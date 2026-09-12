@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Home • Helper Daily Routine & Meal Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif; }
+    .tab-active { border-b-4 border-amber-500 text-amber-600 font-bold; }
+    .lang-active { background-color: #f59e0b !important; color: #ffffff !important; font-weight: bold; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 38px;
+      bottom: -16px;
+      width: 2px;
+      background-color: #fde68a;
+    }
+    .timeline-item:last-child::before { display: none; }
+  </style>
+</head>
+<body class="bg-amber-50/40 text-slate-800 pb-24">
+
+  <!-- Top Uplifting Header -->
+  <header class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white sticky top-0 z-50 px-4 py-3 shadow-md">
+    <div class="max-w-md mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-xl shadow-inner">
+          🌟
+        </div>
+        <div>
+          <h1 class="text-sm font-black tracking-tight flex items-center gap-1.5" id="app-title">
+            Happy Home Hub
+          </h1>
+          <p class="text-[11px] text-amber-100 font-medium" id="app-subtitle">Harvey & Elly • Daily Routine</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- Admin Pin Lock Button -->
+        <button onclick="openPinModal()" id="btn-admin" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-xs backdrop-blur border border-white/30 transition flex items-center gap-1">
+          <i id="admin-icon" class="fa-solid fa-lock text-sm"></i>
+        </button>
+
+        <!-- Trilingual Language Bar -->
+        <div class="flex items-center bg-black/20 backdrop-blur p-1 rounded-lg border border-white/20 text-xs font-semibold">
+          <button onclick="setLang('en')" id="btn-lang-en" class="px-2 py-1 rounded transition text-white">EN</button>
+          <button onclick="setLang('zh')" id="btn-lang-zh" class="px-2 py-1 rounded transition text-white">中文</button>
+          <button onclick="setLang('tl')" id="btn-lang-tl" class="px-2 py-1 rounded transition text-white">TL</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Motivational Warm Banner & Progress Bar -->
+  <div class="max-w-md mx-auto px-4 pt-3 space-y-2.5">
+    
+    <!-- Daily Encouragement Card -->
+    <div class="bg-gradient-to-r from-amber-100 via-orange-50 to-rose-100 border border-amber-200/80 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+      <div class="text-2xl">💖</div>
+      <div class="flex-1">
+        <p class="text-xs font-bold text-amber-900" id="t-motive-title">Maraming salamat sa iyong malasakit!</p>
+        <p class="text-[11px] text-amber-800" id="t-motive-sub">Thank you for taking great care of Harvey and Elly today!</p>
+      </div>
+    </div>
+
+    <!-- Interactive Progress Tracker -->
+    <div class="bg-white p-3 rounded-2xl shadow-sm border border-amber-100 space-y-1.5">
+      <div class="flex justify-between items-center text-xs">
+        <span class="font-bold text-slate-700 flex items-center gap-1.5">
+          <i class="fa-solid fa-trophy text-amber-500"></i>
+          <span id="t-prog-label">Daily Progress • Araw-araw na Tagumpay</span>
+        </span>
+        <span class="font-black text-amber-600 font-mono" id="prog-percent">0%</span>
+      </div>
+      <div class="w-full bg-amber-100 h-2.5 rounded-full overflow-hidden">
+        <div id="prog-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-2.5 rounded-full transition-all duration-500 w-0"></div>
+      </div>
+      <p class="text-[10px] text-slate-400 text-right" id="prog-detail">0 of 12 tasks completed</p>
+    </div>
+
+    <!-- Admin Edit Mode Active Banner (Visible only when unlocked) -->
+    <div id="admin-mode-banner" class="hidden bg-emerald-600 text-white p-2.5 rounded-xl shadow flex justify-between items-center text-xs">
+      <span class="flex items-center gap-1.5 font-bold">
+        <i class="fa-solid fa-unlock-keyhole"></i>
+        <span id="t-admin-active">Edit Mode Active (Employer Unlocked)</span>
+      </span>
+      <button onclick="lockAdmin()" class="bg-white text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-lg hover:bg-emerald-50">
+        Lock & Save
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Navigation Tabs -->
+  <nav class="bg-white/90 backdrop-blur border-b border-amber-100 sticky top-14 z-40 mt-3 shadow-sm">
+    <div class="max-w-md mx-auto flex justify-around text-center text-xs font-bold text-slate-500">
+      <button onclick="switchTab('routine')" id="tab-btn-routine" class="py-3 px-2 flex-1 tab-active transition">
+        <i class="fa-solid fa-heart-circle-check block text-base mb-1"></i>
+        <span class="t-nav-routine">Routine</span>
+      </button>
+      <button onclick="switchTab('meals')" id="tab-btn-meals" class="py-3 px-2 flex-1 transition">
+        <i class="fa-solid fa-utensils block text-base mb-1"></i>
+        <span class="t-nav-meals">Meals</span>
+      </button>
+      <button onclick="switchTab('grocery')" id="tab-btn-grocery" class="py-3 px-2 flex-1 transition">
+        <i class="fa-solid fa-basket-shopping block text-base mb-1"></i>
+        <span class="t-nav-grocery">Market</span>
+      </button>
+      <button onclick="switchTab('rules')" id="tab-btn-rules" class="py-3 px-2 flex-1 transition">
+        <i class="fa-solid fa-star block text-base mb-1"></i>
+        <span class="t-nav-rules">Tips</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="max-w-md mx-auto p-4 space-y-4">
+
+    <!-- ==================== TAB 1: DAILY ROUTINE ==================== -->
+    <section id="view-routine" class="space-y-4">
+
+      <div class="flex justify-between items-center">
+        <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="fa-regular fa-clock"></i>
+          <span class="t-r-section-title">Schedule of the Day</span>
+        </h2>
+        <!-- Admin Add Task Button -->
+        <button id="btn-add-task" onclick="promptAddTask()" class="hidden bg-indigo-600 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow hover:bg-indigo-700 flex items-center gap-1">
+          <i class="fa-solid fa-plus"></i> <span id="t-btn-add">Add Task</span>
+        </button>
+      </div>
+
+      <!-- Routine Blocks -->
+      <div id="routine-list" class="space-y-4 relative">
+        
+        <!-- Block 1: Morning School Rush -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center font-black text-xs">
+            ☀️
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-amber-600 font-mono font-black">06:30 – 07:45</span>
+              <span class="t-b1-title">School Baon & Breakfast</span>
+            </h3>
+            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 07:45 AM</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 t-b1-desc">Cook fresh hot breakfast and pack nutritious thermoses.</p>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
+              <span class="t-b1-t1">Pre-heat thermos with boiling water for 5 minutes before filling with hot food.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
+              <span class="t-b1-t2">Cut meat and vegetables into bite-sized pieces so kids can eat easily with a spoon.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
+              <span class="t-b1-t3">Fill water bottles and pack morning snack into school bags.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-rose-50 p-2.5 rounded-xl border border-rose-200 cursor-pointer text-rose-900 font-bold">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500 task-check">
+              <span class="t-b1-t4">📸 WhatsApp Photo: Send 1 photo of packed lunchbox & bottle before 07:45 AM.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Block 2: Morning Reset -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-black text-xs">
+            🧼
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-blue-600 font-mono font-black">08:00 – 09:30</span>
+              <span class="t-b2-title">Morning Kitchen & House Reset</span>
+            </h3>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 t-b2-desc">Wash dishes and freshen up the house.</p>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b2-t1">Wash breakfast dishes, wipe kitchen stove and dining table.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b2-t2">Sweep and mop living room and dining room floors. Open windows.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b2-t3">Sort laundry, wash clothes, and hang dry.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Block 3: Wet Market -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black text-xs">
+            🥦
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-emerald-600 font-mono font-black">09:30 – 11:30</span>
+              <span class="t-b3-title">Wet Market & Fresh Produce</span>
+            </h3>
+            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 11:00 AM</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 t-b3-desc">Buy fresh ingredients in Hong Kong catty (1 斤 = 600g).</p>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b3-t1">Check 'Market' tab. Buy fresh vegetables and meats according to list.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200 cursor-pointer text-amber-900 font-semibold">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b3-t2">⚠️ Lamb Chops rule: Send WhatsApp photo from the butcher stall before buying!</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 cursor-pointer text-emerald-900 font-bold">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-emerald-600 task-check">
+              <span class="t-b3-t4">📸 WhatsApp Photo: Send photo of receipts and fresh ingredients at 11:00 AM.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Block 4: Deep Cleaning -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-purple-100 text-purple-700 border border-purple-200 flex items-center justify-center font-black text-xs">
+            ✨
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-purple-600 font-mono font-black">11:30 – 14:00</span>
+              <span class="t-b4-title">Daily Deep Cleaning Focus</span>
+            </h3>
+          </div>
+          <div class="bg-purple-50/70 p-3 rounded-xl border border-purple-100 text-xs text-purple-900 mb-2">
+            <p class="font-bold mb-1.5 text-purple-950 t-b4-schedule-title">Daily Area Schedule:</p>
+            <ul class="space-y-1.5 pl-1">
+              <li><b>Mon (Lunes / 週一):</b> <span class="t-b4-m">Bathrooms deep clean & scrub tiles</span></li>
+              <li><b>Tue (Martes / 週二):</b> <span class="t-b4-t">Bedrooms & change bed sheets</span></li>
+              <li><b>Wed (Miyerkules / 週三):</b> <span class="t-b4-w">Kitchen stove, range hood degreasing</span></li>
+              <li><b>Thu (Huwebes / 週四):</b> <span class="t-b4-th">Dusting furniture & wipe window tracks</span></li>
+              <li><b>Fri (Biyernes / 週五):</b> <span class="t-b4-f">Fridge interior wipe & full floor mopping</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Block 5: Rest Time -->
+        <div class="timeline-item relative pl-12 bg-amber-100/50 p-4 rounded-2xl border border-amber-200">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-xs">
+            ☕
+          </div>
+          <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+            <span class="font-mono font-black">14:00 – 15:00</span>
+            <span class="t-b5-title">Helper Lunch & Rest Time</span>
+          </h3>
+          <p class="text-xs text-amber-800 mt-1 t-b5-desc">Take a nice break, eat lunch, and relax before the kids return!</p>
+        </div>
+
+        <!-- Block 6: Afternoon Snack -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-md border-2 border-orange-400">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-orange-100 text-orange-700 border border-orange-300 flex items-center justify-center text-xs font-black">
+            🥪
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-orange-600 font-mono font-black">15:00 – 16:00</span>
+              <span class="t-b6-title">Kids' High-Protein Snack Time</span>
+            </h3>
+            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 03:30 PM</span>
+          </div>
+          <div class="bg-gradient-to-r from-orange-50 to-amber-50 p-2.5 rounded-xl border border-orange-200 text-xs text-orange-950 mb-2.5">
+            <p class="font-black text-orange-800 flex items-center gap-1.5 mb-0.5">
+              <span>💪</span>
+              <span class="t-b6-why-title">Helping Harvey & Elly Grow Taller & Stronger!</span>
+            </p>
+            <p class="text-[11px] text-orange-900 t-b6-why-desc">No chips or junk food. Prepare hot eggs, cheese toast, yogurt, or dumplings by 3:30 PM.</p>
+          </div>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b6-t1">Prepare warm snack (e.g. egg & cheese toast, Greek yogurt with berries, or dumplings).</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b6-t2">Set plates and fresh water/milk on the table before kids arrive from school.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-orange-50 p-2.5 rounded-xl border border-orange-200 cursor-pointer text-orange-950 font-bold">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-orange-600 task-check">
+              <span class="t-b6-t3">📸 WhatsApp Photo: Send 1 photo of prepared snack on table at 03:30 PM sharp.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Block 7: Evening Routine -->
+        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center text-xs">
+            🌙
+          </div>
+          <div class="flex justify-between items-start mb-1.5">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <span class="text-slate-700 font-mono font-black">18:30 – 21:00</span>
+              <span class="t-b7-title">Dinner & Evening Close-Down</span>
+            </h3>
+          </div>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b7-t1">Serve dinner, clear table, wash pots and sanitize kitchen countertops.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b7-t2">Wash kids' thermoses thoroughly and air dry with caps disassembled.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200 cursor-pointer text-amber-950 font-bold">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b7-t3">⭐ Move tomorrow's lunch meat from freezer to fridge to defrost overnight.</span>
+            </label>
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="t-b7-t4">Take out all trash to the building refuse room. Have a good rest!</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MEALS & YOUTUBE ==================== -->
+    <section id="view-meals" class="space-y-4 hidden">
+      <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-3.5 rounded-2xl shadow-sm text-xs">
+        <p class="font-black flex items-center gap-1.5 mb-1 text-sm">
+          <i class="fa-brands fa-youtube"></i>
+          <span class="t-meals-banner-title">Step-by-Step Cooking Video Guides</span>
+        </p>
+        <p class="text-white/90 text-[11px] t-meals-banner-desc">Tap the video button to watch the recipe tutorial before cooking.</p>
+      </div>
+
+      <!-- Mon Card -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <span class="font-bold text-xs text-amber-600">MONDAY • 星期一 • LUNES</span>
+          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Thermos Lunch</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">
+          Braised Soft-Bone Pork Ribs (紅燒燉排骨)
+        </h4>
+        <p class="text-xs text-slate-500 t-m-mon-notes">
+          Ask butcher for soft bones (豬軟骨). Braise the night before until tender; reheat in the morning.
+        </p>
+        <a href="https://www.youtube.com/watch?v=pzE_5bOnRRQ" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+          <span class="t-btn-video">Watch Recipe Video</span>
+        </a>
+      </div>
+
+      <!-- Tue Card -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <span class="font-bold text-xs text-pink-600">TUESDAY • 星期二 • MARTES</span>
+          <span class="text-[10px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">Elly's Favorite ❤️</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">
+          Fish Fillet in Sweet Corn Sauce (免油炸粟米斑塊)
+        </h4>
+        <p class="text-xs text-slate-500 t-m-tue-notes">
+          Pan-fry fish in butter/oil (no deep-fry). Pour warm sweet corn and egg ribbon sauce over rice.
+        </p>
+        <a href="https://www.youtube.com/watch?v=qPlPHW7a158" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+          <span class="t-btn-video">Watch Recipe Video</span>
+        </a>
+      </div>
+
+      <!-- Wed Card -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <span class="font-bold text-xs text-blue-600">WEDNESDAY • 星期三 • MIYERKULES</span>
+          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Harvey's Favorite 🥪</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">
+          Classic Loaded Club Sandwich (經典公司三文治)
+        </h4>
+        <p class="text-xs text-slate-500 t-m-wed-notes">
+          Lightly toast bread, spread butter inside, layer fried egg, cheese, chicken/ham, and tomato. Cut triangles.
+        </p>
+        <a href="https://www.youtube.com/watch?v=S_1_ZSMxRfg" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+          <span class="t-btn-video">Watch Recipe Video</span>
+        </a>
+      </div>
+
+      <!-- Thu Card -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <span class="font-bold text-xs text-amber-700">THURSDAY • 星期四 • HUWEBES</span>
+          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">⚠️ Check with Sir</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">
+          Braised Lamb Chops with Daikon (紅燒燉羊排)
+        </h4>
+        <p class="text-xs text-slate-500 t-m-thu-notes">
+          Blanch with ginger/scallions to remove gaminess. Stew until fork tender with daikon and carrots.
+        </p>
+        <a href="https://www.youtube.com/watch?v=9JSy-RB2JyQ" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+          <span class="t-btn-video">Watch Recipe Video</span>
+        </a>
+      </div>
+
+      <!-- Fri Card -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <span class="font-bold text-xs text-indigo-600">FRIDAY • 星期五 • BIYERNES</span>
+          <span class="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Thermos Lunch</span>
+        </div>
+        <h4 class="font-bold text-sm text-slate-800">
+          Five-Spice Braised Beef Shank (五香醬牛肉)
+        </h4>
+        <p class="text-xs text-slate-500 t-m-fri-notes">
+          Braise beef shank ahead. Chill in fridge, slice thin across the grain, reheat in hot gravy.
+        </p>
+        <a href="https://www.youtube.com/watch?v=esz2fBMGkPE" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+          <span class="t-btn-video">Watch Recipe Video</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: GROCERY LIST ==================== -->
+    <section id="view-grocery" class="space-y-4 hidden">
+      <div class="bg-emerald-500 text-white p-3.5 rounded-2xl shadow-sm text-xs">
+        <p class="font-bold flex items-center gap-1.5 text-sm mb-0.5">
+          <i class="fa-solid fa-scale-balanced"></i>
+          <span class="t-groc-banner-title">Hong Kong Market Unit: 1 斤 (Catty) = ~600g</span>
+        </p>
+        <p class="text-emerald-100 text-[11px] t-groc-banner-desc">Tap checkboxes as you purchase items in the market.</p>
+      </div>
+
+      <!-- Category 1: Meat & Fish -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm">
+        <h4 class="font-bold text-xs text-amber-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-drumstick-bite"></i>
+          <span class="t-g-cat1">Meat, Poultry & Dairy (肉類、海鮮、乳製品)</span>
+        </h4>
+        <div class="space-y-2 text-xs">
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-slate-800">Pork Soft-Bone Ribs / 一字排 豬軟骨 – 1 斤 (~600g)</p>
+              <p class="text-[11px] text-slate-400">Ask butcher to chop small for kids' thermos.</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-slate-800">White Fish Fillet / 鱈魚柳 o 石斑柳 – 10 兩 (~350g)</p>
+              <p class="text-[11px] text-slate-400">Boneless fillets for Elly's corn fish.</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-amber-50/80 border border-amber-200 cursor-pointer">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-amber-900">Lamb Chops / 羊小排 – 1 斤 (~600g)</p>
+              <p class="text-[11px] text-amber-700 font-bold">📸 Send photo to Sir before buying!</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-slate-800">Beef Shank / 金錢腱 – 1 pc (~800g)</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-slate-800">Ham/Turkey slices & Cheddar Cheese / 車打芝士 – 1 pack each</p>
+            </div>
+          </label>
+          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <div>
+              <p class="font-semibold text-slate-800">Fresh Eggs / 雞蛋 – 1 carton (10 pcs)</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Category 2: Fresh Vegetables -->
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm">
+        <h4 class="font-bold text-xs text-emerald-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <i class="fa-solid fa-carrot"></i>
+          <span class="t-g-cat2">Vegetables & Aromatics (新鮮蔬菜及配料)</span>
+        </h4>
+        <div class="space-y-2 text-xs">
+          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
+            <span class="text-slate-800 font-medium">White Daikon Radish / 白蘿蔔 – 1 pc</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
+            <span class="text-slate-800 font-medium">Carrots / 紅蘿蔔 – 3–4 pcs</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
+            <span class="text-slate-800 font-medium">Broccoli / 西蘭花 – 1 head</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
+            <span class="text-slate-800 font-medium">Tomatoes, Lettuce, Cucumber / 番茄、生菜、小青瓜</span>
+          </label>
+          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
+            <span class="text-slate-800 font-medium">Ginger, Scallions, Garlic / 薑、蔥、蒜頭</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: RULES & HEALTH TIPS ==================== -->
+    <section id="view-rules" class="space-y-4 hidden">
+      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-3">
+        <h3 class="font-black text-sm text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-medal text-amber-500"></i>
+          <span class="t-r-title">Growth & Health Standards (生長與健康準則)</span>
+        </h3>
+
+        <div class="space-y-3 text-xs">
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+            <h5 class="font-black text-amber-900 mb-1 t-r-r1-title">1. Pre-Heat Thermos (5 Minutes)</h5>
+            <p class="text-amber-800 t-r-r1-desc">Always pour boiling water into the thermos and close the lid for 5 minutes before adding hot food so the lunch stays warm safely until lunchtime.</p>
+          </div>
+
+          <div class="p-3 bg-blue-50 rounded-xl border border-blue-200">
+            <h5 class="font-black text-blue-900 mb-1 t-r-r2-title">2. Bite-Sized Cuts</h5>
+            <p class="text-blue-800 t-r-r2-desc">Kids eat with spoons at school. Cut all meat, ribs, and vegetables small so they can easily chew and finish their meal without struggling.</p>
+          </div>
+
+          <div class="p-3 bg-rose-50 rounded-xl border border-rose-200">
+            <h5 class="font-black text-rose-900 mb-1 t-r-r3-title">3. Avoid Excess Refined Sugar</h5>
+            <p class="text-rose-800 t-r-r3-desc">Elly receives growth hormone therapy. Avoid adding refined sugar or sweet syrups to sauces. Rely on the natural sweetness of carrots, onions, and tomatoes.</p>
+          </div>
+
+          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+            <h5 class="font-black text-emerald-900 mb-1 t-r-r4-title">4. 3:30 PM High-Protein Snack is Essential</h5>
+            <p class="text-emerald-800 t-r-r4-desc">Both kids are underweight. They must have a warm, nutrient-dense mini-meal (egg, cheese, yogurt, or dumplings) ready right when they arrive home from school.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== EMPLOYER PIN MODAL ==================== -->
+  <div id="pin-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 text-center border border-amber-100">
+      <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-xl">
+        🔒
+      </div>
+      <div>
+        <h3 class="font-black text-slate-800 text-base" id="t-pin-title">Employer Admin Access</h3>
+        <p class="text-xs text-slate-500 mt-0.5" id="t-pin-desc">Enter 4-digit PIN to edit tasks and routine.</p>
+      </div>
+
+      <!-- PIN Input -->
+      <div class="flex justify-center gap-3 my-2">
+        <input type="password" id="pin-input" maxlength="4" class="w-32 tracking-[1em] text-center text-2xl font-bold font-mono border-2 border-amber-300 rounded-xl py-2 focus:outline-none focus:border-amber-500 bg-amber-50/50" placeholder="••••">
+      </div>
+      <p id="pin-error" class="hidden text-xs text-red-500 font-bold">Incorrect PIN. Try again!</p>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="closePinModal()" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button onclick="verifyPin()" class="flex-1 py-2 rounded-xl text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 shadow transition">
+          Unlock
+        </button>
+      </div>
+      <p class="text-[10px] text-slate-400">Default PIN: 1234</p>
+    </div>
+  </div>
+
+  <!-- JavaScript for Trilingual Engine, PIN Protection, Progress Bar & Confetti -->
+  <script>
+    let isAdminUnlocked = false;
+    let employerPin = localStorage.getItem('employer_pin') || '1234';
+
+    const dict = {
+      en: {
+        appTitle: "Happy Home Hub",
+        appSubtitle: "Harvey & Elly • Daily Routine & Meals",
+        motiveTitle: "Thank you for taking great care of our family today!",
+        motiveSub: "Your hard work and dedication mean the world to Harvey and Elly!",
+        progLabel: "Daily Progress • Accomplished Today",
+        adminActive: "Edit Mode Active (Employer Unlocked)",
+        navRoutine: "Routine",
+        navMeals: "Meals",
+        navGrocery: "Market",
+        navRules: "Tips",
+        rSectionTitle: "Schedule of the Day",
+        btnAdd: "Add Task",
+        b1Title: "School Baon & Breakfast",
+        b1Desc: "Cook fresh hot breakfast and pack nutritious thermoses.",
+        b1T1: "Pre-heat thermos with boiling water for 5 minutes before filling with hot food.",
+        b1T2: "Cut meat and vegetables into bite-sized pieces so kids can eat easily with a spoon.",
+        b1T3: "Fill water bottles and pack morning snack into school bags.",
+        b1T4: "📸 WhatsApp Photo: Send 1 photo of packed lunchbox & bottle before 07:45 AM.",
+        b2Title: "Morning Kitchen & House Reset",
+        b2Desc: "Clean breakfast dishes and maintain shared areas.",
+        b2T1: "Wash breakfast dishes, wipe kitchen stove and dining table.",
+        b2T2: "Sweep and mop living room and dining room floors. Open windows.",
+        b2T3: "Sort laundry, wash clothes, and hang dry.",
+        b3Title: "Wet Market & Fresh Produce",
+        b3Desc: "Buy fresh ingredients in Hong Kong catty (1 斤 = 600g).",
+        b3T1: "Check 'Market' tab. Buy fresh vegetables and meats according to list.",
+        b3T2: "⚠️ Lamb Chops rule: Send WhatsApp photo from the butcher stall before buying!",
+        b3T4: "📸 WhatsApp Photo: Send photo of receipts and fresh ingredients at 11:00 AM.",
+        b4Title: "Daily Deep Cleaning Focus",
+        b4SchedTitle: "Daily Area Schedule:",
+        b4M: "Bathrooms deep clean & scrub tiles",
+        b4T: "Bedrooms & change bed sheets",
+        b4W: "Kitchen stove, range hood degreasing",
+        b4Th: "Dusting furniture & wipe window tracks",
+        b4F: "Fridge interior wipe & full floor mopping",
+        b5Title: "Helper Lunch & Rest Time",
+        b5Desc: "Take a nice break, eat lunch, and relax before the kids return!",
+        b6Title: "Kids' High-Protein Snack Time",
+        b6WhyTitle: "Helping Harvey & Elly Grow Taller & Stronger!",
+        b6WhyDesc: "No chips or junk food. Prepare hot eggs, cheese toast, yogurt, or dumplings by 3:30 PM.",
+        b6T1: "Prepare warm snack (e.g. egg & cheese toast, Greek yogurt with berries, or dumplings).",
+        b6T2: "Set plates and fresh water/milk on the table before kids arrive from school.",
+        b6T3: "📸 WhatsApp Photo: Send 1 photo of prepared snack on table at 03:30 PM sharp.",
+        b7Title: "Dinner & Evening Close-Down",
+        b7T1: "Serve dinner, clear table, wash pots and sanitize kitchen countertops.",
+        b7T2: "Wash kids' thermoses thoroughly and air dry with caps disassembled.",
+        b7T3: "⭐ Move tomorrow's lunch meat from freezer to fridge to defrost overnight.",
+        b7T4: "Take out all trash to the building refuse room. Have a good rest!",
+        mealsBannerTitle: "Step-by-Step Cooking Video Guides",
+        mealsBannerDesc: "Tap the video button to watch the recipe tutorial before cooking.",
+        btnVideo: "Watch Recipe Video",
+        mMonNotes: "Ask butcher for soft bones (豬軟骨). Braise the night before until tender; reheat in the morning.",
+        mTueNotes: "Pan-fry fish in butter/oil (no deep-fry). Pour warm sweet corn and egg ribbon sauce over rice.",
+        mWedNotes: "Lightly toast bread, spread butter inside, layer fried egg, cheese, chicken/ham, and tomato. Cut triangles.",
+        mThuNotes: "Blanch with ginger/scallions to remove gaminess. Stew until fork tender with daikon and carrots.",
+        mFriNotes: "Braise beef shank ahead. Chill in fridge, slice thin across the grain, reheat in hot gravy.",
+        grocBannerTitle: "Hong Kong Market Unit: 1 斤 (Catty) = ~600g",
+        grocBannerDesc: "Tap checkboxes as you purchase items in the market.",
+        gCat1: "Meat, Poultry & Dairy (肉類、海鮮、乳製品)",
+        gCat2: "Vegetables & Aromatics (新鮮蔬菜及配料)",
+        rTitle: "Growth & Health Standards (生長與健康準則)",
+        rR1Title: "1. Pre-Heat Thermos (5 Minutes)",
+        rR1Desc: "Always pour boiling water into the thermos and close the lid for 5 minutes before adding hot food.",
+        rR2Title: "2. Bite-Sized Cuts",
+        rR2Desc: "Kids eat with spoons at school. Cut all meat and vegetables small so they can easily chew and finish.",
+        rR3Title: "3. Avoid Excess Refined Sugar",
+        rR3Desc: "Elly receives growth hormone therapy. Avoid adding refined sugar or sweet syrups to sauces.",
+        rR4Title: "4. 3:30 PM High-Protein Snack is Essential",
+        rR4Desc: "Both kids are underweight. They must have a warm, nutrient-dense mini-meal ready after school.",
+        pinTitle: "Employer Admin Access",
+        pinDesc: "Enter 4-digit PIN to edit tasks and routine."
+      },
+      zh: {
+        appTitle: "溫馨家園中心 (Happy Home Hub)",
+        appSubtitle: "Harvey & Elly • 每日作息與營養餐單",
+        motiveTitle: "多謝你今日悉心照顧我哋一家！",
+        motiveSub: "你的付出與辛勞，是 Harvey 與 Elly 健康成長的最大支持！",
+        progLabel: "今日成就進度 • Daily Progress",
+        adminActive: "已解鎖編輯模式 (僱主專用)",
+        navRoutine: "每日作息",
+        navMeals: "每週午餐",
+        navGrocery: "街市買餸",
+        navRules: "健康守則",
+        rSectionTitle: "今日作息清單",
+        btnAdd: "新增事項",
+        b1Title: "準備上學午餐與早餐",
+        b1Desc: "用心準備熱騰騰的營養早餐與保溫壺午餐。",
+        b1T1: "裝入食物前，先將滾水倒入保溫壺預熱5分鐘，倒乾淨後才放食物。",
+        b1T2: "將所有肉類及蔬菜切成小塊（適合湯匙），方便小朋友在學校咀嚼進食。",
+        b1T3: "裝滿水壺並將上午小食放入書包。",
+        b1T4: "📸 WhatsApp拍照：早上 07:45 前發送一張打包好的午餐盒與水壺照片。",
+        b2Title: "上午廚房與客廳整理",
+        b2Desc: "清洗早餐餐具，保持公共區域整潔通風。",
+        b2T1: "清洗早餐碗碟、抹乾淨餐桌與煮食爐灶。",
+        b2T2: "清掃及拖抹客廳與飯廳地板，打開窗戶通風。",
+        b2T3: "分類清洗衣物並晾曬乾透。",
+        b3Title: "街市買餸與新鮮採購",
+        b3Desc: "依清單採購食材，謹記香港 1 斤 = 約600克。",
+        b3T1: "出門前查看「街市買餸」標籤頁。購買新鮮食材。",
+        b3T2: "⚠️ 羊排特別規定：在肉檔付款前必須先拍照發送至 WhatsApp 給先生確認！",
+        b3T4: "📸 WhatsApp拍照：上午 11:00 前發送買餸收據及食材照片。",
+        b4Title: "每日深層清潔輪替",
+        b4SchedTitle: "每日重點區域：",
+        b4M: "星期一：徹底刷洗浴室及瓷磚",
+        b4T: "星期二：清潔睡房及更換全屋床單",
+        b4W: "星期三：廚房抽油煙機與爐灶除油清潔",
+        b4Th: "星期四：擦拭全屋窗框軌道與家具除塵",
+        b4F: "星期五：抹拭雪櫃內部與全屋徹底拖地",
+        b5Title: "姐姐休息與午餐時間",
+        b5Desc: "放鬆享用美味午餐，好好休息充電！",
+        b6Title: "小朋友高蛋白質營養下午茶",
+        b6WhyTitle: "全力協助 Harvey & Elly 增重長高！",
+        b6WhyDesc: "嚴禁給薯片或零食。下午 3:30 前準備好高鈣高蛋白熱食。",
+        b6T1: "準備熱食下午茶（例如：芝士蛋多士、希臘乳酪配藍莓、或鮮蒸燒賣）。",
+        b6T2: "在小朋友放學到家前，將食物及鮮奶整齊擺放於餐桌上。",
+        b6T3: "📸 WhatsApp拍照：下午 03:30 準時發送下午茶擺盤照片。",
+        b7Title: "晚餐與晚間收尾打烊",
+        b7T1: "上晚餐、清理餐桌、洗鍋並徹底消毒廚房檯面。",
+        b7T2: "徹底手洗小朋友保溫壺，將密封膠圈拆開徹底晾乾。",
+        b7T3: "⭐ 關鍵步驟：將明天午餐要用的肉從冰格取出，放入冷藏室解凍。",
+        b7T4: "將所有垃圾拿到樓層垃圾房。祝你有個好夢！",
+        mealsBannerTitle: "大廚烹飪視頻指導",
+        mealsBannerDesc: "點擊紅色按鈕即可在烹飪前觀看視頻教學。",
+        btnVideo: "觀看烹飪教學視頻",
+        mMonNotes: "叫肉檔切一字排/軟骨碎件。前一晚燜至軟腍入味，早上回熱打包。",
+        mTueNotes: "用牛油或橄欖油香煎魚柳（切勿油炸）。將香濃粟米蛋花汁淋在飯面上。",
+        mWedNotes: "輕度烘烤麵包，內層抹牛油防潮，夾入煎蛋、芝士、火腿/雞肉及番茄。切成三角形。",
+        mThuNotes: "先用生薑青蔥汆水去腥。配合白蘿蔔及胡蘿蔔慢火燉至軟爛脫骨。",
+        mFriNotes: "提前燉好金錢腱。放入雪櫃冷藏後逆紋切薄片，加入熱滷汁保溫。",
+        grocBannerTitle: "香港街市標準單位：1 斤 = 約600克 (16兩)",
+        grocBannerDesc: "購買食材後點擊方格，記錄今天的成果。",
+        gCat1: "肉類、海鮮及乳製品 (Meat & Seafood)",
+        gCat2: "新鮮蔬菜及配料 (Fresh Produce)",
+        rTitle: "兒童健康與發育準則",
+        rR1Title: "1. 保溫壺必須預熱5分鐘",
+        rR1Desc: "裝食物前務必用滾水預熱，確保小朋友中午進食時溫度依然熱騰騰。",
+        rR2Title: "2. 所有食材必須切成小塊 (Bite-Sized)",
+        rR2Desc: "小朋友在學校使用湯匙進食，肉類與蔬菜切細件，才能輕鬆吃光。",
+        rR3Title: "3. 避免過多精製糖分",
+        rR3Desc: "Elly 正在接受生長激素療程，切勿在醬汁中添加精製白糖，善用天然蔬果甜味。",
+        rR4Title: "4. 下午 3:30 高蛋白營養餐是必備環節",
+        rR4Desc: "兩位小朋友目前體重偏輕，放學後必須及時補充高熱量、高鈣及蛋白質食物。",
+        pinTitle: "僱主管理權限 (Employer PIN)",
+        pinDesc: "請輸入 4 位數 PIN 碼以編輯日常事項。"
+      },
+      tl: {
+        appTitle: "Happy Home Hub",
+        appSubtitle: "Harvey & Elly • Pang-araw-araw na Iskedyul at Pagkain",
+        motiveTitle: "Maraming salamat sa iyong malasakit at sipag!",
+        motiveSub: "Ang iyong pag-aalaga ay napakahalaga para sa kalusugan nina Harvey at Elly!",
+        progLabel: "Araw-araw na Tagumpay • Daily Progress",
+        adminActive: "Naka-unlock ang Edit Mode (Employer Mode)",
+        navRoutine: "Iskedyul",
+        navMeals: "Tanghalian",
+        navGrocery: "Palengke",
+        navRules: "Paalala",
+        rSectionTitle: "Iskedyul ng Araw",
+        btnAdd: "Magdagdag",
+        b1Title: "Baon sa Eskwela at Agahan",
+        b1Desc: "Ihanda ang masarap na agahan at mainit na baon sa thermos.",
+        b1T1: "Painitin ang thermos ng kumukulong tubig ng 5 minuto bago lagyan ng mainit na pagkain.",
+        b1T2: "Hiwain nang maliliit (bite-sized) ang karne at gulay para madaling kainin gamit ang kutsara.",
+        b1T3: "Punuin ang mga bote ng tubig at ihanda ang gamit sa eskwela.",
+        b1T4: "📸 WhatsApp Photo: Magpadala ng 1 picture ng nakaimpakeng baon bago mag-07:45 AM.",
+        b2Title: "Paglilinis ng Kusina at Bahay sa Umaga",
+        b2Desc: "Ayusin ang pinagkainan at panatilihing presko ang bahay.",
+        b2T1: "Hugasan ang mga pinggan, punasan ang kalan at dining table.",
+        b2T2: "Walisin at lampasuhin ang sala at dining room. Buksan ang bintana.",
+        b2T3: "Maglaba ng damit at isampay nang maayos.",
+        b3Title: "Pamamalengke sa Wet Market",
+        b3Desc: "Bumili ng sariwang karne at gulay (1 斤 = ~600g).",
+        b3T1: "Tingnan ang 'Palengke' tab bago umalis. Bumili ayon sa listahan.",
+        b3T2: "⚠️ Panuntunan sa Lamb Chops: Magpadala muna ng picture sa WhatsApp bago bayaran!",
+        b3T4: "📸 WhatsApp Photo: Magpadala ng picture ng resibo at mga binili sa ganap na 11:00 AM.",
+        b4Title: "Pang-araw-araw na Malalimang Paglilinis",
+        b4SchedTitle: "Iskedyul ng Lilinisin Bawat Araw:",
+        b4M: "Lunes: Kuskusin at linisin nang mabuti ang Banyo",
+        b4T: "Martes: Ayusin ang mga Kuwarto at magpalit ng sapin ng kama",
+        b4W: "Miyerkules: Linisin ang kalan at tanggalin ang grasa sa kusina",
+        b4Th: "Huwebes: Punasan ang mga bintana at alisin ang alikabok sa gamit",
+        b4F: "Biyernes: Punasan ang loob ng Ref at lampasuhin ang buong sahig",
+        b5Title: "Pahinga at Tanghalian ng Kasambahay",
+        b5Desc: "Magpahinga at kumain nang masarap bago dumating ang mga bata!",
+        b6Title: "Mabigat na Merienda ng mga Bata (High Protein)",
+        b6WhyTitle: "Tulungan sina Harvey & Elly na Tumangkad at Lumusog!",
+        b6WhyDesc: "Bawal ang chichirya! Maghanda ng masustansyang mainit na pagkain bago mag-3:30 PM.",
+        b6T1: "Maghanda ng mainit na merienda (hal. Toast na may itlog at cheese, yogurt na may prutas, o dumplings).",
+        b6T2: "Ihain sa lamesa kasama ang sariwang gatas o tubig bago sila makarating.",
+        b6T3: "📸 WhatsApp Photo: Magpadala ng picture ng nakahandang pagkain sa 3:30 PM sharp.",
+        b7Title: "Hapunan at Pagtatapos ng Araw",
+        b7T1: "Ihain ang hapunan, ligpitin ang lamesa, at punasan ang lababo at kalan.",
+        b7T2: "Hugasan nang maigi ang thermos at patuyuin nang bukas ang takip.",
+        b7T3: "⭐ Napakahalaga: Ilipat ang karne para bukas mula freezer papuntang ref para mag-defrost.",
+        b7T4: "Itapon ang basura sa refuse room ng gusali. Magandang gabi at magpahinga nang maayos!",
+        mealsBannerTitle: "Gabay sa Pagluluto gamit ang Video",
+        mealsBannerDesc: "Pindutin ang pulang button para mapanood ang tamang paraan ng pagluluto.",
+        btnVideo: "Panoorin ang Video ng Recipe",
+        mMonNotes: "Pahiwain sa butcher ang soft bones (豬軟骨). Lutuin sa gabi para lumambot; initin sa umaga.",
+        mTueNotes: "I-pan-fry lang sa butter/mantika (bawal i-deep fry). Buhusan ng mainit na corn sauce na may itlog.",
+        mWedNotes: "I-toast ang tinapay, lagyan ng butter, itlog, cheese, ham/manok, at kamatis. Hiwain na tatsulok.",
+        mThuNotes: "Pakuluin sa luya para mawala ang lansa. Kumuha ng litrato bago bilhin sa palengke.",
+        mFriNotes: "Lutuin ang beef shank nang maaga. Palamigin sa ref, hiwain nang manipis, at initin sa sabaw.",
+        grocBannerTitle: "Yunit ng Timbangan sa HK: 1 斤 (Catty) = ~600g",
+        grocBannerDesc: "I-tap ang mga kahon kapag nabili na sa palengke.",
+        gCat1: "Karne, Isda at Gatas (Meat & Seafood)",
+        gCat2: "Sariwang Gulay at Rekado (Fresh Produce)",
+        rTitle: "Mga Mahalagang Tuntunin sa Kalusugan",
+        rR1Title: "1. Painitin ang Thermos (5 Minuto)",
+        rR1Desc: "Laging lagyan ng kumukulong tubig ang thermos ng 5 minuto bago isalin ang pagkain para manatiling mainit.",
+        rR2Title: "2. Hiwain nang Maliit (Bite-Sized)",
+        rR2Desc: "Kutsara ang gamit ng mga bata sa eskwela. Hiwain nang pino ang karne at gulay para maubos nila.",
+        rR3Title: "3. Huwag Maglagay ng Sobrang Asukal",
+        rR3Desc: "May growth hormone therapy si Elly. Iwasan ang matatamis na sauce; gamitin ang tamis ng sibuyas at kamatis.",
+        rR4Title: "4. Napakahalaga ng 3:30 PM Merienda",
+        rR4Desc: "Kailangang magdagdag ng timbang at tangkad ng mga bata. Laging maghanda ng itlog, cheese, o dumplings.",
+        pinTitle: "Employer PIN Access",
+        pinDesc: "Ipasok ang 4-digit PIN upang mag-edit ng mga gawain."
+      }
+    };
+
+    function autoDetectLanguage() {
+      const saved = localStorage.getItem('app_lang');
+      if (saved && dict[saved]) return saved;
+      const navLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+      if (navLang.startsWith('tl') || navLang.startsWith('fil')) return 'tl';
+      if (navLang.startsWith('zh')) return 'zh';
+      return 'en';
+    }
+
+    let currentLang = autoDetectLanguage();
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('app_lang', lang);
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      const t = dict[currentLang];
+      ['en', 'zh', 'tl'].forEach(l => {
+        const btn = document.getElementById('btn-lang-' + l);
+        if (l === currentLang) btn.classList.add('lang-active');
+        else btn.classList.remove('lang-active');
+      });
+
+      document.getElementById('app-title').innerText = t.appTitle;
+      document.getElementById('app-subtitle').innerText = t.appSubtitle;
+      document.getElementById('t-motive-title').innerText = t.motiveTitle;
+      document.getElementById('t-motive-sub').innerText = t.motiveSub;
+      document.getElementById('t-prog-label').innerText = t.progLabel;
+      document.getElementById('t-admin-active').innerText = t.adminActive;
+
+      document.querySelectorAll('.t-nav-routine').forEach(e => e.innerText = t.navRoutine);
+      document.querySelectorAll('.t-nav-meals').forEach(e => e.innerText = t.navMeals);
+      document.querySelectorAll('.t-nav-grocery').forEach(e => e.innerText = t.navGrocery);
+      document.querySelectorAll('.t-nav-rules').forEach(e => e.innerText = t.navRules);
+
+      document.querySelector('.t-r-section-title').innerText = t.rSectionTitle;
+      document.getElementById('t-btn-add').innerText = t.btnAdd;
+
+      // Routine Blocks
+      document.querySelector('.t-b1-title').innerText = t.b1Title;
+      document.querySelector('.t-b1-desc').innerText = t.b1Desc;
+      document.querySelector('.t-b1-t1').innerText = t.b1T1;
+      document.querySelector('.t-b1-t2').innerText = t.b1T2;
+      document.querySelector('.t-b1-t3').innerText = t.b1T3;
+      document.querySelector('.t-b1-t4').innerText = t.b1T4;
+
+      document.querySelector('.t-b2-title').innerText = t.b2Title;
+      document.querySelector('.t-b2-desc').innerText = t.b2Desc;
+      document.querySelector('.t-b2-t1').innerText = t.b2T1;
+      document.querySelector('.t-b2-t2').innerText = t.b2T2;
+      document.querySelector('.t-b2-t3').innerText = t.b2T3;
+
+      document.querySelector('.t-b3-title').innerText = t.b3Title;
+      document.querySelector('.t-b3-desc').innerText = t.b3Desc;
+      document.querySelector('.t-b3-t1').innerText = t.b3T1;
+      document.querySelector('.t-b3-t2').innerText = t.b3T2;
+      document.querySelector('.t-b3-t4').innerText = t.b3T4;
+
+      document.querySelector('.t-b4-title').innerText = t.b4Title;
+      document.querySelector('.t-b4-schedule-title').innerText = t.b4SchedTitle;
+      document.querySelector('.t-b4-m').innerText = t.b4M;
+      document.querySelector('.t-b4-t').innerText = t.b4T;
+      document.querySelector('.t-b4-w').innerText = t.b4W;
+      document.querySelector('.t-b4-th').innerText = t.b4Th;
+      document.querySelector('.t-b4-f').innerText = t.b4F;
+
+      document.querySelector('.t-b5-title').innerText = t.b5Title;
+      document.querySelector('.t-b5-desc').innerText = t.b5Desc;
+
+      document.querySelector('.t-b6-title').innerText = t.b6Title;
+      document.querySelector('.t-b6-why-title').innerText = t.b6WhyTitle;
+      document.querySelector('.t-b6-why-desc').innerText = t.b6WhyDesc;
+      document.querySelector('.t-b6-t1').innerText = t.b6T1;
+      document.querySelector('.t-b6-t2').innerText = t.b6T2;
+      document.querySelector('.t-b6-t3').innerText = t.b6T3;
+
+      document.querySelector('.t-b7-title').innerText = t.b7Title;
+      document.querySelector('.t-b7-t1').innerText = t.b7T1;
+      document.querySelector('.t-b7-t2').innerText = t.b7T2;
+      document.querySelector('.t-b7-t3').innerText = t.b7T3;
+      document.querySelector('.t-b7-t4').innerText = t.b7T4;
+
+      // Meals
+      document.querySelector('.t-meals-banner-title').innerText = t.mealsBannerTitle;
+      document.querySelector('.t-meals-banner-desc').innerText = t.mealsBannerDesc;
+      document.querySelectorAll('.t-btn-video').forEach(e => e.innerText = t.btnVideo);
+      document.querySelector('.t-m-mon-notes').innerText = t.mMonNotes;
+      document.querySelector('.t-m-tue-notes').innerText = t.mTueNotes;
+      document.querySelector('.t-m-wed-notes').innerText = t.mWedNotes;
+      document.querySelector('.t-m-thu-notes').innerText = t.mThuNotes;
+      document.querySelector('.t-m-fri-notes').innerText = t.mFriNotes;
+
+      // Groceries
+      document.querySelector('.t-groc-banner-title').innerText = t.grocBannerTitle;
+      document.querySelector('.t-groc-banner-desc').innerText = t.grocBannerDesc;
+      document.querySelector('.t-g-cat1').innerText = t.gCat1;
+      document.querySelector('.t-g-cat2').innerText = t.gCat2;
+
+      // Rules
+      document.querySelector('.t-r-title').innerText = t.rTitle;
+      document.querySelector('.t-r-r1-title').innerText = t.rR1Title;
+      document.querySelector('.t-r-r1-desc').innerText = t.rR1Desc;
+      document.querySelector('.t-r-r2-title').innerText = t.rR2Title;
+      document.querySelector('.t-r-r2-desc').innerText = t.rR2Desc;
+      document.querySelector('.t-r-r3-title').innerText = t.rR3Title;
+      document.querySelector('.t-r-r3-desc').innerText = t.rR3Desc;
+      document.querySelector('.t-r-r4-title').innerText = t.rR4Title;
+      document.querySelector('.t-r-r4-desc').innerText = t.rR4Desc;
+
+      // Pin
+      document.getElementById('t-pin-title').innerText = t.pinTitle;
+      document.getElementById('t-pin-desc').innerText = t.pinDesc;
+    }
+
+    function switchTab(tab) {
+      ['routine', 'meals', 'grocery', 'rules'].forEach(v => {
+        document.getElementById('view-' + v).classList.add('hidden');
+        document.getElementById('tab-btn-' + v).classList.remove('tab-active');
+        document.getElementById('tab-btn-' + v).classList.add('text-slate-500');
+      });
+      document.getElementById('view-' + tab).classList.remove('hidden');
+      document.getElementById('tab-btn-' + tab).classList.add('tab-active');
+      document.getElementById('tab-btn-' + tab).classList.remove('text-slate-500');
+    }
+
+    // Progress Bar & Confetti
+    function updateProgress() {
+      const allCheckboxes = document.querySelectorAll('.task-check');
+      const checked = Array.from(allCheckboxes).filter(cb => cb.checked).length;
+      const total = allCheckboxes.length;
+      const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
+
+      document.getElementById('prog-bar').style.width = percent + '%';
+      document.getElementById('prog-percent').innerText = percent + '%';
+      document.getElementById('prog-detail').innerText = `${checked} of ${total} completed`;
+
+      if (percent === 100) {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    function onTaskToggled(cb) {
+      saveCheckboxes();
+      updateProgress();
+      if (cb.checked) {
+        confetti({
+          particleCount: 25,
+          spread: 45,
+          origin: { y: 0.7 }
+        });
+      }
+    }
+
+    function saveCheckboxes() {
+      document.querySelectorAll('.task-check').forEach((cb, idx) => {
+        localStorage.setItem('task_status_' + idx, cb.checked);
+      });
+    }
+
+    function loadCheckboxes() {
+      document.querySelectorAll('.task-check').forEach((cb, idx) => {
+        const saved = localStorage.getItem('task_status_' + idx);
+        if (saved === 'true') cb.checked = true;
+      });
+      updateProgress();
+    }
+
+    // PIN Authentication for Admin Editing
+    function openPinModal() {
+      if (isAdminUnlocked) {
+        lockAdmin();
+        return;
+      }
+      document.getElementById('pin-modal').classList.remove('hidden');
+      document.getElementById('pin-input').value = '';
+      document.getElementById('pin-error').classList.add('hidden');
+      setTimeout(() => document.getElementById('pin-input').focus(), 100);
+    }
+
+    function closePinModal() {
+      document.getElementById('pin-modal').classList.add('hidden');
+    }
+
+    function verifyPin() {
+      const input = document.getElementById('pin-input').value;
+      if (input === employerPin) {
+        isAdminUnlocked = true;
+        closePinModal();
+        enableAdminMode();
+      } else {
+        document.getElementById('pin-error').classList.remove('hidden');
+      }
+    }
+
+    function enableAdminMode() {
+      document.getElementById('admin-mode-banner').classList.remove('hidden');
+      document.getElementById('btn-add-task').classList.remove('hidden');
+      document.getElementById('admin-icon').classList.remove('fa-lock');
+      document.getElementById('admin-icon').classList.add('fa-unlock-keyhole', 'text-amber-300');
+
+      // Add edit/delete buttons to routine items
+      document.querySelectorAll('.timeline-item').forEach((item, idx) => {
+        if (!item.querySelector('.admin-edit-btn')) {
+          const editBar = document.createElement('div');
+          editBar.className = 'admin-edit-btn flex gap-2 justify-end mt-2 pt-2 border-t border-slate-100';
+          editBar.innerHTML = `
+            <button onclick="editBlock(${idx})" class="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold px-2 py-0.5 rounded bg-indigo-50">
+              <i class="fa-solid fa-pen"></i> Edit
+            </button>
+            <button onclick="deleteBlock(${idx})" class="text-rose-600 hover:text-rose-800 text-[11px] font-bold px-2 py-0.5 rounded bg-rose-50">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+          `;
+          item.appendChild(editBar);
+        }
+      });
+    }
+
+    function lockAdmin() {
+      isAdminUnlocked = false;
+      document.getElementById('admin-mode-banner').classList.add('hidden');
+      document.getElementById('btn-add-task').classList.add('hidden');
+      document.getElementById('admin-icon').classList.add('fa-lock');
+      document.getElementById('admin-icon').classList.remove('fa-unlock-keyhole', 'text-amber-300');
+      document.querySelectorAll('.admin-edit-btn').forEach(e => e.remove());
+    }
+
+    function editBlock(idx) {
+      const item = document.querySelectorAll('.timeline-item')[idx];
+      const titleElem = item.querySelector('h3 span:last-child');
+      const newTitle = prompt("Edit Block Title:", titleElem ? titleElem.innerText : "");
+      if (newTitle !== null && newTitle.trim() !== "") {
+        if (titleElem) titleElem.innerText = newTitle;
+      }
+    }
+
+    function deleteBlock(idx) {
+      if (confirm("Are you sure you want to remove this schedule block?")) {
+        document.querySelectorAll('.timeline-item')[idx].remove();
+        updateProgress();
+      }
+    }
+
+    function promptAddTask() {
+      const taskTime = prompt("Enter time block (e.g. 16:30 – 17:30):", "16:30 – 17:30");
+      if (!taskTime) return;
+      const taskTitle = prompt("Enter task title:", "Special Tutoring / Activity");
+      if (!taskTitle) return;
+      const taskDesc = prompt("Enter task description:", "Prepare materials and assist kids.");
+      if (!taskDesc) return;
+
+      const newBlock = document.createElement('div');
+      newBlock.className = 'timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100';
+      newBlock.innerHTML = `
+        <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center font-black text-xs">
+          ⭐
+        </div>
+        <div class="flex justify-between items-start mb-1.5">
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+            <span class="text-indigo-600 font-mono font-black">${taskTime}</span>
+            <span>${taskTitle}</span>
+          </h3>
+        </div>
+        <p class="text-xs text-slate-500 mb-3">${taskDesc}</p>
+        <div class="space-y-2 text-xs">
+          <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+            <span>Complete ${taskTitle}</span>
+          </label>
+        </div>
+      `;
+      document.getElementById('routine-list').appendChild(newBlock);
+      if (isAdminUnlocked) enableAdminMode();
+      updateProgress();
+    }
+
+    // Run on startup
+    applyTranslations();
+    loadCheckboxes();
+  </script>
+</body>
+</html>
+
