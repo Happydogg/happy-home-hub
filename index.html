@@ -41,6 +41,11 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <!-- Manual Sync Button -->
+        <button onclick="syncAllFromGoogleSheet()" title="Sync with Google Sheets" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-xs backdrop-blur border border-white/30 transition flex items-center gap-1">
+          <i id="sync-icon" class="fa-solid fa-arrows-rotate text-sm"></i>
+        </button>
+
         <!-- Admin Pin Lock Button -->
         <button onclick="openPinModal()" id="btn-admin" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-xs backdrop-blur border border-white/30 transition flex items-center gap-1">
           <i id="admin-icon" class="fa-solid fa-lock text-sm"></i>
@@ -56,9 +61,20 @@
     </div>
   </header>
 
-  <!-- Motivational Warm Banner & Progress Bar -->
+  <!-- Motivational Banner, Sync Status & Progress Bar -->
   <div class="max-w-md mx-auto px-4 pt-3 space-y-2.5">
     
+    <!-- Sync Status Badge -->
+    <div id="sync-status-bar" class="bg-white/80 backdrop-blur border border-amber-200/80 px-3 py-1.5 rounded-xl shadow-sm flex items-center justify-between text-[11px]">
+      <div class="flex items-center gap-1.5 text-slate-600">
+        <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="sync-text" class="font-medium">Connecting to Google Sheets...</span>
+      </div>
+      <a href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> View Sheet
+      </a>
+    </div>
+
     <!-- Daily Encouragement Card -->
     <div class="bg-gradient-to-r from-amber-100 via-orange-50 to-rose-100 border border-amber-200/80 p-3 rounded-2xl shadow-sm flex items-center gap-3">
       <div class="text-2xl">💖</div>
@@ -80,10 +96,10 @@
       <div class="w-full bg-amber-100 h-2.5 rounded-full overflow-hidden">
         <div id="prog-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-2.5 rounded-full transition-all duration-500 w-0"></div>
       </div>
-      <p class="text-[10px] text-slate-400 text-right" id="prog-detail">0 of 12 tasks completed</p>
+      <p class="text-[10px] text-slate-400 text-right" id="prog-detail">0 of 0 tasks completed</p>
     </div>
 
-    <!-- Admin Edit Mode Active Banner (Visible only when unlocked) -->
+    <!-- Admin Edit Mode Active Banner -->
     <div id="admin-mode-banner" class="hidden bg-emerald-600 text-white p-2.5 rounded-xl shadow flex justify-between items-center text-xs">
       <span class="flex items-center gap-1.5 font-bold">
         <i class="fa-solid fa-unlock-keyhole"></i>
@@ -123,212 +139,22 @@
 
     <!-- ==================== TAB 1: DAILY ROUTINE ==================== -->
     <section id="view-routine" class="space-y-4">
-
       <div class="flex justify-between items-center">
         <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
           <i class="fa-regular fa-clock"></i>
           <span class="t-r-section-title">Schedule of the Day</span>
         </h2>
-        <!-- Admin Add Task Button -->
         <button id="btn-add-task" onclick="promptAddTask()" class="hidden bg-indigo-600 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow hover:bg-indigo-700 flex items-center gap-1">
           <i class="fa-solid fa-plus"></i> <span id="t-btn-add">Add Task</span>
         </button>
       </div>
 
-      <!-- Routine Blocks -->
+      <!-- Routine Blocks (Populated dynamically from Google Sheet or fallback) -->
       <div id="routine-list" class="space-y-4 relative">
-        
-        <!-- Block 1: Morning School Rush -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center font-black text-xs">
-            ☀️
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-amber-600 font-mono font-black">06:30 – 07:45</span>
-              <span class="t-b1-title">School Baon & Breakfast</span>
-            </h3>
-            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 07:45 AM</span>
-          </div>
-          <p class="text-xs text-slate-500 mb-3 t-b1-desc">Cook fresh hot breakfast and pack nutritious thermoses.</p>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
-              <span class="t-b1-t1">Pre-heat thermos with boiling water for 5 minutes before filling with hot food.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
-              <span class="t-b1-t2">Cut meat and vegetables into bite-sized pieces so kids can eat easily with a spoon.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100 cursor-pointer hover:bg-amber-50 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 focus:ring-amber-500 task-check">
-              <span class="t-b1-t3">Fill water bottles and pack morning snack into school bags.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-rose-50 p-2.5 rounded-xl border border-rose-200 cursor-pointer text-rose-900 font-bold">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-rose-600 focus:ring-rose-500 task-check">
-              <span class="t-b1-t4">📸 WhatsApp Photo: Send 1 photo of packed lunchbox & bottle before 07:45 AM.</span>
-            </label>
-          </div>
+        <div class="p-8 text-center text-slate-400 text-xs">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg text-amber-500 mb-2"></i>
+          <p>Loading schedule from Google Sheets...</p>
         </div>
-
-        <!-- Block 2: Morning Reset -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-black text-xs">
-            🧼
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-blue-600 font-mono font-black">08:00 – 09:30</span>
-              <span class="t-b2-title">Morning Kitchen & House Reset</span>
-            </h3>
-          </div>
-          <p class="text-xs text-slate-500 mb-3 t-b2-desc">Wash dishes and freshen up the house.</p>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b2-t1">Wash breakfast dishes, wipe kitchen stove and dining table.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b2-t2">Sweep and mop living room and dining room floors. Open windows.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b2-t3">Sort laundry, wash clothes, and hang dry.</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Block 3: Wet Market -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black text-xs">
-            🥦
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-emerald-600 font-mono font-black">09:30 – 11:30</span>
-              <span class="t-b3-title">Wet Market & Fresh Produce</span>
-            </h3>
-            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 11:00 AM</span>
-          </div>
-          <p class="text-xs text-slate-500 mb-3 t-b3-desc">Buy fresh ingredients in Hong Kong catty (1 斤 = 600g).</p>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b3-t1">Check 'Market' tab. Buy fresh vegetables and meats according to list.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200 cursor-pointer text-amber-900 font-semibold">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b3-t2">⚠️ Lamb Chops rule: Send WhatsApp photo from the butcher stall before buying!</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 cursor-pointer text-emerald-900 font-bold">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-emerald-600 task-check">
-              <span class="t-b3-t4">📸 WhatsApp Photo: Send photo of receipts and fresh ingredients at 11:00 AM.</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Block 4: Deep Cleaning -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-purple-100 text-purple-700 border border-purple-200 flex items-center justify-center font-black text-xs">
-            ✨
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-purple-600 font-mono font-black">11:30 – 14:00</span>
-              <span class="t-b4-title">Daily Deep Cleaning Focus</span>
-            </h3>
-          </div>
-          <div class="bg-purple-50/70 p-3 rounded-xl border border-purple-100 text-xs text-purple-900 mb-2">
-            <p class="font-bold mb-1.5 text-purple-950 t-b4-schedule-title">Daily Area Schedule:</p>
-            <ul class="space-y-1.5 pl-1">
-              <li><b>Mon (Lunes / 週一):</b> <span class="t-b4-m">Bathrooms deep clean & scrub tiles</span></li>
-              <li><b>Tue (Martes / 週二):</b> <span class="t-b4-t">Bedrooms & change bed sheets</span></li>
-              <li><b>Wed (Miyerkules / 週三):</b> <span class="t-b4-w">Kitchen stove, range hood degreasing</span></li>
-              <li><b>Thu (Huwebes / 週四):</b> <span class="t-b4-th">Dusting furniture & wipe window tracks</span></li>
-              <li><b>Fri (Biyernes / 週五):</b> <span class="t-b4-f">Fridge interior wipe & full floor mopping</span></li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Block 5: Rest Time -->
-        <div class="timeline-item relative pl-12 bg-amber-100/50 p-4 rounded-2xl border border-amber-200">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-xs">
-            ☕
-          </div>
-          <h3 class="font-bold text-amber-900 text-sm flex items-center gap-2">
-            <span class="font-mono font-black">14:00 – 15:00</span>
-            <span class="t-b5-title">Helper Lunch & Rest Time</span>
-          </h3>
-          <p class="text-xs text-amber-800 mt-1 t-b5-desc">Take a nice break, eat lunch, and relax before the kids return!</p>
-        </div>
-
-        <!-- Block 6: Afternoon Snack -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-md border-2 border-orange-400">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-orange-100 text-orange-700 border border-orange-300 flex items-center justify-center text-xs font-black">
-            🥪
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-orange-600 font-mono font-black">15:00 – 16:00</span>
-              <span class="t-b6-title">Kids' High-Protein Snack Time</span>
-            </h3>
-            <span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 03:30 PM</span>
-          </div>
-          <div class="bg-gradient-to-r from-orange-50 to-amber-50 p-2.5 rounded-xl border border-orange-200 text-xs text-orange-950 mb-2.5">
-            <p class="font-black text-orange-800 flex items-center gap-1.5 mb-0.5">
-              <span>💪</span>
-              <span class="t-b6-why-title">Helping Harvey & Elly Grow Taller & Stronger!</span>
-            </p>
-            <p class="text-[11px] text-orange-900 t-b6-why-desc">No chips or junk food. Prepare hot eggs, cheese toast, yogurt, or dumplings by 3:30 PM.</p>
-          </div>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b6-t1">Prepare warm snack (e.g. egg & cheese toast, Greek yogurt with berries, or dumplings).</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b6-t2">Set plates and fresh water/milk on the table before kids arrive from school.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-orange-50 p-2.5 rounded-xl border border-orange-200 cursor-pointer text-orange-950 font-bold">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-orange-600 task-check">
-              <span class="t-b6-t3">📸 WhatsApp Photo: Send 1 photo of prepared snack on table at 03:30 PM sharp.</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Block 7: Evening Routine -->
-        <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
-          <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-slate-100 text-slate-700 border border-slate-300 flex items-center justify-center text-xs">
-            🌙
-          </div>
-          <div class="flex justify-between items-start mb-1.5">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-              <span class="text-slate-700 font-mono font-black">18:30 – 21:00</span>
-              <span class="t-b7-title">Dinner & Evening Close-Down</span>
-            </h3>
-          </div>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b7-t1">Serve dinner, clear table, wash pots and sanitize kitchen countertops.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b7-t2">Wash kids' thermoses thoroughly and air dry with caps disassembled.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-amber-50 p-2.5 rounded-xl border border-amber-200 cursor-pointer text-amber-950 font-bold">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b7-t3">⭐ Move tomorrow's lunch meat from freezer to fridge to defrost overnight.</span>
-            </label>
-            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="t-b7-t4">Take out all trash to the building refuse room. Have a good rest!</span>
-            </label>
-          </div>
-        </div>
-
       </div>
     </section>
 
@@ -339,97 +165,15 @@
           <i class="fa-brands fa-youtube"></i>
           <span class="t-meals-banner-title">Step-by-Step Cooking Video Guides</span>
         </p>
-        <p class="text-white/90 text-[11px] t-meals-banner-desc">Tap the video button to watch the recipe tutorial before cooking.</p>
+        <p class="text-white/90 text-[11px] t-meals-banner-desc">Live synced from Google Sheet. Tap to watch tutorial.</p>
       </div>
 
-      <!-- Mon Card -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-          <span class="font-bold text-xs text-amber-600">MONDAY • 星期一 • LUNES</span>
-          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Thermos Lunch</span>
+      <!-- Meal Cards Container (Populated dynamically from Google Sheet) -->
+      <div id="meals-list" class="space-y-4">
+        <div class="p-8 text-center text-slate-400 text-xs">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg text-amber-500 mb-2"></i>
+          <p>Loading meals from Google Sheets...</p>
         </div>
-        <h4 class="font-bold text-sm text-slate-800">
-          Braised Soft-Bone Pork Ribs (紅燒燉排骨)
-        </h4>
-        <p class="text-xs text-slate-500 t-m-mon-notes">
-          Ask butcher for soft bones (豬軟骨). Braise the night before until tender; reheat in the morning.
-        </p>
-        <a href="https://www.youtube.com/watch?v=pzE_5bOnRRQ" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
-          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-          <span class="t-btn-video">Watch Recipe Video</span>
-        </a>
-      </div>
-
-      <!-- Tue Card -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-          <span class="font-bold text-xs text-pink-600">TUESDAY • 星期二 • MARTES</span>
-          <span class="text-[10px] bg-pink-100 text-pink-700 font-bold px-2 py-0.5 rounded-full">Elly's Favorite ❤️</span>
-        </div>
-        <h4 class="font-bold text-sm text-slate-800">
-          Fish Fillet in Sweet Corn Sauce (免油炸粟米斑塊)
-        </h4>
-        <p class="text-xs text-slate-500 t-m-tue-notes">
-          Pan-fry fish in butter/oil (no deep-fry). Pour warm sweet corn and egg ribbon sauce over rice.
-        </p>
-        <a href="https://www.youtube.com/watch?v=qPlPHW7a158" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
-          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-          <span class="t-btn-video">Watch Recipe Video</span>
-        </a>
-      </div>
-
-      <!-- Wed Card -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-          <span class="font-bold text-xs text-blue-600">WEDNESDAY • 星期三 • MIYERKULES</span>
-          <span class="text-[10px] bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded-full">Harvey's Favorite 🥪</span>
-        </div>
-        <h4 class="font-bold text-sm text-slate-800">
-          Classic Loaded Club Sandwich (經典公司三文治)
-        </h4>
-        <p class="text-xs text-slate-500 t-m-wed-notes">
-          Lightly toast bread, spread butter inside, layer fried egg, cheese, chicken/ham, and tomato. Cut triangles.
-        </p>
-        <a href="https://www.youtube.com/watch?v=S_1_ZSMxRfg" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
-          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-          <span class="t-btn-video">Watch Recipe Video</span>
-        </a>
-      </div>
-
-      <!-- Thu Card -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-          <span class="font-bold text-xs text-amber-700">THURSDAY • 星期四 • HUWEBES</span>
-          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Kids Love Curry! 🍛</span>
-        </div>
-        <h4 class="font-bold text-sm text-slate-800">
-          Japanese Mild Chicken Curry (日式甜咖喱雞肉飯)
-        </h4>
-        <p class="text-xs text-slate-500 t-m-thu-notes">
-          Blanch with ginger/scallions to remove gaminess. Stew until fork tender with daikon and carrots.
-        </p>
-        <a href="https://www.youtube.com/watch?v=T-UDJC-qqjc" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
-          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-          <span class="t-btn-video">Watch Recipe Video</span>
-        </a>
-      </div>
-
-      <!-- Fri Card -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-          <span class="font-bold text-xs text-indigo-600">FRIDAY • 星期五 • BIYERNES</span>
-          <span class="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Thermos Lunch</span>
-        </div>
-        <h4 class="font-bold text-sm text-slate-800">
-          Five-Spice Braised Beef Shank (五香醬牛肉)
-        </h4>
-        <p class="text-xs text-slate-500 t-m-fri-notes">
-          Braise beef shank ahead. Chill in fridge, slice thin across the grain, reheat in hot gravy.
-        </p>
-        <a href="https://www.youtube.com/watch?v=esz2fBMGkPE" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
-          <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-          <span class="t-btn-video">Watch Recipe Video</span>
-        </a>
       </div>
     </section>
 
@@ -440,85 +184,14 @@
           <i class="fa-solid fa-scale-balanced"></i>
           <span class="t-groc-banner-title">Hong Kong Market Unit: 1 斤 (Catty) = ~600g</span>
         </p>
-        <p class="text-emerald-100 text-[11px] t-groc-banner-desc">Tap checkboxes as you purchase items in the market.</p>
+        <p class="text-emerald-100 text-[11px] t-groc-banner-desc">Live synced from Google Sheet. Tap checkboxes as you buy.</p>
       </div>
 
-      <!-- Category 1: Meat & Fish -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm">
-        <h4 class="font-bold text-xs text-amber-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-drumstick-bite"></i>
-          <span class="t-g-cat1">Meat, Poultry & Dairy (肉類、海鮮、乳製品)</span>
-        </h4>
-        <div class="space-y-2 text-xs">
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-slate-800">Pork Soft-Bone Ribs / 一字排 豬軟骨 – 1 斤 (~600g)</p>
-              <p class="text-[11px] text-slate-400">Ask butcher to chop small for kids' thermos.</p>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-slate-800">White Fish Fillet / 鱈魚柳 o 石斑柳 – 10 兩 (~350g)</p>
-              <p class="text-[11px] text-slate-400">Boneless fillets for Elly's corn fish.</p>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-amber-50/80 border border-amber-200 cursor-pointer">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-amber-900">Boneless Chicken Thighs / 去骨雞扒 – 1 斤 (~600g)</p>
-              <p class="text-[11px] text-amber-700 font-bold">Cut bite-sized for Japanese curry.</p>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-slate-800">Beef Shank / 金錢腱 – 1 pc (~800g)</p>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-slate-800">Ham/Turkey slices & Cheddar Cheese / 車打芝士 – 1 pack each</p>
-            </div>
-          </label>
-          <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <div>
-              <p class="font-semibold text-slate-800">Fresh Eggs / 雞蛋 – 1 carton (10 pcs)</p>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      <!-- Category 2: Fresh Vegetables -->
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm">
-        <h4 class="font-bold text-xs text-emerald-700 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-carrot"></i>
-          <span class="t-g-cat2">Vegetables & Aromatics (新鮮蔬菜及配料)</span>
-        </h4>
-        <div class="space-y-2 text-xs">
-          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">Potatoes / 薯仔 (馬鈴薯) – 2–3 pcs</span>
-          </label>
-          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">Carrots / 紅蘿蔔 – 3–4 pcs</span>
-          </label>
-          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">Broccoli / 西蘭花 – 1 head</span>
-          </label>
-          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">Tomatoes, Lettuce, Cucumber / 番茄、生菜、小青瓜</span>
-          </label>
-          <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">Ginger, Scallions, Garlic / 薑、蔥、蒜頭</span>
-          </label>
+      <!-- Grocery Items Container (Populated dynamically from Google Sheet) -->
+      <div id="grocery-list-container" class="space-y-4">
+        <div class="p-8 text-center text-slate-400 text-xs">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg text-emerald-500 mb-2"></i>
+          <p>Loading groceries from Google Sheets...</p>
         </div>
       </div>
     </section>
@@ -568,7 +241,6 @@
         <p class="text-xs text-slate-500 mt-0.5" id="t-pin-desc">Enter 4-digit PIN to edit tasks and routine.</p>
       </div>
 
-      <!-- PIN Input -->
       <div class="flex justify-center gap-3 my-2">
         <input type="password" id="pin-input" maxlength="4" class="w-32 tracking-[1em] text-center text-2xl font-bold font-mono border-2 border-amber-300 rounded-xl py-2 focus:outline-none focus:border-amber-500 bg-amber-50/50" placeholder="••••">
       </div>
@@ -582,15 +254,17 @@
           Unlock
         </button>
       </div>
-      <p class="text-[10px] text-slate-400">Default PIN: 1234</p>
+      
     </div>
   </div>
 
-  <!-- JavaScript for Trilingual Engine, PIN Protection, Progress Bar & Confetti -->
+  <!-- ==================== GOOGLE SHEETS LIVE SYNC ENGINE ==================== -->
   <script>
+    const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
     let isAdminUnlocked = false;
-    let employerPin = localStorage.getItem('employer_pin') || '1234';
+    let employerPin = localStorage.getItem('employer_pin') || '3726';
 
+    // Trilingual Dictionary
     const dict = {
       en: {
         appTitle: "Happy Home Hub",
@@ -605,55 +279,8 @@
         navRules: "Tips",
         rSectionTitle: "Schedule of the Day",
         btnAdd: "Add Task",
-        b1Title: "School Baon & Breakfast",
-        b1Desc: "Cook fresh hot breakfast and pack nutritious thermoses.",
-        b1T1: "Pre-heat thermos with boiling water for 5 minutes before filling with hot food.",
-        b1T2: "Cut meat and vegetables into bite-sized pieces so kids can eat easily with a spoon.",
-        b1T3: "Fill water bottles and pack morning snack into school bags.",
-        b1T4: "📸 WhatsApp Photo: Send 1 photo of packed lunchbox & bottle before 07:45 AM.",
-        b2Title: "Morning Kitchen & House Reset",
-        b2Desc: "Clean breakfast dishes and maintain shared areas.",
-        b2T1: "Wash breakfast dishes, wipe kitchen stove and dining table.",
-        b2T2: "Sweep and mop living room and dining room floors. Open windows.",
-        b2T3: "Sort laundry, wash clothes, and hang dry.",
-        b3Title: "Wet Market & Fresh Produce",
-        b3Desc: "Buy fresh ingredients in Hong Kong catty (1 斤 = 600g).",
-        b3T1: "Check 'Market' tab. Buy fresh vegetables and meats according to list.",
-        b3T2: "⚠️ Lamb Chops rule: Send WhatsApp photo from the butcher stall before buying!",
-        b3T4: "📸 WhatsApp Photo: Send photo of receipts and fresh ingredients at 11:00 AM.",
-        b4Title: "Daily Deep Cleaning Focus",
-        b4SchedTitle: "Daily Area Schedule:",
-        b4M: "Bathrooms deep clean & scrub tiles",
-        b4T: "Bedrooms & change bed sheets",
-        b4W: "Kitchen stove, range hood degreasing",
-        b4Th: "Dusting furniture & wipe window tracks",
-        b4F: "Fridge interior wipe & full floor mopping",
-        b5Title: "Helper Lunch & Rest Time",
-        b5Desc: "Take a nice break, eat lunch, and relax before the kids return!",
-        b6Title: "Kids' High-Protein Snack Time",
-        b6WhyTitle: "Helping Harvey & Elly Grow Taller & Stronger!",
-        b6WhyDesc: "No chips or junk food. Prepare hot eggs, cheese toast, yogurt, or dumplings by 3:30 PM.",
-        b6T1: "Prepare warm snack (e.g. egg & cheese toast, Greek yogurt with berries, or dumplings).",
-        b6T2: "Set plates and fresh water/milk on the table before kids arrive from school.",
-        b6T3: "📸 WhatsApp Photo: Send 1 photo of prepared snack on table at 03:30 PM sharp.",
-        b7Title: "Dinner & Evening Close-Down",
-        b7T1: "Serve dinner, clear table, wash pots and sanitize kitchen countertops.",
-        b7T2: "Wash kids' thermoses thoroughly and air dry with caps disassembled.",
-        b7T3: "⭐ Move tomorrow's lunch meat from freezer to fridge to defrost overnight.",
-        b7T4: "Take out all trash to the building refuse room. Have a good rest!",
-        mealsBannerTitle: "Step-by-Step Cooking Video Guides",
-        mealsBannerDesc: "Tap the video button to watch the recipe tutorial before cooking.",
         btnVideo: "Watch Recipe Video",
-        mMonNotes: "Ask butcher for soft bones (豬軟骨). Braise the night before until tender; reheat in the morning.",
-        mTueNotes: "Pan-fry fish in butter/oil (no deep-fry). Pour warm sweet corn and egg ribbon sauce over rice.",
-        mWedNotes: "Lightly toast bread, spread butter inside, layer fried egg, cheese, chicken/ham, and tomato. Cut triangles.",
-        mThuNotes: "Blanch with ginger/scallions to remove gaminess. Stew until fork tender with daikon and carrots.",
-        mFriNotes: "Braise beef shank ahead. Chill in fridge, slice thin across the grain, reheat in hot gravy.",
-        grocBannerTitle: "Hong Kong Market Unit: 1 斤 (Catty) = ~600g",
-        grocBannerDesc: "Tap checkboxes as you purchase items in the market.",
-        gCat1: "Meat, Poultry & Dairy (肉類、海鮮、乳製品)",
-        gCat2: "Vegetables & Aromatics (新鮮蔬菜及配料)",
-        rTitle: "Growth & Health Standards (生長與健康準則)",
+        rTitle: "Growth & Health Standards",
         rR1Title: "1. Pre-Heat Thermos (5 Minutes)",
         rR1Desc: "Always pour boiling water into the thermos and close the lid for 5 minutes before adding hot food.",
         rR2Title: "2. Bite-Sized Cuts",
@@ -678,54 +305,7 @@
         navRules: "健康守則",
         rSectionTitle: "今日作息清單",
         btnAdd: "新增事項",
-        b1Title: "準備上學午餐與早餐",
-        b1Desc: "用心準備熱騰騰的營養早餐與保溫壺午餐。",
-        b1T1: "裝入食物前，先將滾水倒入保溫壺預熱5分鐘，倒乾淨後才放食物。",
-        b1T2: "將所有肉類及蔬菜切成小塊（適合湯匙），方便小朋友在學校咀嚼進食。",
-        b1T3: "裝滿水壺並將上午小食放入書包。",
-        b1T4: "📸 WhatsApp拍照：早上 07:45 前發送一張打包好的午餐盒與水壺照片。",
-        b2Title: "上午廚房與客廳整理",
-        b2Desc: "清洗早餐餐具，保持公共區域整潔通風。",
-        b2T1: "清洗早餐碗碟、抹乾淨餐桌與煮食爐灶。",
-        b2T2: "清掃及拖抹客廳與飯廳地板，打開窗戶通風。",
-        b2T3: "分類清洗衣物並晾曬乾透。",
-        b3Title: "街市買餸與新鮮採購",
-        b3Desc: "依清單採購食材，謹記香港 1 斤 = 約600克。",
-        b3T1: "出門前查看「街市買餸」標籤頁。購買新鮮食材。",
-        b3T2: "⚠️ 羊排特別規定：在肉檔付款前必須先拍照發送至 WhatsApp 給先生確認！",
-        b3T4: "📸 WhatsApp拍照：上午 11:00 前發送買餸收據及食材照片。",
-        b4Title: "每日深層清潔輪替",
-        b4SchedTitle: "每日重點區域：",
-        b4M: "星期一：徹底刷洗浴室及瓷磚",
-        b4T: "星期二：清潔睡房及更換全屋床單",
-        b4W: "星期三：廚房抽油煙機與爐灶除油清潔",
-        b4Th: "星期四：擦拭全屋窗框軌道與家具除塵",
-        b4F: "星期五：抹拭雪櫃內部與全屋徹底拖地",
-        b5Title: "姐姐休息與午餐時間",
-        b5Desc: "放鬆享用美味午餐，好好休息充電！",
-        b6Title: "小朋友高蛋白質營養下午茶",
-        b6WhyTitle: "全力協助 Harvey & Elly 增重長高！",
-        b6WhyDesc: "嚴禁給薯片或零食。下午 3:30 前準備好高鈣高蛋白熱食。",
-        b6T1: "準備熱食下午茶（例如：芝士蛋多士、希臘乳酪配藍莓、或鮮蒸燒賣）。",
-        b6T2: "在小朋友放學到家前，將食物及鮮奶整齊擺放於餐桌上。",
-        b6T3: "📸 WhatsApp拍照：下午 03:30 準時發送下午茶擺盤照片。",
-        b7Title: "晚餐與晚間收尾打烊",
-        b7T1: "上晚餐、清理餐桌、洗鍋並徹底消毒廚房檯面。",
-        b7T2: "徹底手洗小朋友保溫壺，將密封膠圈拆開徹底晾乾。",
-        b7T3: "⭐ 關鍵步驟：將明天午餐要用的肉從冰格取出，放入冷藏室解凍。",
-        b7T4: "將所有垃圾拿到樓層垃圾房。祝你有個好夢！",
-        mealsBannerTitle: "大廚烹飪視頻指導",
-        mealsBannerDesc: "點擊紅色按鈕即可在烹飪前觀看視頻教學。",
         btnVideo: "觀看烹飪教學視頻",
-        mMonNotes: "叫肉檔切一字排/軟骨碎件。前一晚燜至軟腍入味，早上回熱打包。",
-        mTueNotes: "用牛油或橄欖油香煎魚柳（切勿油炸）。將香濃粟米蛋花汁淋在飯面上。",
-        mWedNotes: "輕度烘烤麵包，內層抹牛油防潮，夾入煎蛋、芝士、火腿/雞肉及番茄。切成三角形。",
-        mThuNotes: "先用生薑青蔥汆水去腥。配合白蘿蔔及胡蘿蔔慢火燉至軟爛脫骨。",
-        mFriNotes: "提前燉好金錢腱。放入雪櫃冷藏後逆紋切薄片，加入熱滷汁保溫。",
-        grocBannerTitle: "香港街市標準單位：1 斤 = 約600克 (16兩)",
-        grocBannerDesc: "購買食材後點擊方格，記錄今天的成果。",
-        gCat1: "肉類、海鮮及乳製品 (Meat & Seafood)",
-        gCat2: "新鮮蔬菜及配料 (Fresh Produce)",
         rTitle: "兒童健康與發育準則",
         rR1Title: "1. 保溫壺必須預熱5分鐘",
         rR1Desc: "裝食物前務必用滾水預熱，確保小朋友中午進食時溫度依然熱騰騰。",
@@ -751,54 +331,7 @@
         navRules: "Paalala",
         rSectionTitle: "Iskedyul ng Araw",
         btnAdd: "Magdagdag",
-        b1Title: "Baon sa Eskwela at Agahan",
-        b1Desc: "Ihanda ang masarap na agahan at mainit na baon sa thermos.",
-        b1T1: "Painitin ang thermos ng kumukulong tubig ng 5 minuto bago lagyan ng mainit na pagkain.",
-        b1T2: "Hiwain nang maliliit (bite-sized) ang karne at gulay para madaling kainin gamit ang kutsara.",
-        b1T3: "Punuin ang mga bote ng tubig at ihanda ang gamit sa eskwela.",
-        b1T4: "📸 WhatsApp Photo: Magpadala ng 1 picture ng nakaimpakeng baon bago mag-07:45 AM.",
-        b2Title: "Paglilinis ng Kusina at Bahay sa Umaga",
-        b2Desc: "Ayusin ang pinagkainan at panatilihing presko ang bahay.",
-        b2T1: "Hugasan ang mga pinggan, punasan ang kalan at dining table.",
-        b2T2: "Walisin at lampasuhin ang sala at dining room. Buksan ang bintana.",
-        b2T3: "Maglaba ng damit at isampay nang maayos.",
-        b3Title: "Pamamalengke sa Wet Market",
-        b3Desc: "Bumili ng sariwang karne at gulay (1 斤 = ~600g).",
-        b3T1: "Tingnan ang 'Palengke' tab bago umalis. Bumili ayon sa listahan.",
-        b3T2: "⚠️ Panuntunan sa Lamb Chops: Magpadala muna ng picture sa WhatsApp bago bayaran!",
-        b3T4: "📸 WhatsApp Photo: Magpadala ng picture ng resibo at mga binili sa ganap na 11:00 AM.",
-        b4Title: "Pang-araw-araw na Malalimang Paglilinis",
-        b4SchedTitle: "Iskedyul ng Lilinisin Bawat Araw:",
-        b4M: "Lunes: Kuskusin at linisin nang mabuti ang Banyo",
-        b4T: "Martes: Ayusin ang mga Kuwarto at magpalit ng sapin ng kama",
-        b4W: "Miyerkules: Linisin ang kalan at tanggalin ang grasa sa kusina",
-        b4Th: "Huwebes: Punasan ang mga bintana at alisin ang alikabok sa gamit",
-        b4F: "Biyernes: Punasan ang loob ng Ref at lampasuhin ang buong sahig",
-        b5Title: "Pahinga at Tanghalian ng Kasambahay",
-        b5Desc: "Magpahinga at kumain nang masarap bago dumating ang mga bata!",
-        b6Title: "Mabigat na Merienda ng mga Bata (High Protein)",
-        b6WhyTitle: "Tulungan sina Harvey & Elly na Tumangkad at Lumusog!",
-        b6WhyDesc: "Bawal ang chichirya! Maghanda ng masustansyang mainit na pagkain bago mag-3:30 PM.",
-        b6T1: "Maghanda ng mainit na merienda (hal. Toast na may itlog at cheese, yogurt na may prutas, o dumplings).",
-        b6T2: "Ihain sa lamesa kasama ang sariwang gatas o tubig bago sila makarating.",
-        b6T3: "📸 WhatsApp Photo: Magpadala ng picture ng nakahandang pagkain sa 3:30 PM sharp.",
-        b7Title: "Hapunan at Pagtatapos ng Araw",
-        b7T1: "Ihain ang hapunan, ligpitin ang lamesa, at punasan ang lababo at kalan.",
-        b7T2: "Hugasan nang maigi ang thermos at patuyuin nang bukas ang takip.",
-        b7T3: "⭐ Napakahalaga: Ilipat ang karne para bukas mula freezer papuntang ref para mag-defrost.",
-        b7T4: "Itapon ang basura sa refuse room ng gusali. Magandang gabi at magpahinga nang maayos!",
-        mealsBannerTitle: "Gabay sa Pagluluto gamit ang Video",
-        mealsBannerDesc: "Pindutin ang pulang button para mapanood ang tamang paraan ng pagluluto.",
         btnVideo: "Panoorin ang Video ng Recipe",
-        mMonNotes: "Pahiwain sa butcher ang soft bones (豬軟骨). Lutuin sa gabi para lumambot; initin sa umaga.",
-        mTueNotes: "I-pan-fry lang sa butter/mantika (bawal i-deep fry). Buhusan ng mainit na corn sauce na may itlog.",
-        mWedNotes: "I-toast ang tinapay, lagyan ng butter, itlog, cheese, ham/manok, at kamatis. Hiwain na tatsulok.",
-        mThuNotes: "Pakuluin sa luya para mawala ang lansa. Kumuha ng litrato bago bilhin sa palengke.",
-        mFriNotes: "Lutuin ang beef shank nang maaga. Palamigin sa ref, hiwain nang manipis, at initin sa sabaw.",
-        grocBannerTitle: "Yunit ng Timbangan sa HK: 1 斤 (Catty) = ~600g",
-        grocBannerDesc: "I-tap ang mga kahon kapag nabili na sa palengke.",
-        gCat1: "Karne, Isda at Gatas (Meat & Seafood)",
-        gCat2: "Sariwang Gulay at Rekado (Fresh Produce)",
         rTitle: "Mga Mahalagang Tuntunin sa Kalusugan",
         rR1Title: "1. Painitin ang Thermos (5 Minuto)",
         rR1Desc: "Laging lagyan ng kumukulong tubig ang thermos ng 5 minuto bago isalin ang pagkain para manatiling mainit.",
@@ -828,6 +361,7 @@
       currentLang = lang;
       localStorage.setItem('app_lang', lang);
       applyTranslations();
+      renderAllFromCachedData();
     }
 
     function applyTranslations() {
@@ -853,67 +387,6 @@
       document.querySelector('.t-r-section-title').innerText = t.rSectionTitle;
       document.getElementById('t-btn-add').innerText = t.btnAdd;
 
-      // Routine Blocks
-      document.querySelector('.t-b1-title').innerText = t.b1Title;
-      document.querySelector('.t-b1-desc').innerText = t.b1Desc;
-      document.querySelector('.t-b1-t1').innerText = t.b1T1;
-      document.querySelector('.t-b1-t2').innerText = t.b1T2;
-      document.querySelector('.t-b1-t3').innerText = t.b1T3;
-      document.querySelector('.t-b1-t4').innerText = t.b1T4;
-
-      document.querySelector('.t-b2-title').innerText = t.b2Title;
-      document.querySelector('.t-b2-desc').innerText = t.b2Desc;
-      document.querySelector('.t-b2-t1').innerText = t.b2T1;
-      document.querySelector('.t-b2-t2').innerText = t.b2T2;
-      document.querySelector('.t-b2-t3').innerText = t.b2T3;
-
-      document.querySelector('.t-b3-title').innerText = t.b3Title;
-      document.querySelector('.t-b3-desc').innerText = t.b3Desc;
-      document.querySelector('.t-b3-t1').innerText = t.b3T1;
-      document.querySelector('.t-b3-t2').innerText = t.b3T2;
-      document.querySelector('.t-b3-t4').innerText = t.b3T4;
-
-      document.querySelector('.t-b4-title').innerText = t.b4Title;
-      document.querySelector('.t-b4-schedule-title').innerText = t.b4SchedTitle;
-      document.querySelector('.t-b4-m').innerText = t.b4M;
-      document.querySelector('.t-b4-t').innerText = t.b4T;
-      document.querySelector('.t-b4-w').innerText = t.b4W;
-      document.querySelector('.t-b4-th').innerText = t.b4Th;
-      document.querySelector('.t-b4-f').innerText = t.b4F;
-
-      document.querySelector('.t-b5-title').innerText = t.b5Title;
-      document.querySelector('.t-b5-desc').innerText = t.b5Desc;
-
-      document.querySelector('.t-b6-title').innerText = t.b6Title;
-      document.querySelector('.t-b6-why-title').innerText = t.b6WhyTitle;
-      document.querySelector('.t-b6-why-desc').innerText = t.b6WhyDesc;
-      document.querySelector('.t-b6-t1').innerText = t.b6T1;
-      document.querySelector('.t-b6-t2').innerText = t.b6T2;
-      document.querySelector('.t-b6-t3').innerText = t.b6T3;
-
-      document.querySelector('.t-b7-title').innerText = t.b7Title;
-      document.querySelector('.t-b7-t1').innerText = t.b7T1;
-      document.querySelector('.t-b7-t2').innerText = t.b7T2;
-      document.querySelector('.t-b7-t3').innerText = t.b7T3;
-      document.querySelector('.t-b7-t4').innerText = t.b7T4;
-
-      // Meals
-      document.querySelector('.t-meals-banner-title').innerText = t.mealsBannerTitle;
-      document.querySelector('.t-meals-banner-desc').innerText = t.mealsBannerDesc;
-      document.querySelectorAll('.t-btn-video').forEach(e => e.innerText = t.btnVideo);
-      document.querySelector('.t-m-mon-notes').innerText = t.mMonNotes;
-      document.querySelector('.t-m-tue-notes').innerText = t.mTueNotes;
-      document.querySelector('.t-m-wed-notes').innerText = t.mWedNotes;
-      document.querySelector('.t-m-thu-notes').innerText = t.mThuNotes;
-      document.querySelector('.t-m-fri-notes').innerText = t.mFriNotes;
-
-      // Groceries
-      document.querySelector('.t-groc-banner-title').innerText = t.grocBannerTitle;
-      document.querySelector('.t-groc-banner-desc').innerText = t.grocBannerDesc;
-      document.querySelector('.t-g-cat1').innerText = t.gCat1;
-      document.querySelector('.t-g-cat2').innerText = t.gCat2;
-
-      // Rules
       document.querySelector('.t-r-title').innerText = t.rTitle;
       document.querySelector('.t-r-r1-title').innerText = t.rR1Title;
       document.querySelector('.t-r-r1-desc').innerText = t.rR1Desc;
@@ -924,7 +397,6 @@
       document.querySelector('.t-r-r4-title').innerText = t.rR4Title;
       document.querySelector('.t-r-r4-desc').innerText = t.rR4Desc;
 
-      // Pin
       document.getElementById('t-pin-title').innerText = t.pinTitle;
       document.getElementById('t-pin-desc').innerText = t.pinDesc;
     }
@@ -940,7 +412,241 @@
       document.getElementById('tab-btn-' + tab).classList.remove('text-slate-500');
     }
 
-    // Progress Bar & Confetti
+    // ==================== LIVE GOOGLE SHEETS FETCH ====================
+    async function fetchSheetData(sheetName) {
+      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+      const data = JSON.parse(jsonStr);
+      return data.table.rows;
+    }
+
+    async function syncAllFromGoogleSheet() {
+      const syncIcon = document.getElementById('sync-icon');
+      const syncDot = document.getElementById('sync-dot');
+      const syncText = document.getElementById('sync-text');
+      
+      syncIcon.classList.add('fa-spin');
+      syncText.innerText = "Syncing with Google Sheets...";
+
+      try {
+        const [mealRows, groceryRows, routineRows] = await Promise.all([
+          fetchSheetData('Weekly_Meals'),
+          fetchSheetData('Grocery_List'),
+          fetchSheetData('Daily_Routine')
+        ]);
+
+        localStorage.setItem('cached_meals_data', JSON.stringify(mealRows));
+        localStorage.setItem('cached_groceries_data', JSON.stringify(groceryRows));
+        localStorage.setItem('cached_routine_data', JSON.stringify(routineRows));
+        localStorage.setItem('last_sync_time', new Date().toLocaleTimeString());
+
+        renderMeals(mealRows);
+        renderGroceries(groceryRows);
+        renderRoutine(routineRows);
+
+        syncDot.className = "w-2 h-2 rounded-full bg-emerald-500";
+        syncText.innerText = `Live Connected (Updated ${localStorage.getItem('last_sync_time')})`;
+      } catch (err) {
+        console.warn("Could not fetch fresh data from Google Sheets, using offline cache:", err);
+        syncDot.className = "w-2 h-2 rounded-full bg-amber-500";
+        syncText.innerText = `Offline Mode (Using Saved Schedule)`;
+        renderAllFromCachedData();
+      } finally {
+        syncIcon.classList.remove('fa-spin');
+      }
+    }
+
+    function renderAllFromCachedData() {
+      const meals = localStorage.getItem('cached_meals_data');
+      const groc = localStorage.getItem('cached_groceries_data');
+      const routine = localStorage.getItem('cached_routine_data');
+
+      if (meals) renderMeals(JSON.parse(meals));
+      if (groc) renderGroceries(JSON.parse(groc));
+      if (routine) renderRoutine(JSON.parse(routine));
+    }
+
+    // 1. Render Meals
+    function renderMeals(rows) {
+      const container = document.getElementById('meals-list');
+      if (!rows || rows.length === 0) return;
+
+      let html = '';
+      rows.forEach(r => {
+        const day = r.c[0] ? String(r.c[0].v).trim() : '';
+        // Skip header row if returned in data
+        if (day.toLowerCase() === 'day' || day.toLowerCase().includes('dish_en')) return;
+        const dishEn = r.c[1] ? r.c[1].v : '';
+        const dishCn = r.c[2] ? r.c[2].v : '';
+        const dishTl = r.c[3] ? r.c[3].v : '';
+        const target = r.c[4] ? r.c[4].v : 'Kids';
+        const notes = r.c[5] ? r.c[5].v : '';
+        const videoUrl = r.c[6] ? r.c[6].v : '';
+        const snack = r.c[7] ? r.c[7].v : '';
+
+        let badgeStyle = 'bg-amber-100 text-amber-800';
+        if (target.includes('Elly')) badgeStyle = 'bg-pink-100 text-pink-700 font-bold';
+        if (target.includes('Harvey')) badgeStyle = 'bg-blue-100 text-blue-700 font-bold';
+        if (dishEn.toLowerCase().includes('curry')) badgeStyle = 'bg-amber-100 text-amber-900 font-black border border-amber-300';
+
+        let displayDish = dishEn;
+        if (currentLang === 'zh' && dishCn) displayDish = `${dishCn} (${dishEn})`;
+        if (currentLang === 'tl' && dishTl) displayDish = `${dishEn} - ${dishTl}`;
+
+        html += `
+          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+            <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+              <span class="font-bold text-xs text-amber-600 uppercase font-mono">${day}</span>
+              <span class="text-[10px] ${badgeStyle} px-2 py-0.5 rounded-full">${target}</span>
+            </div>
+            <h4 class="font-bold text-sm text-slate-800">${displayDish}</h4>
+            <p class="text-xs text-slate-500">${notes}</p>
+            ${snack ? `<p class="text-[11px] text-orange-950 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 p-2 rounded-xl font-medium">🥪 <b>3:30 PM Snack:</b> ${snack}</p>` : ''}
+            ${videoUrl ? `
+              <a href="${videoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
+                <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+                <span>${dict[currentLang].btnVideo}</span>
+              </a>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 2. Render Groceries
+    function renderGroceries(rows) {
+      const container = document.getElementById('grocery-list-container');
+      if (!rows || rows.length === 0) return;
+
+      const categories = {};
+      rows.forEach((r, idx) => {
+        const cat = r.c[0] ? String(r.c[0].v).trim() : 'Other';
+        // Skip header row
+        if (cat.toLowerCase() === 'category' || cat.toLowerCase().includes('item_en')) return;
+        const itemEn = r.c[1] ? r.c[1].v : '';
+        const itemCn = r.c[2] ? r.c[2].v : '';
+        const itemTl = r.c[3] ? r.c[3].v : '';
+        const qty = r.c[4] ? r.c[4].v : '';
+        const store = r.c[5] ? r.c[5].v : '';
+        const notes = r.c[6] ? r.c[6].v : '';
+
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push({ idx, itemEn, itemCn, itemTl, qty, store, notes });
+      });
+
+      let html = '';
+      for (const [catName, items] of Object.entries(categories)) {
+        let icon = 'fa-basket-shopping';
+        let colorClass = 'text-amber-700';
+        if (catName.includes('Meat') || catName.includes('Seafood')) { icon = 'fa-drumstick-bite'; colorClass = 'text-amber-700'; }
+        if (catName.includes('Produce') || catName.includes('Vegetables')) { icon = 'fa-carrot'; colorClass = 'text-emerald-700'; }
+
+        html += `
+          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
+            <h4 class="font-bold text-xs ${colorClass} uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid ${icon}"></i>
+              <span>${catName}</span>
+            </h4>
+            <div class="space-y-2 text-xs">
+        `;
+
+        items.forEach(it => {
+          const isSpecial = it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照'));
+          const bgStyle = isSpecial ? 'bg-amber-50/90 border border-amber-200 text-amber-950 font-bold' : 'bg-slate-50 hover:bg-amber-50';
+
+          let displayItem = it.itemEn;
+          if (it.itemCn) displayItem += ` / ${it.itemCn}`;
+          if (it.qty) displayItem += ` – ${it.qty}`;
+
+          html += `
+            <label class="flex items-start gap-2.5 p-2 rounded-xl ${bgStyle} cursor-pointer transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <div>
+                <p class="font-semibold text-slate-800">${displayItem}</p>
+                ${it.notes ? `<p class="text-[11px] text-slate-500">${it.notes}</p>` : ''}
+              </div>
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+      loadCheckboxes();
+    }
+
+    // 3. Render Routine
+    function renderRoutine(rows) {
+      const container = document.getElementById('routine-list');
+      if (!rows || rows.length === 0) return;
+
+      let html = '';
+      rows.forEach((r, idx) => {
+        const timeBlock = r.c[0] ? String(r.c[0].v).trim() : '';
+        // Skip header row
+        if (timeBlock.toLowerCase().includes('time_block') || timeBlock.toLowerCase().includes('task_name')) return;
+        const titleEn = r.c[1] ? r.c[1].v : '';
+        const titleTl = r.c[2] ? r.c[2].v : '';
+        const titleCn = r.c[3] ? r.c[3].v : '';
+        const checklist = r.c[4] ? r.c[4].v : '';
+        const photoReq = r.c[5] ? r.c[5].v : 'NO';
+        const rationale = r.c[6] ? r.c[6].v : '';
+
+        let displayTitle = titleEn;
+        if (currentLang === 'zh' && titleCn) displayTitle = titleCn;
+        if (currentLang === 'tl' && titleTl) displayTitle = titleTl;
+
+        const isPhoto = photoReq.includes('YES') || photoReq.includes('📸');
+
+        // Split checklist items
+        const taskItems = checklist.split(';').map(t => t.trim()).filter(t => t.length > 0);
+
+        html += `
+          <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+            <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center font-black text-xs">
+              ${idx + 1}
+            </div>
+            <div class="flex justify-between items-start mb-1.5">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <span class="text-amber-600 font-mono font-black">${timeBlock}</span>
+                <span>${displayTitle}</span>
+              </h3>
+              ${isPhoto ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 Required</span>` : ''}
+            </div>
+            ${rationale ? `<p class="text-[11px] text-amber-900 bg-amber-50/60 p-2 rounded-xl mb-2.5 border border-amber-100">💡 <b>Goal:</b> ${rationale}</p>` : ''}
+            <div class="space-y-2 text-xs">
+        `;
+
+        taskItems.forEach(task => {
+          html += `
+            <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <span class="text-slate-700">${task}</span>
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      loadCheckboxes();
+      if (isAdminUnlocked) enableAdminMode();
+    }
+
+    // ==================== CHECKBOXES, CONFETTI & PROGRESS ====================
     function updateProgress() {
       const allCheckboxes = document.querySelectorAll('.task-check');
       const checked = Array.from(allCheckboxes).filter(cb => cb.checked).length;
@@ -951,12 +657,8 @@
       document.getElementById('prog-percent').innerText = percent + '%';
       document.getElementById('prog-detail').innerText = `${checked} of ${total} completed`;
 
-      if (percent === 100) {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
+      if (percent === 100 && total > 0) {
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
       }
     }
 
@@ -964,11 +666,7 @@
       saveCheckboxes();
       updateProgress();
       if (cb.checked) {
-        confetti({
-          particleCount: 25,
-          spread: 45,
-          origin: { y: 0.7 }
-        });
+        confetti({ particleCount: 25, spread: 45, origin: { y: 0.7 } });
       }
     }
 
@@ -986,12 +684,9 @@
       updateProgress();
     }
 
-    // PIN Authentication for Admin Editing
+    // ==================== PIN & ADMIN EDIT MODE ====================
     function openPinModal() {
-      if (isAdminUnlocked) {
-        lockAdmin();
-        return;
-      }
+      if (isAdminUnlocked) { lockAdmin(); return; }
       document.getElementById('pin-modal').classList.remove('hidden');
       document.getElementById('pin-input').value = '';
       document.getElementById('pin-error').classList.add('hidden');
@@ -1019,7 +714,6 @@
       document.getElementById('admin-icon').classList.remove('fa-lock');
       document.getElementById('admin-icon').classList.add('fa-unlock-keyhole', 'text-amber-300');
 
-      // Add edit/delete buttons to routine items
       document.querySelectorAll('.timeline-item').forEach((item, idx) => {
         if (!item.querySelector('.admin-edit-btn')) {
           const editBar = document.createElement('div');
@@ -1056,7 +750,7 @@
     }
 
     function deleteBlock(idx) {
-      if (confirm("Are you sure you want to remove this schedule block?")) {
+      if (confirm("Remove this schedule block?")) {
         document.querySelectorAll('.timeline-item')[idx].remove();
         updateProgress();
       }
@@ -1065,9 +759,9 @@
     function promptAddTask() {
       const taskTime = prompt("Enter time block (e.g. 16:30 – 17:30):", "16:30 – 17:30");
       if (!taskTime) return;
-      const taskTitle = prompt("Enter task title:", "Special Tutoring / Activity");
+      const taskTitle = prompt("Enter task title:", "Special Task");
       if (!taskTitle) return;
-      const taskDesc = prompt("Enter task description:", "Prepare materials and assist kids.");
+      const taskDesc = prompt("Enter task details:", "Task details here.");
       if (!taskDesc) return;
 
       const newBlock = document.createElement('div');
@@ -1082,11 +776,10 @@
             <span>${taskTitle}</span>
           </h3>
         </div>
-        <p class="text-xs text-slate-500 mb-3">${taskDesc}</p>
         <div class="space-y-2 text-xs">
           <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
             <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <span>Complete ${taskTitle}</span>
+            <span>${taskDesc}</span>
           </label>
         </div>
       `;
@@ -1095,176 +788,10 @@
       updateProgress();
     }
 
-    // Run on startup
+    // Initialize
     applyTranslations();
-    loadCheckboxes();
+    syncAllFromGoogleSheet();
   </script>
-
-  <script>
-    const SHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
-
-    // Fetch and dynamically render Weekly Meals from Google Sheet
-    async function fetchMealsFromSheet() {
-      try {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Weekly_Meals`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const text = await res.text();
-        const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-        const data = JSON.parse(jsonStr);
-
-        const rows = data.table.rows;
-        if (!rows || rows.length === 0) return;
-
-        // Cache the raw data to localStorage for instant offline access
-        localStorage.setItem('cached_weekly_meals', JSON.stringify(rows));
-        renderMeals(rows);
-      } catch (err) {
-        console.log("Offline or fetch error, using cached meals:", err);
-        const cached = localStorage.getItem('cached_weekly_meals');
-        if (cached) renderMeals(JSON.parse(cached));
-      }
-    }
-
-    function renderMeals(rows) {
-      const container = document.getElementById('view-meals');
-      // Keep banner at top
-      const banner = container.firstElementChild.outerHTML;
-      let html = banner;
-
-      rows.forEach((r, idx) => {
-        const day = r.c[0] ? r.c[0].v : '';
-        const dishEn = r.c[1] ? r.c[1].v : '';
-        const dishCn = r.c[2] ? r.c[2].v : '';
-        const dishTl = r.c[3] ? r.c[3].v : '';
-        const target = r.c[4] ? r.c[4].v : 'Kids';
-        const notes = r.c[5] ? r.c[5].v : '';
-        const videoUrl = r.c[6] ? r.c[6].v : '';
-        const snack = r.c[7] ? r.c[7].v : '';
-
-        let badgeColor = 'bg-amber-100 text-amber-800';
-        if (target.includes('Elly')) badgeColor = 'bg-pink-100 text-pink-700';
-        if (target.includes('Harvey')) badgeColor = 'bg-blue-100 text-blue-700';
-        if (dishEn.toLowerCase().includes('curry')) badgeColor = 'bg-amber-100 text-amber-900 font-bold';
-
-        let displayDish = dishEn;
-        if (currentLang === 'zh' && dishCn) displayDish = `${dishCn} (${dishEn})`;
-        if (currentLang === 'tl' && dishTl) displayDish = `${dishEn} - ${dishTl}`;
-
-        html += `
-          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
-            <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-              <span class="font-bold text-xs text-amber-600 uppercase font-mono">${day}</span>
-              <span class="text-[10px] ${badgeColor} font-bold px-2 py-0.5 rounded-full">${target}</span>
-            </div>
-            <h4 class="font-bold text-sm text-slate-800">${displayDish}</h4>
-            <p class="text-xs text-slate-500">${notes}</p>
-            ${snack ? `<p class="text-[11px] text-orange-900 bg-orange-50/70 p-1.5 rounded-lg font-medium">🥪 3:30 PM Snack: ${snack}</p>` : ''}
-            ${videoUrl ? `
-              <a href="${videoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
-                <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-                <span>${dict[currentLang].btnVideo || 'Watch Recipe Video'}</span>
-              </a>
-            ` : ''}
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
-    }
-
-    // Fetch and dynamically render Grocery List from Google Sheet
-    async function fetchGroceriesFromSheet() {
-      try {
-        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Grocery_List`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const text = await res.text();
-        const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-        const data = JSON.parse(jsonStr);
-
-        const rows = data.table.rows;
-        if (!rows || rows.length === 0) return;
-
-        localStorage.setItem('cached_groceries', JSON.stringify(rows));
-        renderGroceries(rows);
-      } catch (err) {
-        console.log("Offline or fetch error for groceries:", err);
-        const cached = localStorage.getItem('cached_groceries');
-        if (cached) renderGroceries(JSON.parse(cached));
-      }
-    }
-
-    function renderGroceries(rows) {
-      const container = document.getElementById('view-grocery');
-      const banner = container.firstElementChild.outerHTML;
-
-      // Group by Category
-      const categories = {};
-      rows.forEach((r, idx) => {
-        const cat = r.c[0] ? r.c[0].v : 'Other';
-        const itemEn = r.c[1] ? r.c[1].v : '';
-        const itemCn = r.c[2] ? r.c[2].v : '';
-        const itemTl = r.c[3] ? r.c[3].v : '';
-        const qty = r.c[4] ? r.c[4].v : '';
-        const store = r.c[5] ? r.c[5].v : '';
-        const notes = r.c[6] ? r.c[6].v : '';
-
-        if (!categories[cat]) categories[cat] = [];
-        categories[cat].push({ idx, itemEn, itemCn, itemTl, qty, store, notes });
-      });
-
-      let html = banner;
-      for (const [catName, items] of Object.entries(categories)) {
-        let icon = 'fa-basket-shopping';
-        if (catName.includes('Meat') || catName.includes('Seafood')) icon = 'fa-drumstick-bite';
-        if (catName.includes('Produce') || catName.includes('Veg')) icon = 'fa-carrot';
-
-        html += `
-          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
-            <h4 class="font-bold text-xs text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fa-solid ${icon}"></i>
-              <span>${catName}</span>
-            </h4>
-            <div class="space-y-2 text-xs">
-        `;
-
-        items.forEach(it => {
-          const isSpecial = it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照'));
-          const bgStyle = isSpecial ? 'bg-amber-50/80 border border-amber-200 text-amber-900 font-semibold' : 'bg-slate-50 hover:bg-amber-50';
-
-          let displayItem = it.itemEn;
-          if (it.itemCn) displayItem += ` / ${it.itemCn}`;
-          if (it.qty) displayItem += ` – ${it.qty}`;
-
-          html += `
-            <label class="flex items-start gap-2.5 p-2 rounded-xl ${bgStyle} cursor-pointer">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <div>
-                <p class="font-semibold text-slate-800">${displayItem}</p>
-                ${it.notes ? `<p class="text-[11px] text-slate-500">${it.notes}</p>` : ''}
-              </div>
-            </label>
-          `;
-        });
-
-        html += `
-            </div>
-          </div>
-        `;
-      }
-
-      container.innerHTML = html;
-      loadCheckboxes();
-    }
-
-    // Auto-trigger on page load
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchMealsFromSheet();
-      fetchGroceriesFromSheet();
-    });
-  </script>
-
 </body>
 </html>
 
