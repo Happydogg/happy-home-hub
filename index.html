@@ -400,15 +400,15 @@
       <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
         <div class="flex justify-between items-center border-b border-amber-100 pb-2">
           <span class="font-bold text-xs text-amber-700">THURSDAY • 星期四 • HUWEBES</span>
-          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">⚠️ Check with Sir</span>
+          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Kids Love Curry! 🍛</span>
         </div>
         <h4 class="font-bold text-sm text-slate-800">
-          Braised Lamb Chops with Daikon (紅燒燉羊排)
+          Japanese Mild Chicken Curry (日式甜咖喱雞肉飯)
         </h4>
         <p class="text-xs text-slate-500 t-m-thu-notes">
           Blanch with ginger/scallions to remove gaminess. Stew until fork tender with daikon and carrots.
         </p>
-        <a href="https://www.youtube.com/watch?v=9JSy-RB2JyQ" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
+        <a href="https://www.youtube.com/watch?v=T-UDJC-qqjc" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition">
           <i class="fa-brands fa-youtube text-red-500 text-base"></i>
           <span class="t-btn-video">Watch Recipe Video</span>
         </a>
@@ -467,8 +467,8 @@
           <label class="flex items-start gap-2.5 p-2 rounded-xl bg-amber-50/80 border border-amber-200 cursor-pointer">
             <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
             <div>
-              <p class="font-semibold text-amber-900">Lamb Chops / 羊小排 – 1 斤 (~600g)</p>
-              <p class="text-[11px] text-amber-700 font-bold">📸 Send photo to Sir before buying!</p>
+              <p class="font-semibold text-amber-900">Boneless Chicken Thighs / 去骨雞扒 – 1 斤 (~600g)</p>
+              <p class="text-[11px] text-amber-700 font-bold">Cut bite-sized for Japanese curry.</p>
             </div>
           </label>
           <label class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-amber-50">
@@ -501,7 +501,7 @@
         <div class="space-y-2 text-xs">
           <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
             <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
-            <span class="text-slate-800 font-medium">White Daikon Radish / 白蘿蔔 – 1 pc</span>
+            <span class="text-slate-800 font-medium">Potatoes / 薯仔 (馬鈴薯) – 2–3 pcs</span>
           </label>
           <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 cursor-pointer hover:bg-emerald-50">
             <input type="checkbox" onchange="onTaskToggled(this)" class="rounded text-amber-600 task-check">
@@ -1099,6 +1099,172 @@
     applyTranslations();
     loadCheckboxes();
   </script>
+
+  <script>
+    const SHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
+
+    // Fetch and dynamically render Weekly Meals from Google Sheet
+    async function fetchMealsFromSheet() {
+      try {
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Weekly_Meals`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const text = await res.text();
+        const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        const data = JSON.parse(jsonStr);
+
+        const rows = data.table.rows;
+        if (!rows || rows.length === 0) return;
+
+        // Cache the raw data to localStorage for instant offline access
+        localStorage.setItem('cached_weekly_meals', JSON.stringify(rows));
+        renderMeals(rows);
+      } catch (err) {
+        console.log("Offline or fetch error, using cached meals:", err);
+        const cached = localStorage.getItem('cached_weekly_meals');
+        if (cached) renderMeals(JSON.parse(cached));
+      }
+    }
+
+    function renderMeals(rows) {
+      const container = document.getElementById('view-meals');
+      // Keep banner at top
+      const banner = container.firstElementChild.outerHTML;
+      let html = banner;
+
+      rows.forEach((r, idx) => {
+        const day = r.c[0] ? r.c[0].v : '';
+        const dishEn = r.c[1] ? r.c[1].v : '';
+        const dishCn = r.c[2] ? r.c[2].v : '';
+        const dishTl = r.c[3] ? r.c[3].v : '';
+        const target = r.c[4] ? r.c[4].v : 'Kids';
+        const notes = r.c[5] ? r.c[5].v : '';
+        const videoUrl = r.c[6] ? r.c[6].v : '';
+        const snack = r.c[7] ? r.c[7].v : '';
+
+        let badgeColor = 'bg-amber-100 text-amber-800';
+        if (target.includes('Elly')) badgeColor = 'bg-pink-100 text-pink-700';
+        if (target.includes('Harvey')) badgeColor = 'bg-blue-100 text-blue-700';
+        if (dishEn.toLowerCase().includes('curry')) badgeColor = 'bg-amber-100 text-amber-900 font-bold';
+
+        let displayDish = dishEn;
+        if (currentLang === 'zh' && dishCn) displayDish = `${dishCn} (${dishEn})`;
+        if (currentLang === 'tl' && dishTl) displayDish = `${dishEn} - ${dishTl}`;
+
+        html += `
+          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+            <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+              <span class="font-bold text-xs text-amber-600 uppercase font-mono">${day}</span>
+              <span class="text-[10px] ${badgeColor} font-bold px-2 py-0.5 rounded-full">${target}</span>
+            </div>
+            <h4 class="font-bold text-sm text-slate-800">${displayDish}</h4>
+            <p class="text-xs text-slate-500">${notes}</p>
+            ${snack ? `<p class="text-[11px] text-orange-900 bg-orange-50/70 p-1.5 rounded-lg font-medium">🥪 3:30 PM Snack: ${snack}</p>` : ''}
+            ${videoUrl ? `
+              <a href="${videoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
+                <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+                <span>${dict[currentLang].btnVideo || 'Watch Recipe Video'}</span>
+              </a>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Fetch and dynamically render Grocery List from Google Sheet
+    async function fetchGroceriesFromSheet() {
+      try {
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Grocery_List`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const text = await res.text();
+        const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        const data = JSON.parse(jsonStr);
+
+        const rows = data.table.rows;
+        if (!rows || rows.length === 0) return;
+
+        localStorage.setItem('cached_groceries', JSON.stringify(rows));
+        renderGroceries(rows);
+      } catch (err) {
+        console.log("Offline or fetch error for groceries:", err);
+        const cached = localStorage.getItem('cached_groceries');
+        if (cached) renderGroceries(JSON.parse(cached));
+      }
+    }
+
+    function renderGroceries(rows) {
+      const container = document.getElementById('view-grocery');
+      const banner = container.firstElementChild.outerHTML;
+
+      // Group by Category
+      const categories = {};
+      rows.forEach((r, idx) => {
+        const cat = r.c[0] ? r.c[0].v : 'Other';
+        const itemEn = r.c[1] ? r.c[1].v : '';
+        const itemCn = r.c[2] ? r.c[2].v : '';
+        const itemTl = r.c[3] ? r.c[3].v : '';
+        const qty = r.c[4] ? r.c[4].v : '';
+        const store = r.c[5] ? r.c[5].v : '';
+        const notes = r.c[6] ? r.c[6].v : '';
+
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push({ idx, itemEn, itemCn, itemTl, qty, store, notes });
+      });
+
+      let html = banner;
+      for (const [catName, items] of Object.entries(categories)) {
+        let icon = 'fa-basket-shopping';
+        if (catName.includes('Meat') || catName.includes('Seafood')) icon = 'fa-drumstick-bite';
+        if (catName.includes('Produce') || catName.includes('Veg')) icon = 'fa-carrot';
+
+        html += `
+          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
+            <h4 class="font-bold text-xs text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid ${icon}"></i>
+              <span>${catName}</span>
+            </h4>
+            <div class="space-y-2 text-xs">
+        `;
+
+        items.forEach(it => {
+          const isSpecial = it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照'));
+          const bgStyle = isSpecial ? 'bg-amber-50/80 border border-amber-200 text-amber-900 font-semibold' : 'bg-slate-50 hover:bg-amber-50';
+
+          let displayItem = it.itemEn;
+          if (it.itemCn) displayItem += ` / ${it.itemCn}`;
+          if (it.qty) displayItem += ` – ${it.qty}`;
+
+          html += `
+            <label class="flex items-start gap-2.5 p-2 rounded-xl ${bgStyle} cursor-pointer">
+              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+              <div>
+                <p class="font-semibold text-slate-800">${displayItem}</p>
+                ${it.notes ? `<p class="text-[11px] text-slate-500">${it.notes}</p>` : ''}
+              </div>
+            </label>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+      loadCheckboxes();
+    }
+
+    // Auto-trigger on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchMealsFromSheet();
+      fetchGroceriesFromSheet();
+    });
+  </script>
+
 </body>
 </html>
 
