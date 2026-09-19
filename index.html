@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Happy Home • Helper Daily Routine & Meal Planner</title>
+  <title>Happy Home Hub v2.2 • Helper Routine & Meal Planner</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -36,7 +36,9 @@
           <h1 class="text-sm font-black tracking-tight flex items-center gap-1.5" id="app-title">
             Happy Home Hub
           </h1>
-          <p class="text-[11px] text-amber-100 font-medium" id="app-subtitle">Harvey & Elly • Daily Routine</p>
+          <p class="text-[11px] text-amber-100 font-medium" id="app-subtitle">
+            Harvey & Elly • Daily Routine <span class="bg-white/20 text-white font-mono text-[9px] px-1.5 py-0.5 rounded ml-1 font-bold">v2.2</span>
+          </p>
         </div>
       </div>
 
@@ -70,8 +72,9 @@
         <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span id="sync-text" class="font-medium">Connecting to Google Sheets...</span>
       </div>
-      <a href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1">
-        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> View Sheet
+      <!-- View Sheet Button (Hidden by default, unlocked only via PIN) -->
+      <a id="btn-view-sheet" href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="hidden text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1 text-[10px] bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View Sheet
       </a>
     </div>
 
@@ -112,7 +115,7 @@
 
   </div>
 
-  <!-- Navigation Tabs -->
+  <!-- Navigation Tabs (Streamlined to 3 Core Tabs) -->
   <nav class="bg-white/90 backdrop-blur border-b border-amber-100 sticky top-14 z-40 mt-3 shadow-sm">
     <div class="max-w-md mx-auto flex justify-around text-center text-xs font-bold text-slate-500">
       <button onclick="switchTab('routine')" id="tab-btn-routine" class="py-3 px-2 flex-1 tab-active transition">
@@ -126,10 +129,6 @@
       <button onclick="switchTab('grocery')" id="tab-btn-grocery" class="py-3 px-2 flex-1 transition">
         <i class="fa-solid fa-basket-shopping block text-base mb-1"></i>
         <span class="t-nav-grocery">Market</span>
-      </button>
-      <button onclick="switchTab('rules')" id="tab-btn-rules" class="py-3 px-2 flex-1 transition">
-        <i class="fa-solid fa-star block text-base mb-1"></i>
-        <span class="t-nav-rules">Tips</span>
       </button>
     </div>
   </nav>
@@ -168,7 +167,6 @@
         <p class="text-white/90 text-[11px] t-meals-banner-desc">Live synced from Google Sheet. Tap to watch tutorial.</p>
       </div>
 
-      <!-- Meal Cards Container (Populated dynamically from Google Sheet) -->
       <div id="meals-list" class="space-y-4">
         <div class="p-8 text-center text-slate-400 text-xs">
           <i class="fa-solid fa-circle-notch fa-spin text-lg text-amber-500 mb-2"></i>
@@ -187,43 +185,10 @@
         <p class="text-emerald-100 text-[11px] t-groc-banner-desc">Live synced from Google Sheet. Tap checkboxes as you buy.</p>
       </div>
 
-      <!-- Grocery Items Container (Populated dynamically from Google Sheet) -->
       <div id="grocery-list-container" class="space-y-4">
         <div class="p-8 text-center text-slate-400 text-xs">
           <i class="fa-solid fa-circle-notch fa-spin text-lg text-emerald-500 mb-2"></i>
           <p>Loading groceries from Google Sheets...</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 4: RULES & HEALTH TIPS ==================== -->
-    <section id="view-rules" class="space-y-4 hidden">
-      <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-3">
-        <h3 class="font-black text-sm text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-medal text-amber-500"></i>
-          <span class="t-r-title">Growth & Health Standards (生長與健康準則)</span>
-        </h3>
-
-        <div class="space-y-3 text-xs">
-          <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
-            <h5 class="font-black text-amber-900 mb-1 t-r-r1-title">1. Pre-Heat Thermos (5 Minutes)</h5>
-            <p class="text-amber-800 t-r-r1-desc">Always pour boiling water into the thermos and close the lid for 5 minutes before adding hot food so the lunch stays warm safely until lunchtime.</p>
-          </div>
-
-          <div class="p-3 bg-blue-50 rounded-xl border border-blue-200">
-            <h5 class="font-black text-blue-900 mb-1 t-r-r2-title">2. Bite-Sized Cuts</h5>
-            <p class="text-blue-800 t-r-r2-desc">Kids eat with spoons at school. Cut all meat, ribs, and vegetables small so they can easily chew and finish their meal without struggling.</p>
-          </div>
-
-          <div class="p-3 bg-rose-50 rounded-xl border border-rose-200">
-            <h5 class="font-black text-rose-900 mb-1 t-r-r3-title">3. Avoid Excess Refined Sugar</h5>
-            <p class="text-rose-800 t-r-r3-desc">Elly receives growth hormone therapy. Avoid adding refined sugar or sweet syrups to sauces. Rely on the natural sweetness of carrots, onions, and tomatoes.</p>
-          </div>
-
-          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-            <h5 class="font-black text-emerald-900 mb-1 t-r-r4-title">4. 3:30 PM High-Protein Snack is Essential</h5>
-            <p class="text-emerald-800 t-r-r4-desc">Both kids are underweight. They must have a warm, nutrient-dense mini-meal (egg, cheese, yogurt, or dumplings) ready right when they arrive home from school.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -254,15 +219,20 @@
           Unlock
         </button>
       </div>
-      
     </div>
   </div>
 
-  <!-- ==================== GOOGLE SHEETS LIVE SYNC ENGINE ==================== -->
+  <!-- Hidden Camera File Input Trigger -->
+  <input type="file" id="global-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelected(event)">
+
+  <!-- ==================== GOOGLE SHEETS & VISION AI ENGINE ==================== -->
   <script>
     const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx8nBhKg_T8kxw-sFpxbYXA75DW4AP_E_lovkColuFfxDWP8EXIo4XyfhYTTjpQ5hoI/exec";
     let isAdminUnlocked = false;
-    let employerPin = localStorage.getItem('employer_pin') || '3726';
+    let employerPin = localStorage.getItem('employer_pin') || '1234';
+    let currentUploadTaskType = null;
+    let currentUploadBlockIdx = null;
 
     // Trilingual Dictionary
     const dict = {
@@ -276,21 +246,17 @@
         navRoutine: "Routine",
         navMeals: "Meals",
         navGrocery: "Market",
-        navRules: "Tips",
         rSectionTitle: "Schedule of the Day",
         btnAdd: "Add Task",
         btnVideo: "Watch Recipe Video",
-        rTitle: "Growth & Health Standards",
-        rR1Title: "1. Pre-Heat Thermos (5 Minutes)",
-        rR1Desc: "Always pour boiling water into the thermos and close the lid for 5 minutes before adding hot food.",
-        rR2Title: "2. Bite-Sized Cuts",
-        rR2Desc: "Kids eat with spoons at school. Cut all meat and vegetables small so they can easily chew and finish.",
-        rR3Title: "3. Avoid Excess Refined Sugar",
-        rR3Desc: "Elly receives growth hormone therapy. Avoid adding refined sugar or sweet syrups to sauces.",
-        rR4Title: "4. 3:30 PM High-Protein Snack is Essential",
-        rR4Desc: "Both kids are underweight. They must have a warm, nutrient-dense mini-meal ready after school.",
+        btnSnap: "📸 Snap Photo",
+        btnUploading: "Analyzing photo with AI...",
         pinTitle: "Employer Admin Access",
-        pinDesc: "Enter 4-digit PIN to edit tasks and routine."
+        pinDesc: "Enter 4-digit PIN to edit tasks and routine.",
+        afterSchoolTitle: "After-School Lunchbox Check",
+        afterSchoolDesc: "Inspect Harvey and Elly's thermoses right after school:",
+        leftoverFinishAlert: "⚠️ MUST FINISH LEFTOVER: Child finished less than 50% of lunch! Reheat remaining lunch so they finish it before any snack!",
+        leftoverSuccess: "✅ Great! Lunch was finished (>50%). Serve the scheduled high-protein afternoon snack!"
       },
       zh: {
         appTitle: "溫馨家園中心 (Happy Home Hub)",
@@ -302,21 +268,17 @@
         navRoutine: "每日作息",
         navMeals: "每週午餐",
         navGrocery: "街市買餸",
-        navRules: "健康守則",
         rSectionTitle: "今日作息清單",
         btnAdd: "新增事項",
         btnVideo: "觀看烹飪教學視頻",
-        rTitle: "兒童健康與發育準則",
-        rR1Title: "1. 保溫壺必須預熱5分鐘",
-        rR1Desc: "裝食物前務必用滾水預熱，確保小朋友中午進食時溫度依然熱騰騰。",
-        rR2Title: "2. 所有食材必須切成小塊 (Bite-Sized)",
-        rR2Desc: "小朋友在學校使用湯匙進食，肉類與蔬菜切細件，才能輕鬆吃光。",
-        rR3Title: "3. 避免過多精製糖分",
-        rR3Desc: "Elly 正在接受生長激素療程，切勿在醬汁中添加精製白糖，善用天然蔬果甜味。",
-        rR4Title: "4. 下午 3:30 高蛋白營養餐是必備環節",
-        rR4Desc: "兩位小朋友目前體重偏輕，放學後必須及時補充高熱量、高鈣及蛋白質食物。",
+        btnSnap: "📸 拍照上傳",
+        btnUploading: "AI 正在分析照片中...",
         pinTitle: "僱主管理權限 (Employer PIN)",
-        pinDesc: "請輸入 4 位數 PIN 碼以編輯日常事項。"
+        pinDesc: "請輸入 4 位數 PIN 碼以編輯日常事項。",
+        afterSchoolTitle: "放學午餐保溫壺檢查",
+        afterSchoolDesc: "小朋友放學回家後，立即開保溫壺檢查進食情況：",
+        leftoverFinishAlert: "⚠️ 必須食晒剩菜：小朋友午餐食剩多過50%！必須先回熱午餐，食晒之後先准食其他下午茶！",
+        leftoverSuccess: "✅ 做得好！午餐已食多於50%，可端出預先準備的高蛋白營養下午茶。"
       },
       tl: {
         appTitle: "Happy Home Hub",
@@ -328,21 +290,17 @@
         navRoutine: "Iskedyul",
         navMeals: "Tanghalian",
         navGrocery: "Palengke",
-        navRules: "Paalala",
         rSectionTitle: "Iskedyul ng Araw",
         btnAdd: "Magdagdag",
         btnVideo: "Panoorin ang Video ng Recipe",
-        rTitle: "Mga Mahalagang Tuntunin sa Kalusugan",
-        rR1Title: "1. Painitin ang Thermos (5 Minuto)",
-        rR1Desc: "Laging lagyan ng kumukulong tubig ang thermos ng 5 minuto bago isalin ang pagkain para manatiling mainit.",
-        rR2Title: "2. Hiwain nang Maliit (Bite-Sized)",
-        rR2Desc: "Kutsara ang gamit ng mga bata sa eskwela. Hiwain nang pino ang karne at gulay para maubos nila.",
-        rR3Title: "3. Huwag Maglagay ng Sobrang Asukal",
-        rR3Desc: "May growth hormone therapy si Elly. Iwasan ang matatamis na sauce; gamitin ang tamis ng sibuyas at kamatis.",
-        rR4Title: "4. Napakahalaga ng 3:30 PM Merienda",
-        rR4Desc: "Kailangang magdagdag ng timbang at tangkad ng mga bata. Laging maghanda ng itlog, cheese, o dumplings.",
+        btnSnap: "📸 Kunan ng Litrato",
+        btnUploading: "Sinusuri ang litrato gamit ang AI...",
         pinTitle: "Employer PIN Access",
-        pinDesc: "Ipasok ang 4-digit PIN upang mag-edit ng mga gawain."
+        pinDesc: "Ipasok ang 4-digit PIN upang mag-edit ng mga gawain.",
+        afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
+        afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
+        leftoverFinishAlert: "⚠️ KAILANGAN UBOSIN: Hindi naubos ang higit sa 50% ng tanghalian! Painitin ang natira upang ubusin bago mag-merienda!",
+        leftoverSuccess: "✅ Magaling! Naubos ang tanghalian (>50%). Maaari nang ihain ang nakatakdang masustansyang merienda."
       }
     };
 
@@ -382,27 +340,16 @@
       document.querySelectorAll('.t-nav-routine').forEach(e => e.innerText = t.navRoutine);
       document.querySelectorAll('.t-nav-meals').forEach(e => e.innerText = t.navMeals);
       document.querySelectorAll('.t-nav-grocery').forEach(e => e.innerText = t.navGrocery);
-      document.querySelectorAll('.t-nav-rules').forEach(e => e.innerText = t.navRules);
 
       document.querySelector('.t-r-section-title').innerText = t.rSectionTitle;
       document.getElementById('t-btn-add').innerText = t.btnAdd;
-
-      document.querySelector('.t-r-title').innerText = t.rTitle;
-      document.querySelector('.t-r-r1-title').innerText = t.rR1Title;
-      document.querySelector('.t-r-r1-desc').innerText = t.rR1Desc;
-      document.querySelector('.t-r-r2-title').innerText = t.rR2Title;
-      document.querySelector('.t-r-r2-desc').innerText = t.rR2Desc;
-      document.querySelector('.t-r-r3-title').innerText = t.rR3Title;
-      document.querySelector('.t-r-r3-desc').innerText = t.rR3Desc;
-      document.querySelector('.t-r-r4-title').innerText = t.rR4Title;
-      document.querySelector('.t-r-r4-desc').innerText = t.rR4Desc;
 
       document.getElementById('t-pin-title').innerText = t.pinTitle;
       document.getElementById('t-pin-desc').innerText = t.pinDesc;
     }
 
     function switchTab(tab) {
-      ['routine', 'meals', 'grocery', 'rules'].forEach(v => {
+      ['routine', 'meals', 'grocery'].forEach(v => {
         document.getElementById('view-' + v).classList.add('hidden');
         document.getElementById('tab-btn-' + v).classList.remove('tab-active');
         document.getElementById('tab-btn-' + v).classList.add('text-slate-500');
@@ -448,11 +395,11 @@
         renderRoutine(routineRows);
 
         syncDot.className = "w-2 h-2 rounded-full bg-emerald-500";
-        syncText.innerText = `Live Connected (Updated ${localStorage.getItem('last_sync_time')})`;
+        syncText.innerText = `Live Connected (${localStorage.getItem('last_sync_time')})`;
       } catch (err) {
-        console.warn("Could not fetch fresh data from Google Sheets, using offline cache:", err);
+        console.warn("Using offline cache:", err);
         syncDot.className = "w-2 h-2 rounded-full bg-amber-500";
-        syncText.innerText = `Offline Mode (Using Saved Schedule)`;
+        syncText.innerText = `Offline Mode (Using Cached Schedule)`;
         renderAllFromCachedData();
       } finally {
         syncIcon.classList.remove('fa-spin');
@@ -469,7 +416,7 @@
       if (routine) renderRoutine(JSON.parse(routine));
     }
 
-    // 1. Render Meals
+    // 1. Render Meals (With Header Filter)
     function renderMeals(rows) {
       const container = document.getElementById('meals-list');
       if (!rows || rows.length === 0) return;
@@ -477,8 +424,8 @@
       let html = '';
       rows.forEach(r => {
         const day = r.c[0] ? String(r.c[0].v).trim() : '';
-        // Skip header row if returned in data
         if (day.toLowerCase() === 'day' || day.toLowerCase().includes('dish_en')) return;
+
         const dishEn = r.c[1] ? r.c[1].v : '';
         const dishCn = r.c[2] ? r.c[2].v : '';
         const dishTl = r.c[3] ? r.c[3].v : '';
@@ -518,7 +465,7 @@
       container.innerHTML = html;
     }
 
-    // 2. Render Groceries
+    // 2. Render Groceries (With Header Filter)
     function renderGroceries(rows) {
       const container = document.getElementById('grocery-list-container');
       if (!rows || rows.length === 0) return;
@@ -526,8 +473,8 @@
       const categories = {};
       rows.forEach((r, idx) => {
         const cat = r.c[0] ? String(r.c[0].v).trim() : 'Other';
-        // Skip header row
         if (cat.toLowerCase() === 'category' || cat.toLowerCase().includes('item_en')) return;
+
         const itemEn = r.c[1] ? r.c[1].v : '';
         const itemCn = r.c[2] ? r.c[2].v : '';
         const itemTl = r.c[3] ? r.c[3].v : '';
@@ -584,7 +531,7 @@
       loadCheckboxes();
     }
 
-    // 3. Render Routine
+    // 3. Render Routine (With In-App Camera Triggers & After-School Check)
     function renderRoutine(rows) {
       const container = document.getElementById('routine-list');
       if (!rows || rows.length === 0) return;
@@ -592,8 +539,8 @@
       let html = '';
       rows.forEach((r, idx) => {
         const timeBlock = r.c[0] ? String(r.c[0].v).trim() : '';
-        // Skip header row
         if (timeBlock.toLowerCase().includes('time_block') || timeBlock.toLowerCase().includes('task_name')) return;
+
         const titleEn = r.c[1] ? r.c[1].v : '';
         const titleTl = r.c[2] ? r.c[2].v : '';
         const titleCn = r.c[3] ? r.c[3].v : '';
@@ -606,12 +553,17 @@
         if (currentLang === 'tl' && titleTl) displayTitle = titleTl;
 
         const isPhoto = photoReq.includes('YES') || photoReq.includes('📸');
+        let taskType = 'general';
+        if (timeBlock.includes('06:30') || timeBlock.includes('07:45')) taskType = 'baon';
+        if (timeBlock.includes('09:30') || timeBlock.includes('11:00')) taskType = 'market';
+        if (timeBlock.includes('15:00') || timeBlock.includes('16:00')) taskType = 'snack';
 
-        // Split checklist items
+        const isAfterSchoolBlock = timeBlock.includes('15:00') || timeBlock.includes('16:00');
+
         const taskItems = checklist.split(';').map(t => t.trim()).filter(t => t.length > 0);
 
         html += `
-          <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100">
+          <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100" id="block-${idx}">
             <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center font-black text-xs">
               ${idx + 1}
             </div>
@@ -623,7 +575,11 @@
               ${isPhoto ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 Required</span>` : ''}
             </div>
             ${rationale ? `<p class="text-[11px] text-amber-900 bg-amber-50/60 p-2 rounded-xl mb-2.5 border border-amber-100">💡 <b>Goal:</b> ${rationale}</p>` : ''}
-            <div class="space-y-2 text-xs">
+
+            <!-- After-School Lunchbox Leftover Check Module -->
+            ${isAfterSchoolBlock ? renderAfterSchoolModule() : ''}
+
+            <div class="space-y-2 text-xs mb-3">
         `;
 
         taskItems.forEach(task => {
@@ -637,16 +593,178 @@
 
         html += `
             </div>
+
+            <!-- In-App Camera Button for Photo Tasks -->
+            ${isPhoto ? `
+              <div class="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between">
+                <button onclick="triggerInAppCamera('${taskType}', ${idx})" class="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 transition">
+                  <i class="fa-solid fa-camera"></i>
+                  <span>${dict[currentLang].btnSnap}</span>
+                </button>
+                <span id="photo-feedback-${idx}" class="text-[11px] text-slate-500 font-medium"></span>
+              </div>
+            ` : ''}
+
           </div>
         `;
       });
 
       container.innerHTML = html;
       loadCheckboxes();
+      loadAfterSchoolState();
       if (isAdminUnlocked) enableAdminMode();
     }
 
-    // ==================== CHECKBOXES, CONFETTI & PROGRESS ====================
+    // Render After-School Check
+    function renderAfterSchoolModule() {
+      const t = dict[currentLang];
+      return `
+        <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 p-3 rounded-xl mb-3 space-y-2.5">
+          <div class="flex items-center gap-1.5 font-black text-xs text-orange-950">
+            <span>🍱</span>
+            <span>${t.afterSchoolTitle}</span>
+          </div>
+          <p class="text-[11px] text-orange-900 font-medium">${t.afterSchoolDesc}</p>
+          
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <!-- Harvey -->
+            <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
+              <p class="font-bold text-slate-700 text-[11px] mb-1">Harvey:</p>
+              <div class="flex flex-col gap-1">
+                <button onclick="setLeftover('harvey', 'finished')" id="btn-harvey-finished" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                  🟢 Finished >50%
+                </button>
+                <button onclick="setLeftover('harvey', 'left')" id="btn-harvey-left" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                  ⚠️ Left >50%
+                </button>
+              </div>
+            </div>
+
+            <!-- Elly -->
+            <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
+              <p class="font-bold text-slate-700 text-[11px] mb-1">Elly:</p>
+              <div class="flex flex-col gap-1">
+                <button onclick="setLeftover('elly', 'finished')" id="btn-elly-finished" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                  🟢 Finished >50%
+                </button>
+                <button onclick="setLeftover('elly', 'left')" id="btn-elly-left" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                  ⚠️ Left >50%
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Alert Banner based on selection -->
+          <div id="leftover-alert-box" class="hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
+        </div>
+      `;
+    }
+
+    function setLeftover(kid, status) {
+      localStorage.setItem(`leftover_${kid}`, status);
+      loadAfterSchoolState();
+    }
+
+    function loadAfterSchoolState() {
+      const hStatus = localStorage.getItem('leftover_harvey');
+      const eStatus = localStorage.getItem('leftover_elly');
+      const t = dict[currentLang];
+
+      const hFin = document.getElementById('btn-harvey-finished');
+      const hLeft = document.getElementById('btn-harvey-left');
+      const eFin = document.getElementById('btn-elly-finished');
+      const eLeft = document.getElementById('btn-elly-left');
+      const alertBox = document.getElementById('leftover-alert-box');
+
+      if (!hFin) return;
+
+      if (hStatus === 'finished') {
+        hFin.className = "text-[10px] font-black py-1 px-1.5 rounded bg-emerald-500 text-white border border-emerald-600 text-left";
+        hLeft.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+      } else if (hStatus === 'left') {
+        hLeft.className = "text-[10px] font-black py-1 px-1.5 rounded bg-rose-500 text-white border border-rose-600 text-left";
+        hFin.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+      }
+
+      if (eStatus === 'finished') {
+        eFin.className = "text-[10px] font-black py-1 px-1.5 rounded bg-emerald-500 text-white border border-emerald-600 text-left";
+        eLeft.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+      } else if (eStatus === 'left') {
+        eLeft.className = "text-[10px] font-black py-1 px-1.5 rounded bg-rose-500 text-white border border-rose-600 text-left";
+        eFin.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+      }
+
+      if (hStatus === 'left' || eStatus === 'left') {
+        alertBox.classList.remove('hidden');
+        alertBox.className = "p-2.5 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 font-bold text-xs";
+        alertBox.innerText = t.leftoverFinishAlert;
+      } else if (hStatus === 'finished' && eStatus === 'finished') {
+        alertBox.classList.remove('hidden');
+        alertBox.className = "p-2.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs";
+        alertBox.innerText = t.leftoverSuccess;
+      }
+    }
+
+    // ==================== IN-APP CAMERA & GEMINI VISION AI UPLOAD ====================
+    function triggerInAppCamera(taskType, blockIdx) {
+      currentUploadTaskType = taskType;
+      currentUploadBlockIdx = blockIdx;
+      const fileInput = document.getElementById('global-camera-input');
+      fileInput.value = '';
+      fileInput.click();
+    }
+
+    async function handlePhotoSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const feedbackSpan = document.getElementById(`photo-feedback-${currentUploadBlockIdx}`);
+      if (feedbackSpan) {
+        feedbackSpan.innerHTML = `<span class="text-amber-600 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> ${dict[currentLang].btnUploading}</span>`;
+      }
+
+      try {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          const base64Data = e.target.result.split(',')[1];
+          const payload = {
+            task_type: currentUploadTaskType,
+            mime_type: file.type || 'image/jpeg',
+            image_base64: base64Data,
+            date: new Date().toISOString().split('T')[0],
+            notes: `Uploaded via Happy Home Hub v2.2 (${currentUploadTaskType})`
+          };
+
+          const res = await fetch(BACKEND_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          const result = await res.json();
+          if (feedbackSpan) {
+            if (result.pass) {
+              let msg = result.feedback_en || "Photo verified by AI!";
+              if (currentLang === 'tl' && result.feedback_tl) msg = result.feedback_tl;
+              if (currentLang === 'zh' && result.feedback_zh) msg = result.feedback_zh;
+              feedbackSpan.innerHTML = `<span class="text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> ${msg}</span>`;
+              confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+            } else {
+              let msg = result.feedback_en || "Flagged: please retake photo.";
+              if (currentLang === 'tl' && result.feedback_tl) msg = result.feedback_tl;
+              feedbackSpan.innerHTML = `<span class="text-rose-600 font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</span>`;
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Upload error:", err);
+        if (feedbackSpan) {
+          feedbackSpan.innerHTML = `<span class="text-rose-500 font-bold">Upload error. Saved locally.</span>`;
+        }
+      }
+    }
+
+    // ==================== CHECKBOXES & PROGRESS ====================
     function updateProgress() {
       const allCheckboxes = document.querySelectorAll('.task-check');
       const checked = Array.from(allCheckboxes).filter(cb => cb.checked).length;
@@ -711,6 +829,9 @@
     function enableAdminMode() {
       document.getElementById('admin-mode-banner').classList.remove('hidden');
       document.getElementById('btn-add-task').classList.remove('hidden');
+      const viewSheetBtn = document.getElementById('btn-view-sheet');
+      if (viewSheetBtn) viewSheetBtn.classList.remove('hidden');
+
       document.getElementById('admin-icon').classList.remove('fa-lock');
       document.getElementById('admin-icon').classList.add('fa-unlock-keyhole', 'text-amber-300');
 
@@ -735,6 +856,9 @@
       isAdminUnlocked = false;
       document.getElementById('admin-mode-banner').classList.add('hidden');
       document.getElementById('btn-add-task').classList.add('hidden');
+      const viewSheetBtn = document.getElementById('btn-view-sheet');
+      if (viewSheetBtn) viewSheetBtn.classList.add('hidden');
+
       document.getElementById('admin-icon').classList.add('fa-lock');
       document.getElementById('admin-icon').classList.remove('fa-unlock-keyhole', 'text-amber-300');
       document.querySelectorAll('.admin-edit-btn').forEach(e => e.remove());
@@ -788,7 +912,7 @@
       updateProgress();
     }
 
-    // Initialize
+    // Run on startup
     applyTranslations();
     syncAllFromGoogleSheet();
   </script>
