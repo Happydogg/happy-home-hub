@@ -3,6 +3,7 @@
   "short_name": "HappyHome",
   "description": "Helper Daily Routine, Nutritious Meals & Wet Market Guide",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fffbeb",
@@ -22,4 +23,3 @@
     }
   ]
 }
-
