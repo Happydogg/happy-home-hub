@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Happy Home • Helper Routine, Meals & Groceries (v2.6)</title>
+  <title>Happy Home • Helper Routine, Meals & Groceries (v2.7)</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -51,7 +51,7 @@
         <div>
           <h1 class="text-base font-extrabold tracking-tight leading-tight flex items-center gap-1.5">
             <span id="app-title">Happy Home Hub</span>
-            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.6</span>
+            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.7</span>
           </h1>
           <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey & Elly • Helper Daily Guide</p>
         </div>
@@ -65,7 +65,7 @@
           <button onclick="setLang('tl')" id="btn-lang-tl" class="px-2 py-1 rounded transition text-[11px]">TL</button>
         </div>
 
-        <!-- Employer PIN Unlock Button -->
+        <!-- Employer PIN Unlock Button (PIN: 2776) -->
         <button onclick="openPinModal()" id="btn-pin-toggle" title="Employer PIN Settings" class="w-8 h-8 rounded-lg bg-amber-800/80 hover:bg-amber-800 flex items-center justify-center text-amber-200 transition active:scale-95">
           <i class="fa-solid fa-lock text-xs" id="admin-icon"></i>
         </button>
@@ -107,19 +107,24 @@
     </div>
   </section>
 
-  <!-- Admin Mode Notice (Visible when unlocked via PIN) -->
-  <div id="admin-mode-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-bold text-center flex justify-between items-center max-w-md mx-auto w-full">
-    <span class="flex items-center gap-1.5">
-      <i class="fa-solid fa-unlock-keyhole text-amber-300"></i>
-      <span id="t-admin-active">Employer Admin Mode Active</span>
-    </span>
-    <div class="flex gap-2">
-      <a href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded text-[11px]">
-        Sheet ↗
-      </a>
-      <button onclick="lockAdmin()" class="bg-indigo-800 hover:bg-indigo-900 px-2 py-0.5 rounded text-[11px]">
-        Lock
-      </button>
+  <!-- Admin Mode Bar (Visible when unlocked via PIN 2776) -->
+  <div id="admin-mode-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-bold text-center flex flex-col gap-1.5 max-w-md mx-auto w-full shadow">
+    <div class="flex justify-between items-center w-full">
+      <span class="flex items-center gap-1.5">
+        <i class="fa-solid fa-unlock-keyhole text-amber-300"></i>
+        <span id="t-admin-active">Employer Admin Mode (PIN: 2776)</span>
+      </span>
+      <div class="flex gap-2">
+        <button onclick="toggleBackendConfigModal()" class="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
+          <i class="fa-solid fa-link text-[10px]"></i> Backend URL
+        </button>
+        <a href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded text-[11px]">
+          Sheet ↗
+        </a>
+        <button onclick="lockAdmin()" class="bg-indigo-800 hover:bg-indigo-900 px-2 py-0.5 rounded text-[11px]">
+          Lock
+        </button>
+      </div>
     </div>
   </div>
 
@@ -246,21 +251,53 @@
 
   </main>
 
-  <!-- ==================== EMPLOYER PIN MODAL ==================== -->
+  <!-- ==================== EMPLOYER PIN MODAL (PIN: 2776) ==================== -->
   <div id="pin-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 text-center border border-amber-100">
       <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-xl">
         🔒
       </div>
       <div>
-        <h3 class="font-bold text-base text-slate-800" id="t-pin-title">Employer PIN</h3>
-        <p class="text-xs text-slate-500 mt-1" id="t-pin-desc">Enter 4-digit PIN to manage tasks.</p>
+        <h3 class="font-bold text-base text-slate-800" id="t-pin-title">Employer PIN Access</h3>
+        <p class="text-xs text-slate-500 mt-1" id="t-pin-desc">Enter 4-digit PIN (2776) to manage tasks.</p>
       </div>
       <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-32 mx-auto text-center text-2xl tracking-widest font-mono font-bold py-2 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-500">
       <p id="pin-error" class="text-xs text-rose-500 font-bold hidden">Incorrect PIN. Try again.</p>
       <div class="flex gap-2 pt-2">
         <button onclick="closePinModal()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Cancel</button>
         <button onclick="verifyPin()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 shadow">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BACKEND URL CONFIGURATION MODAL ==================== -->
+  <div id="backend-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4 text-left border border-indigo-100">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+            🔗
+          </div>
+          <h3 class="font-bold text-sm text-slate-800">Google Apps Script Web App</h3>
+        </div>
+        <button onclick="toggleBackendConfigModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <p class="text-slate-600 leading-relaxed">
+          Paste your deployed Google Apps Script Web App URL below to sync photo uploads and deletions live to Google Sheets:
+        </p>
+        <input type="url" id="input-backend-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-2.5 border border-slate-200 rounded-xl font-mono text-[11px] focus:outline-none focus:border-indigo-500">
+        <p id="backend-test-status" class="text-[11px] font-bold text-slate-500">Status: Not tested</p>
+      </div>
+
+      <div class="flex gap-2 pt-2 border-t border-slate-100">
+        <button onclick="testAndSaveBackendUrl()" id="btn-test-backend" class="w-full py-2.5 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-plug"></i>
+          <span>Save & Test Connection</span>
+        </button>
       </div>
     </div>
   </div>
@@ -365,9 +402,15 @@
 
   <script>
     const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU/exec";
+    // Default fallback backend URL
+    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU/exec";
 
-    const employerPin = "1234";
+    function getBackendUrl() {
+      return localStorage.getItem('custom_backend_url') || DEFAULT_BACKEND_URL;
+    }
+
+    // Employer PIN updated to 2776
+    const employerPin = "2776";
     let isAdminUnlocked = false;
     let isSchoolDayMode = true;
     let currentUploadTaskType = 'general';
@@ -386,7 +429,7 @@
         motiveTitle: "Family Teamwork • Harvey & Elly",
         motiveSub: "Thank you for taking great care of our home!",
         progLabel: "Daily Progress",
-        adminActive: "Employer Admin Mode Active",
+        adminActive: "Employer Admin Mode (PIN: 2776)",
         navRoutine: "Routine",
         navMeals: "Meals",
         navGrocery: "Market",
@@ -398,7 +441,7 @@
         btnRetake: "🔄 Retake Photo",
         btnUploading: "Analyzing photo with AI...",
         pinTitle: "Employer PIN Access",
-        pinDesc: "Enter 4-digit PIN to manage tasks.",
+        pinDesc: "Enter 4-digit PIN (2776) to manage tasks.",
         calTitle: "Today's Schedule & Mode",
         afterSchoolTitle: "After-School Lunchbox Check",
         afterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home:",
@@ -411,7 +454,7 @@
         motiveTitle: "家庭同心 • 照顧 Harvey & Elly",
         motiveSub: "感謝你悉心打理屋企，讓小朋友健康快樂成長！",
         progLabel: "今日家務進度",
-        adminActive: "僱主管理模式已啟用",
+        adminActive: "僱主管理模式已啟用 (PIN: 2776)",
         navRoutine: "作息時間",
         navMeals: "每日餐單",
         navGrocery: "街市買餸",
@@ -423,7 +466,7 @@
         btnRetake: "🔄 重新拍照",
         btnUploading: "AI 正在分析驗證相片...",
         pinTitle: "僱主安全 PIN 碼",
-        pinDesc: "請輸入 4 位數 PIN 碼以新增臨時任務及編輯設定。",
+        pinDesc: "請輸入 4 位數 PIN 碼 (2776) 以管理任務。",
         calTitle: "今日上學及放假模式",
         afterSchoolTitle: "放學保溫壺剩菜檢查",
         afterSchoolDesc: "Harvey 和 Elly 放學返屋企後，立即打開保溫壺檢查：",
@@ -436,7 +479,7 @@
         motiveTitle: "Pagtutulungan ng Pamilya • Harvey at Elly",
         motiveSub: "Maraming salamat sa iyong malasakit at pag-aalaga sa tahanan!",
         progLabel: "Nagawa Ngayong Araw",
-        adminActive: "Naka-on ang Employer Mode",
+        adminActive: "Naka-on ang Employer Mode (PIN: 2776)",
         navRoutine: "Oras ng Gawain",
         navMeals: "Tanghalian",
         navGrocery: "Palengke",
@@ -448,7 +491,7 @@
         btnRetake: "🔄 Kunan Ulit",
         btnUploading: "Sinusuri ang litrato gamit ang AI...",
         pinTitle: "Employer PIN Access",
-        pinDesc: "Ipasok ang 4-digit PIN upang mag-edit ng mga gawain.",
+        pinDesc: "Ipasok ang 4-digit PIN (2776) upang mag-edit ng mga gawain.",
         calTitle: "Iskedyul sa Eskwela at Mode Ngayon",
         afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
         afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
@@ -637,7 +680,7 @@
         }
 
         const status = r.c[10] ? String(r.c[10].v).trim() : 'Pending';
-        if (status.toLowerCase().includes('deleted')) return; // Skip deleted
+        if (status.toLowerCase().includes('deleted')) return;
 
         if (matchesToday) {
           parsed.push({
@@ -671,7 +714,7 @@
       };
 
       try {
-        const res = await fetch(`${BACKEND_URL}?action=calendar_status`);
+        const res = await fetch(`${getBackendUrl()}?action=calendar_status`);
         if (res.ok) {
           const remoteData = await res.json();
           if (remoteData.status === 'success') {
@@ -744,7 +787,7 @@
       if (routine) renderRoutine(JSON.parse(routine));
     }
 
-    // 1. Render Meals (With Breakfast YouTube Recipe Videos)
+    // 1. Render Meals
     function renderMeals(rows) {
       const container = document.getElementById('meals-list');
       if (!rows || rows.length === 0) return;
@@ -764,7 +807,6 @@
         let snack = '';
         let breakfastVideoUrl = '';
 
-        // Flexible column mapping
         if (r.c.length >= 10) {
           breakfast = r.c[1] ? r.c[1].v : '';
           breakfastVideoUrl = r.c[2] ? r.c[2].v : '';
@@ -786,7 +828,6 @@
           snack = r.c[8] ? r.c[8].v : '';
         }
 
-        // Check if breakfast has related video in notes or dedicated column
         if (!breakfastVideoUrl) {
           if (breakfast.toLowerCase().includes('scrambled')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=s9r-C0UCDU0';
           else if (breakfast.toLowerCase().includes('oatmeal')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=0k5G_C4hYdM';
@@ -940,7 +981,7 @@
       loadCheckboxes();
     }
 
-    // 3. Render Routine (Full Admin Edit & Delete Support)
+    // 3. Render Routine
     function renderRoutine(rows) {
       const container = document.getElementById('routine-list');
       if (!rows || rows.length === 0) return;
@@ -1003,7 +1044,7 @@
 
                 <!-- Admin Edit / Delete Actions -->
                 <div class="flex items-center gap-1.5">
-                  <div class="admin-control-box hidden flex gap-1">
+                  <div class="admin-control-box ${isAdminUnlocked ? '' : 'hidden'} flex gap-1">
                     <button onclick="openEditAdhocModal(${aIdx})" title="Edit Task" class="w-6 h-6 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-700 flex items-center justify-center text-xs">
                       <i class="fa-solid fa-pen"></i>
                     </button>
@@ -1042,9 +1083,9 @@
                     ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
                     <div class="flex-1 text-[11px]">
                       <p class="font-bold flex items-center gap-1 text-emerald-800">
-                        <i class="fa-solid fa-sparkles text-amber-500"></i> AI Verification Complete
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Logged
                       </p>
-                      <p class="text-emerald-700">Task photo verified and saved.</p>
+                      <p class="text-emerald-700">Photo verified and synced to Google Sheets.</p>
                     </div>
                   </div>
                 </div>
@@ -1070,43 +1111,17 @@
         const photoReq = r.c[7] ? r.c[7].v : 'NO';
         const rationale = r.c[8] ? r.c[8].v : '';
 
-        // Check if skipped by admin for today
+        // If skipped by admin for today, completely omit it
         const isSkippedByAdmin = localStorage.getItem(`skipped_block_${todayKey}_${idx}`) === 'true';
         if (isSkippedByAdmin) {
-          html += `
-            <div class="timeline-item relative pl-12 bg-slate-100/70 p-3.5 rounded-2xl border border-dashed border-slate-300 opacity-60">
-              <div class="absolute left-3 top-3 w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs">
-                ${idx + 1}
-              </div>
-              <div class="flex justify-between items-center text-xs">
-                <span class="line-through text-slate-500 font-mono font-bold">${timeBlock} - ${titleEn}</span>
-                <div class="flex items-center gap-2">
-                  <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">❌ Skipped Today</span>
-                  <button onclick="restoreRoutineBlock(${idx})" title="Restore Block" class="admin-control-box hidden text-[10px] bg-slate-200 hover:bg-slate-300 px-2 py-0.5 rounded font-bold">Restore</button>
-                </div>
-              </div>
-            </div>
-          `;
           return;
         }
 
-        // Check if overwritten by an ad-hoc task
         const isBlockOverwritten = overwrittenBlocks.has(timeBlock) || 
           Array.from(overwrittenBlocks).some(ob => ob.includes(timeBlock.substring(0, 5)));
 
         if (isBlockOverwritten) {
-          html += `
-            <div class="timeline-item relative pl-12 bg-slate-100/80 p-3.5 rounded-2xl border border-dashed border-slate-300 opacity-60">
-              <div class="absolute left-3 top-3 w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs">
-                ${idx + 1}
-              </div>
-              <div class="flex justify-between items-center text-xs">
-                <span class="line-through text-slate-500 font-mono font-bold">${timeBlock} - ${titleEn}</span>
-                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">🔄 Replaced Today</span>
-              </div>
-            </div>
-          `;
-          return;
+          return; // Suppressed and replaced by today's adhoc task
         }
 
         let displayTitle = titleEn;
@@ -1147,15 +1162,15 @@
               </h3>
 
               <div class="flex items-center gap-1.5">
-                <!-- Admin Skip / Edit Controls -->
-                <div class="admin-control-box hidden flex gap-1">
-                  <button onclick="skipRoutineBlock(${idx})" title="Skip Task for Today" class="w-6 h-6 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-ban"></i>
+                <!-- Admin Skip Controls -->
+                <div class="admin-control-box ${isAdminUnlocked ? '' : 'hidden'} flex gap-1">
+                  <button onclick="skipRoutineBlock(${idx})" title="Remove / Skip Task for Today" class="w-6 h-6 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
                 ${isPhoto ? `
                   <span id="badge-${idx}" class="${isVerified ? 'bg-emerald-500 text-white' : 'bg-rose-100 text-rose-700'} text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                    ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified by AI' : '📸 Required'}
+                    ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified' : '📸 Required'}
                   </span>
                 ` : ''}
               </div>
@@ -1200,9 +1215,9 @@
                   ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
                   <div class="flex-1 text-[11px]">
                     <p class="font-bold flex items-center gap-1 text-emerald-800">
-                      <i class="fa-solid fa-sparkles text-amber-500"></i> AI Verification Complete
+                      <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Logged
                     </p>
-                    <p class="text-emerald-700" id="vdetail-${idx}">Task verified and logged.</p>
+                    <p class="text-emerald-700" id="vdetail-${idx}">Task verified and logged to Google Sheets.</p>
                   </div>
                 </div>
               </div>
@@ -1335,7 +1350,6 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Compress to JPEG with 70% quality (~100KB to 150KB)
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             resolve(compressedDataUrl);
           };
@@ -1345,7 +1359,7 @@
       });
     }
 
-    // ==================== ROBUST IN-APP CAMERA & AI VERIFICATION ====================
+    // ==================== IN-APP CAMERA & AI VERIFICATION ====================
     function triggerInAppCamera(taskType, blockKey) {
       currentUploadTaskType = taskType;
       currentUploadBlockIdx = blockKey;
@@ -1378,7 +1392,6 @@
       let compressedDataUrl = '';
 
       try {
-        // Step 1: Compress image on client side (10MB -> ~120KB)
         compressedDataUrl = await compressImage(file, 1024, 1024, 0.7);
         const base64Data = compressedDataUrl.split(',')[1];
 
@@ -1387,10 +1400,9 @@
           mime_type: 'image/jpeg',
           image_base64: base64Data,
           date: todayDateStr,
-          notes: `Uploaded via Happy Home Hub v2.6 (${taskType})`
+          notes: `Uploaded via Happy Home Hub v2.7 (${taskType})`
         };
 
-        // Step 2: Send with 15-second AbortController timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -1398,7 +1410,7 @@
         let aiResult = null;
 
         try {
-          const res = await fetch(BACKEND_URL, {
+          const res = await fetch(getBackendUrl(), {
             method: 'POST',
             body: JSON.stringify(payload),
             signal: controller.signal
@@ -1413,14 +1425,37 @@
           console.warn("Backend sync slow or offline. Proceeding with local verification:", fetchErr);
         }
 
-        // Step 3: Handle completion (Online AI or Local verified fallback)
         if (snapBtn) {
           snapBtn.disabled = false;
           snapBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> <span>${dict[currentLang].btnRetake}</span>`;
           snapBtn.className = "bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition";
         }
 
-        // Auto-check task item
+        // Check if Gemini Vision Flagged the image as incorrect (e.g. empty cup)
+        if (uploadSucceeded && aiResult && aiResult.pass === false) {
+          let msg = aiResult.feedback_en || "Verification flagged: please retake a clear photo of the task.";
+          if (currentLang === 'tl' && aiResult.feedback_tl) msg = aiResult.feedback_tl;
+          if (currentLang === 'zh' && aiResult.feedback_zh) msg = aiResult.feedback_zh;
+
+          if (feedbackSpan) {
+            feedbackSpan.innerHTML = `<span class="text-rose-600 font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Retake Needed</span>`;
+          }
+
+          const vCard = document.getElementById(`verified-card-${blockKey}`);
+          if (vCard) {
+            vCard.classList.remove('hidden');
+            vCard.className = "bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-xs text-rose-900";
+            vCard.innerHTML = `
+              <p class="font-bold text-rose-800 flex items-center gap-1 mb-0.5">
+                <i class="fa-solid fa-triangle-exclamation"></i> AI Notice:
+              </p>
+              <p class="text-rose-700 font-medium">${msg}</p>
+            `;
+          }
+          return;
+        }
+
+        // PASS: Verified & Completed
         if (card) {
           const checkboxes = card.querySelectorAll('.task-check');
           checkboxes.forEach(cb => {
@@ -1439,7 +1474,7 @@
         const vCard = document.getElementById(`verified-card-${blockKey}`);
         if (vCard) {
           vCard.classList.remove('hidden');
-          const noteText = (aiResult && aiResult.feedback_en) ? aiResult.feedback_en : 'Photo saved and verified locally.';
+          const noteText = (aiResult && aiResult.feedback_en) ? aiResult.feedback_en : 'Photo saved and verified.';
           vCard.innerHTML = `
             <img src="${compressedDataUrl}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">
             <div class="flex-1 text-[11px]">
@@ -1455,7 +1490,6 @@
           feedbackSpan.innerHTML = `<span class="text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified at ${timeNowStr}</span>`;
         }
 
-        // Persist locally
         localStorage.setItem(`verified_${taskType}_${todayDateStr}`, 'true');
         localStorage.setItem(`thumb_${taskType}_${todayDateStr}`, compressedDataUrl);
         localStorage.setItem(`vtime_${taskType}_${todayDateStr}`, timeNowStr);
@@ -1516,7 +1550,7 @@
       updateProgress();
     }
 
-    // ==================== EMPLOYER PIN & FULL ADMIN CONTROLS ====================
+    // ==================== EMPLOYER PIN & FULL ADMIN CONTROLS (PIN: 2776) ====================
     function openPinModal() {
       if (isAdminUnlocked) { lockAdmin(); return; }
       document.getElementById('pin-modal').classList.remove('hidden');
@@ -1555,6 +1589,49 @@
       document.getElementById('admin-icon').classList.add('fa-lock');
       document.getElementById('admin-icon').classList.remove('fa-unlock-keyhole', 'text-amber-300');
       document.querySelectorAll('.admin-control-box').forEach(el => el.classList.add('hidden'));
+    }
+
+    // Backend Connection Settings Modal
+    function toggleBackendConfigModal() {
+      const modal = document.getElementById('backend-modal');
+      modal.classList.toggle('hidden');
+      document.getElementById('input-backend-url').value = getBackendUrl();
+    }
+
+    async function testAndSaveBackendUrl() {
+      const urlInput = document.getElementById('input-backend-url').value.trim();
+      const statusP = document.getElementById('backend-test-status');
+      const btn = document.getElementById('btn-test-backend');
+
+      if (!urlInput.startsWith('https://script.google.com/macros/s/')) {
+        statusP.innerHTML = `<span class="text-rose-500">URL must start with https://script.google.com/macros/s/</span>`;
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Testing Connection...`;
+
+      try {
+        const res = await fetch(`${urlInput}?action=status`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'ok') {
+            localStorage.setItem('custom_backend_url', urlInput);
+            statusP.innerHTML = `<span class="text-emerald-600 font-bold">✅ Success! Connected to Google Apps Script.</span>`;
+            setTimeout(() => {
+              toggleBackendConfigModal();
+              syncAllData();
+            }, 1200);
+            return;
+          }
+        }
+        statusP.innerHTML = `<span class="text-amber-600">Connected, but backend returned non-OK status.</span>`;
+      } catch (err) {
+        statusP.innerHTML = `<span class="text-rose-600">Connection failed. Check deployment access is set to 'Anyone'.</span>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-plug"></i> <span>Save & Test Connection</span>`;
+      }
     }
 
     // Task Modal Controls (Add & Edit)
@@ -1650,7 +1727,7 @@
       const saveBtn = document.getElementById('btn-save-task');
       const saveText = document.getElementById('btn-save-text');
       saveBtn.disabled = true;
-      saveText.innerText = "Translating & Saving...";
+      saveText.innerText = "Translating & Saving to Sheets...";
 
       const todayKey = new Date().toISOString().split('T')[0];
 
@@ -1666,7 +1743,7 @@
       };
 
       try {
-        const res = await fetch(BACKEND_URL, {
+        const res = await fetch(getBackendUrl(), {
           method: 'POST',
           body: JSON.stringify(payload)
         });
@@ -1718,39 +1795,37 @@
       const task = currentTodayAdhocTasks[adhocIdx];
       if (!task) return;
 
+      const todayKey = new Date().toISOString().split('T')[0];
+
+      // Remove immediately from local state
       currentTodayAdhocTasks.splice(adhocIdx, 1);
       localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
 
-      const todayKey = new Date().toISOString().split('T')[0];
-      fetch(BACKEND_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'delete_adhoc_task',
-          date: todayKey,
-          task_name: task.task_en || task.task_cn,
-          time_slot: task.time_slot
-        })
-      }).catch(e => console.warn("Delete request offline:", e));
-
       if (currentRoutineRows && currentRoutineRows.length > 0) {
         renderRoutine(currentRoutineRows);
       }
       updateProgress();
+
+      // Send delete command to Google Apps Script to delete row from Google Sheet
+      try {
+        await fetch(getBackendUrl(), {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'delete_adhoc_task',
+            date: todayKey,
+            task_name: task.task_en || task.task_cn,
+            time_slot: task.time_slot
+          })
+        });
+      } catch (e) {
+        console.warn("Delete request offline:", e);
+      }
     }
 
     function skipRoutineBlock(blockIdx) {
-      if (!confirm("Skip this routine task for today?")) return;
+      if (!confirm("Remove / Skip this routine task for today?")) return;
       const todayKey = new Date().toISOString().split('T')[0];
       localStorage.setItem(`skipped_block_${todayKey}_${blockIdx}`, 'true');
-      if (currentRoutineRows && currentRoutineRows.length > 0) {
-        renderRoutine(currentRoutineRows);
-      }
-      updateProgress();
-    }
-
-    function restoreRoutineBlock(blockIdx) {
-      const todayKey = new Date().toISOString().split('T')[0];
-      localStorage.removeItem(`skipped_block_${todayKey}_${blockIdx}`);
       if (currentRoutineRows && currentRoutineRows.length > 0) {
         renderRoutine(currentRoutineRows);
       }
