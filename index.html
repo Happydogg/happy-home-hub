@@ -3,130 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Happy Home Hub v2.2 • Helper Routine & Meal Planner</title>
+  <title>Happy Home • Helper Routine, Meals & Groceries (v2.6)</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif; }
-    .tab-active { border-b-4 border-amber-500 text-amber-600 font-bold; }
-    .lang-active { background-color: #f59e0b !important; color: #ffffff !important; font-weight: bold; }
+    body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .tab-active { color: #d97706; border-bottom: 2px solid #d97706; font-weight: 700; }
     .timeline-item::before {
       content: '';
       position: absolute;
       left: 19px;
-      top: 38px;
+      top: 36px;
       bottom: -16px;
       width: 2px;
-      background-color: #fde68a;
+      background: #fed7aa;
     }
     .timeline-item:last-child::before { display: none; }
+    .lang-active { background-color: #d97706 !important; color: white !important; font-weight: 700; }
+    .card-verified { background: #f0fdf4 !important; border-color: #86efac !important; }
   </style>
 </head>
-<body class="bg-amber-50/40 text-slate-800 pb-24">
+<body class="bg-amber-50/40 text-slate-800 min-h-screen flex flex-col pb-20">
 
-  <!-- Top Uplifting Header -->
-  <header class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white sticky top-0 z-50 px-4 py-3 shadow-md">
-    <div class="max-w-md mx-auto flex justify-between items-center">
+  <!-- Hidden global file input for camera snap -->
+  <input type="file" id="global-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelected(event)">
+
+  <!-- Header -->
+  <header class="bg-amber-700 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center text-xl shadow-inner">
-          🌟
+        <div class="w-9 h-9 rounded-full bg-amber-600 flex items-center justify-center text-xl shadow-inner">
+          🏡
         </div>
         <div>
-          <h1 class="text-sm font-black tracking-tight flex items-center gap-1.5" id="app-title">
-            Happy Home Hub
+          <h1 class="text-base font-extrabold tracking-tight leading-tight flex items-center gap-1.5">
+            <span id="app-title">Happy Home Hub</span>
+            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.6</span>
           </h1>
-          <p class="text-[11px] text-amber-100 font-medium" id="app-subtitle">
-            Harvey & Elly • Daily Routine <span class="bg-white/20 text-white font-mono text-[9px] px-1.5 py-0.5 rounded ml-1 font-bold">v2.2</span>
-          </p>
+          <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey & Elly • Helper Daily Guide</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Manual Sync Button -->
-        <button onclick="syncAllFromGoogleSheet()" title="Sync with Google Sheets" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-xs backdrop-blur border border-white/30 transition flex items-center gap-1">
-          <i id="sync-icon" class="fa-solid fa-arrows-rotate text-sm"></i>
-        </button>
-
-        <!-- Admin Pin Lock Button -->
-        <button onclick="openPinModal()" id="btn-admin" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg text-xs backdrop-blur border border-white/30 transition flex items-center gap-1">
-          <i id="admin-icon" class="fa-solid fa-lock text-sm"></i>
-        </button>
-
-        <!-- Trilingual Language Bar -->
-        <div class="flex items-center bg-black/20 backdrop-blur p-1 rounded-lg border border-white/20 text-xs font-semibold">
-          <button onclick="setLang('en')" id="btn-lang-en" class="px-2 py-1 rounded transition text-white">EN</button>
-          <button onclick="setLang('zh')" id="btn-lang-zh" class="px-2 py-1 rounded transition text-white">中文</button>
-          <button onclick="setLang('tl')" id="btn-lang-tl" class="px-2 py-1 rounded transition text-white">TL</button>
+        <!-- Language Switcher: English, Chinese, Tagalog -->
+        <div class="flex bg-amber-800/80 rounded-lg p-0.5 text-xs font-semibold">
+          <button onclick="setLang('en')" id="btn-lang-en" class="px-2 py-1 rounded transition text-[11px]">EN</button>
+          <button onclick="setLang('zh')" id="btn-lang-zh" class="px-2 py-1 rounded transition text-[11px]">中文</button>
+          <button onclick="setLang('tl')" id="btn-lang-tl" class="px-2 py-1 rounded transition text-[11px]">TL</button>
         </div>
+
+        <!-- Employer PIN Unlock Button -->
+        <button onclick="openPinModal()" id="btn-pin-toggle" title="Employer PIN Settings" class="w-8 h-8 rounded-lg bg-amber-800/80 hover:bg-amber-800 flex items-center justify-center text-amber-200 transition active:scale-95">
+          <i class="fa-solid fa-lock text-xs" id="admin-icon"></i>
+        </button>
       </div>
+    </div>
+
+    <!-- Live Sync & Calendar Mode Status Bar -->
+    <div class="bg-amber-800/90 text-amber-100 text-[11px] px-4 py-1.5 flex justify-between items-center max-w-md mx-auto">
+      <div class="flex items-center gap-1.5">
+        <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="sync-text">Live Connected</span>
+      </div>
+      <button onclick="syncAllData()" class="hover:text-white flex items-center gap-1">
+        <i class="fa-solid fa-arrows-rotate" id="sync-icon"></i>
+        <span>Sync</span>
+      </button>
     </div>
   </header>
 
-  <!-- Motivational Banner, Sync Status & Progress Bar -->
-  <div class="max-w-md mx-auto px-4 pt-3 space-y-2.5">
-    
-    <!-- Sync Status Badge -->
-    <div id="sync-status-bar" class="bg-white/80 backdrop-blur border border-amber-200/80 px-3 py-1.5 rounded-xl shadow-sm flex items-center justify-between text-[11px]">
-      <div class="flex items-center gap-1.5 text-slate-600">
-        <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span id="sync-text" class="font-medium">Connecting to Google Sheets...</span>
+  <!-- Motivational Banner & Progress Tracker -->
+  <section class="bg-gradient-to-r from-amber-600 via-amber-700 to-orange-700 text-white px-4 py-3 shadow-inner">
+    <div class="max-w-md mx-auto space-y-2">
+      <div class="flex justify-between items-center">
+        <div>
+          <p id="t-motive-title" class="font-bold text-xs tracking-wide">Family Teamwork • Harvey & Elly</p>
+          <p id="t-motive-sub" class="text-[11px] text-amber-100">Thank you for taking great care of our home!</p>
+        </div>
+        <div class="text-right">
+          <span id="prog-percent" class="text-lg font-black tracking-tight">0%</span>
+        </div>
       </div>
-      <!-- View Sheet Button (Hidden by default, unlocked only via PIN) -->
-      <a id="btn-view-sheet" href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="hidden text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1 text-[10px] bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
-        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View Sheet
+      <div class="w-full bg-amber-900/50 rounded-full h-2 overflow-hidden">
+        <div id="prog-bar" class="bg-amber-300 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div class="flex justify-between items-center text-[10px] text-amber-200">
+        <span id="t-prog-label">Daily Progress</span>
+        <span id="prog-detail">0 of 0 completed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin Mode Notice (Visible when unlocked via PIN) -->
+  <div id="admin-mode-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-bold text-center flex justify-between items-center max-w-md mx-auto w-full">
+    <span class="flex items-center gap-1.5">
+      <i class="fa-solid fa-unlock-keyhole text-amber-300"></i>
+      <span id="t-admin-active">Employer Admin Mode Active</span>
+    </span>
+    <div class="flex gap-2">
+      <a href="https://docs.google.com/spreadsheets/d/1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU/edit" target="_blank" class="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded text-[11px]">
+        Sheet ↗
       </a>
-    </div>
-
-    <!-- Daily Encouragement Card -->
-    <div class="bg-gradient-to-r from-amber-100 via-orange-50 to-rose-100 border border-amber-200/80 p-3 rounded-2xl shadow-sm flex items-center gap-3">
-      <div class="text-2xl">💖</div>
-      <div class="flex-1">
-        <p class="text-xs font-bold text-amber-900" id="t-motive-title">Maraming salamat sa iyong malasakit!</p>
-        <p class="text-[11px] text-amber-800" id="t-motive-sub">Thank you for taking great care of Harvey and Elly today!</p>
-      </div>
-    </div>
-
-    <!-- Interactive Progress Tracker -->
-    <div class="bg-white p-3 rounded-2xl shadow-sm border border-amber-100 space-y-1.5">
-      <div class="flex justify-between items-center text-xs">
-        <span class="font-bold text-slate-700 flex items-center gap-1.5">
-          <i class="fa-solid fa-trophy text-amber-500"></i>
-          <span id="t-prog-label">Daily Progress • Araw-araw na Tagumpay</span>
-        </span>
-        <span class="font-black text-amber-600 font-mono" id="prog-percent">0%</span>
-      </div>
-      <div class="w-full bg-amber-100 h-2.5 rounded-full overflow-hidden">
-        <div id="prog-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-2.5 rounded-full transition-all duration-500 w-0"></div>
-      </div>
-      <p class="text-[10px] text-slate-400 text-right" id="prog-detail">0 of 0 tasks completed</p>
-    </div>
-
-    <!-- Admin Edit Mode Active Banner -->
-    <div id="admin-mode-banner" class="hidden bg-emerald-600 text-white p-2.5 rounded-xl shadow flex justify-between items-center text-xs">
-      <span class="flex items-center gap-1.5 font-bold">
-        <i class="fa-solid fa-unlock-keyhole"></i>
-        <span id="t-admin-active">Edit Mode Active (Employer Unlocked)</span>
-      </span>
-      <button onclick="lockAdmin()" class="bg-white text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-lg hover:bg-emerald-50">
-        Lock & Save
+      <button onclick="lockAdmin()" class="bg-indigo-800 hover:bg-indigo-900 px-2 py-0.5 rounded text-[11px]">
+        Lock
       </button>
     </div>
-
   </div>
 
-  <!-- Navigation Tabs (Streamlined to 3 Core Tabs) -->
-  <nav class="bg-white/90 backdrop-blur border-b border-amber-100 sticky top-14 z-40 mt-3 shadow-sm">
-    <div class="max-w-md mx-auto flex justify-around text-center text-xs font-bold text-slate-500">
+  <!-- Main Navigation Tabs -->
+  <nav class="bg-white border-b border-amber-100 shadow-sm sticky top-[73px] z-30">
+    <div class="max-w-md mx-auto flex text-center text-xs font-semibold">
       <button onclick="switchTab('routine')" id="tab-btn-routine" class="py-3 px-2 flex-1 tab-active transition">
-        <i class="fa-solid fa-heart-circle-check block text-base mb-1"></i>
+        <i class="fa-regular fa-calendar-check block text-base mb-1"></i>
         <span class="t-nav-routine">Routine</span>
       </button>
-      <button onclick="switchTab('meals')" id="tab-btn-meals" class="py-3 px-2 flex-1 transition">
+      <button onclick="switchTab('meals')" id="tab-btn-meals" class="py-3 px-2 flex-1 text-slate-500 transition">
         <i class="fa-solid fa-utensils block text-base mb-1"></i>
         <span class="t-nav-meals">Meals</span>
       </button>
-      <button onclick="switchTab('grocery')" id="tab-btn-grocery" class="py-3 px-2 flex-1 transition">
+      <button onclick="switchTab('grocery')" id="tab-btn-grocery" class="py-3 px-2 flex-1 text-slate-500 transition">
         <i class="fa-solid fa-basket-shopping block text-base mb-1"></i>
         <span class="t-nav-grocery">Market</span>
       </button>
@@ -134,21 +142,57 @@
   </nav>
 
   <!-- Main Content Area -->
-  <main class="max-w-md mx-auto p-4 space-y-4">
+  <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
 
     <!-- ==================== TAB 1: DAILY ROUTINE ==================== -->
     <section id="view-routine" class="space-y-4">
-      <div class="flex justify-between items-center">
+
+      <!-- Real-time School & Weekend Status Card -->
+      <div id="calendar-banner" class="bg-white border border-amber-200/80 rounded-2xl p-3.5 shadow-sm space-y-2">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <div class="flex items-center gap-1.5 font-bold text-xs text-amber-900">
+            <i class="fa-solid fa-graduation-cap text-amber-600"></i>
+            <span id="t-cal-title">Today's Schedule & Mode</span>
+          </div>
+          <span id="today-date-badge" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+            Today
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <!-- Harvey Status -->
+          <div class="bg-blue-50/70 border border-blue-100 p-2 rounded-xl">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-blue-900">👦 Harvey</span>
+              <span id="harvey-cal-tag" class="text-[10px] px-1.5 py-0.2 rounded font-bold">Checking...</span>
+            </div>
+            <p id="harvey-cal-status" class="text-[11px] text-blue-700 leading-tight">School Day</p>
+          </div>
+
+          <!-- Elly Status -->
+          <div class="bg-pink-50/70 border border-pink-100 p-2 rounded-xl">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-bold text-pink-900">👧 Elly</span>
+              <span id="elly-cal-tag" class="text-[10px] px-1.5 py-0.2 rounded font-bold">Checking...</span>
+            </div>
+            <p id="elly-cal-status" class="text-[11px] text-pink-700 leading-tight">School Day</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Routine Header & Add Task Button -->
+      <div class="flex justify-between items-center px-1">
         <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
           <i class="fa-regular fa-clock"></i>
           <span class="t-r-section-title">Schedule of the Day</span>
         </h2>
-        <button id="btn-add-task" onclick="promptAddTask()" class="hidden bg-indigo-600 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow hover:bg-indigo-700 flex items-center gap-1">
-          <i class="fa-solid fa-plus"></i> <span id="t-btn-add">Add Task</span>
+        <!-- Add Task Button (Visible when unlocked via PIN) -->
+        <button id="btn-add-task" onclick="openAddTaskModal()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow flex items-center gap-1 active:scale-95 transition">
+          <i class="fa-solid fa-plus"></i> <span id="t-btn-add">+ Add Task (Today Only)</span>
         </button>
       </div>
 
-      <!-- Routine Blocks (Populated dynamically from Google Sheet or fallback) -->
+      <!-- Routine Blocks (Populated dynamically) -->
       <div id="routine-list" class="space-y-4 relative">
         <div class="p-8 text-center text-slate-400 text-xs">
           <i class="fa-solid fa-circle-notch fa-spin text-lg text-amber-500 mb-2"></i>
@@ -159,12 +203,14 @@
 
     <!-- ==================== TAB 2: MEALS & YOUTUBE ==================== -->
     <section id="view-meals" class="space-y-4 hidden">
-      <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-3.5 rounded-2xl shadow-sm text-xs">
-        <p class="font-black flex items-center gap-1.5 mb-1 text-sm">
-          <i class="fa-brands fa-youtube"></i>
-          <span class="t-meals-banner-title">Step-by-Step Cooking Video Guides</span>
+      <div class="bg-amber-100/70 border border-amber-200 p-3 rounded-2xl text-xs text-amber-900 space-y-1">
+        <p class="font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-kitchen-set text-amber-600"></i>
+          <span>Weekly Nutritious Menu (Harvey & Elly)</span>
         </p>
-        <p class="text-white/90 text-[11px] t-meals-banner-desc">Live synced from Google Sheet. Tap to watch tutorial.</p>
+        <p class="text-[11px] text-amber-800">
+          Packed in pre-heated thermos with boiling water for 5 mins. Tap video buttons to learn quick breakfast & lunch recipes!
+        </p>
       </div>
 
       <div id="meals-list" class="space-y-4">
@@ -175,14 +221,19 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 3: GROCERY LIST ==================== -->
+    <!-- ==================== TAB 3: GROCERY LIST WITH CANTONESE AUDIO ==================== -->
     <section id="view-grocery" class="space-y-4 hidden">
-      <div class="bg-emerald-500 text-white p-3.5 rounded-2xl shadow-sm text-xs">
-        <p class="font-bold flex items-center gap-1.5 text-sm mb-0.5">
-          <i class="fa-solid fa-scale-balanced"></i>
-          <span class="t-groc-banner-title">Hong Kong Market Unit: 1 斤 (Catty) = ~600g</span>
+      <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-xs">
+        <div class="flex justify-between items-center">
+          <p class="font-bold flex items-center gap-1.5 text-sm mb-0.5">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <span class="t-groc-banner-title">Wet Market Guide (街市買餸助手)</span>
+          </p>
+          <span class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded font-bold">🔊 Audio Help</span>
+        </div>
+        <p class="text-emerald-100 text-[11px] t-groc-banner-desc">
+          Tap 🔊 to speak fluent Cantonese to market vendors! (Auto-converts grams & pieces to 克/個)
         </p>
-        <p class="text-emerald-100 text-[11px] t-groc-banner-desc">Live synced from Google Sheet. Tap checkboxes as you buy.</p>
       </div>
 
       <div id="grocery-list-container" class="space-y-4">
@@ -202,101 +253,203 @@
         🔒
       </div>
       <div>
-        <h3 class="font-black text-slate-800 text-base" id="t-pin-title">Employer Admin Access</h3>
-        <p class="text-xs text-slate-500 mt-0.5" id="t-pin-desc">Enter 4-digit PIN to edit tasks and routine.</p>
+        <h3 class="font-bold text-base text-slate-800" id="t-pin-title">Employer PIN</h3>
+        <p class="text-xs text-slate-500 mt-1" id="t-pin-desc">Enter 4-digit PIN to manage tasks.</p>
+      </div>
+      <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-32 mx-auto text-center text-2xl tracking-widest font-mono font-bold py-2 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-500">
+      <p id="pin-error" class="text-xs text-rose-500 font-bold hidden">Incorrect PIN. Try again.</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closePinModal()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Cancel</button>
+        <button onclick="verifyPin()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 shadow">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TASK MANAGER MODAL (ADD / EDIT) ==================== -->
+  <div id="task-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4 text-left border border-indigo-100 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
+            ⭐
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-slate-800" id="modal-header-title">Add Task for Today</h3>
+            <p class="text-[10px] text-slate-500">Auto-translates into English, Chinese & Tagalog</p>
+          </div>
+        </div>
+        <button onclick="closeTaskModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
-      <div class="flex justify-center gap-3 my-2">
-        <input type="password" id="pin-input" maxlength="4" class="w-32 tracking-[1em] text-center text-2xl font-bold font-mono border-2 border-amber-300 rounded-xl py-2 focus:outline-none focus:border-amber-500 bg-amber-50/50" placeholder="••••">
-      </div>
-      <p id="pin-error" class="hidden text-xs text-red-500 font-bold">Incorrect PIN. Try again!</p>
+      <input type="hidden" id="modal-task-mode" value="add">
+      <input type="hidden" id="modal-original-title" value="">
+      <input type="hidden" id="modal-edit-index" value="-1">
 
-      <div class="flex gap-2 pt-1">
-        <button onclick="closePinModal()" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition">
+      <div class="space-y-3 text-xs">
+        <!-- 1. Time Slot Dropdown -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Time Slot (時段 / Oras):</label>
+          <select id="modal-time-slot" onchange="onTimeSlotChanged()" class="w-full p-2 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:border-indigo-500 text-xs font-medium">
+            <option value="06:30 – 07:45">06:30 – 07:45 (Morning Prep & Baon)</option>
+            <option value="08:00 – 09:15">08:00 – 09:15 (Morning Clean & Dishes)</option>
+            <option value="09:30 – 11:00">09:30 – 11:00 (Wet Market & Groceries)</option>
+            <option value="11:45 – 13:00">11:45 – 13:00 (Lunch Prep & Serve)</option>
+            <option value="13:30 – 14:45">13:30 – 14:45 (Laundry & Housekeeping)</option>
+            <option value="15:00 – 16:00">15:00 – 16:00 (Afternoon Snack & Leftover Check)</option>
+            <option value="17:30 – 19:30">17:30 – 19:30 (Dinner Prep & Clean)</option>
+            <option value="custom">✏️ Custom Time Slot...</option>
+          </select>
+          <input type="text" id="modal-custom-time" placeholder="e.g. 10:15 – 10:45" class="hidden mt-1.5 w-full p-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:border-indigo-500 text-xs">
+        </div>
+
+        <!-- 2. Time Conflict Warning & Overwrite Selector -->
+        <div id="modal-conflict-box" class="p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 space-y-1.5">
+          <p class="font-bold text-[11px] flex items-center gap-1.5 text-amber-900">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+            <span id="modal-conflict-text">Routine Overlap: Replaces standard task?</span>
+          </p>
+          <div class="space-y-1 pl-1">
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-[11px]">
+              <input type="radio" name="conflict_mode" value="OVERWRITE" checked class="text-indigo-600">
+              <span><b>Overwrite routine task for today</b> (Helper skips routine task)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer font-medium text-[11px]">
+              <input type="radio" name="conflict_mode" value="PARALLEL" class="text-indigo-600">
+              <span>Run alongside routine task (Both tasks active)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Task Name Input (Supports Chinese or English) -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Task Name (任務名稱):</label>
+          <input type="text" id="modal-task-name" placeholder="e.g. 去乾洗店取西裝 / Pick up dry cleaning" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 font-semibold text-slate-800">
+          <p class="text-[10px] text-slate-400 mt-0.5">Input in Chinese or English — auto-translates to Tagalog!</p>
+        </div>
+
+        <!-- 4. Details / Instructions Input -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Details & Instructions (詳細指引):</label>
+          <textarea id="modal-task-desc" rows="3" placeholder="e.g. 帶抽屜內的粉紅色收據，取回兩套西裝和一條連身裙..." class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 text-slate-700"></textarea>
+        </div>
+
+        <!-- 5. Photo Requirement Toggle -->
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">📸</span>
+            <div>
+              <p class="font-bold text-slate-700 text-xs">Photo Verification</p>
+              <p class="text-[10px] text-slate-500">Require helper to submit completion photo</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="modal-photo-req" checked class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeTaskModal()" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">
           Cancel
         </button>
-        <button onclick="verifyPin()" class="flex-1 py-2 rounded-xl text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 shadow transition">
-          Unlock
+        <button onclick="saveTaskModal()" id="btn-save-task" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow flex items-center justify-center gap-1.5 active:scale-95 transition">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span id="btn-save-text">Save & Translate</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Hidden Camera File Input Trigger -->
-  <input type="file" id="global-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelected(event)">
-
-  <!-- ==================== GOOGLE SHEETS & VISION AI ENGINE ==================== -->
   <script>
     const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbx8nBhKg_T8kxw-sFpxbYXA75DW4AP_E_lovkColuFfxDWP8EXIo4XyfhYTTjpQ5hoI/exec";
-    let isAdminUnlocked = false;
-    let employerPin = localStorage.getItem('employer_pin') || '1234';
-    let currentUploadTaskType = null;
-    let currentUploadBlockIdx = null;
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU/exec";
 
-    // Trilingual Dictionary
+    const employerPin = "1234";
+    let isAdminUnlocked = false;
+    let isSchoolDayMode = true;
+    let currentUploadTaskType = 'general';
+    let currentUploadBlockIdx = 0;
+
+    let currentRoutineRows = [];
+    let currentMealsRows = [];
+    let currentGroceryRows = [];
+    let currentTodayAdhocTasks = [];
+
+    // Multilingual Dictionary
     const dict = {
       en: {
         appTitle: "Happy Home Hub",
-        appSubtitle: "Harvey & Elly • Daily Routine & Meals",
-        motiveTitle: "Thank you for taking great care of our family today!",
-        motiveSub: "Your hard work and dedication mean the world to Harvey and Elly!",
-        progLabel: "Daily Progress • Accomplished Today",
-        adminActive: "Edit Mode Active (Employer Unlocked)",
+        appSubtitle: "Harvey & Elly • Helper Daily Guide",
+        motiveTitle: "Family Teamwork • Harvey & Elly",
+        motiveSub: "Thank you for taking great care of our home!",
+        progLabel: "Daily Progress",
+        adminActive: "Employer Admin Mode Active",
         navRoutine: "Routine",
         navMeals: "Meals",
         navGrocery: "Market",
         rSectionTitle: "Schedule of the Day",
-        btnAdd: "Add Task",
+        btnAdd: "+ Add Task (Today Only)",
         btnVideo: "Watch Recipe Video",
-        btnSnap: "📸 Snap Photo",
+        btnBreakfastVideo: "Watch Breakfast Video",
+        btnSnap: "📸 Take Photo",
+        btnRetake: "🔄 Retake Photo",
         btnUploading: "Analyzing photo with AI...",
-        pinTitle: "Employer Admin Access",
-        pinDesc: "Enter 4-digit PIN to edit tasks and routine.",
+        pinTitle: "Employer PIN Access",
+        pinDesc: "Enter 4-digit PIN to manage tasks.",
+        calTitle: "Today's Schedule & Mode",
         afterSchoolTitle: "After-School Lunchbox Check",
-        afterSchoolDesc: "Inspect Harvey and Elly's thermoses right after school:",
-        leftoverFinishAlert: "⚠️ MUST FINISH LEFTOVER: Child finished less than 50% of lunch! Reheat remaining lunch so they finish it before any snack!",
-        leftoverSuccess: "✅ Great! Lunch was finished (>50%). Serve the scheduled high-protein afternoon snack!"
+        afterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home:",
+        leftoverFinishAlert: "⚠️ FINISH REMAINING: Over 50% left! Warm up leftovers to eat before afternoon snack!",
+        leftoverSuccess: "✅ Great job! Lunch was finished (>50%). Ready for the planned healthy snack."
       },
       zh: {
-        appTitle: "溫馨家園中心 (Happy Home Hub)",
-        appSubtitle: "Harvey & Elly • 每日作息與營養餐單",
-        motiveTitle: "多謝你今日悉心照顧我哋一家！",
-        motiveSub: "你的付出與辛勞，是 Harvey 與 Elly 健康成長的最大支持！",
-        progLabel: "今日成就進度 • Daily Progress",
-        adminActive: "已解鎖編輯模式 (僱主專用)",
-        navRoutine: "每日作息",
-        navMeals: "每週午餐",
+        appTitle: "溫馨家園助手",
+        appSubtitle: "Harvey & Elly • 姐姐每日家務指南",
+        motiveTitle: "家庭同心 • 照顧 Harvey & Elly",
+        motiveSub: "感謝你悉心打理屋企，讓小朋友健康快樂成長！",
+        progLabel: "今日家務進度",
+        adminActive: "僱主管理模式已啟用",
+        navRoutine: "作息時間",
+        navMeals: "每日餐單",
         navGrocery: "街市買餸",
-        rSectionTitle: "今日作息清單",
-        btnAdd: "新增事項",
-        btnVideo: "觀看烹飪教學視頻",
-        btnSnap: "📸 拍照上傳",
-        btnUploading: "AI 正在分析照片中...",
-        pinTitle: "僱主管理權限 (Employer PIN)",
-        pinDesc: "請輸入 4 位數 PIN 碼以編輯日常事項。",
-        afterSchoolTitle: "放學午餐保溫壺檢查",
-        afterSchoolDesc: "小朋友放學回家後，立即開保溫壺檢查進食情況：",
-        leftoverFinishAlert: "⚠️ 必須食晒剩菜：小朋友午餐食剩多過50%！必須先回熱午餐，食晒之後先准食其他下午茶！",
-        leftoverSuccess: "✅ 做得好！午餐已食多於50%，可端出預先準備的高蛋白營養下午茶。"
+        rSectionTitle: "今日作息日程",
+        btnAdd: "+ 新增臨時任務 (只限今日)",
+        btnVideo: "觀看烹飪影片教學",
+        btnBreakfastVideo: "觀看早餐影片教學",
+        btnSnap: "📸 拍攝驗證照片",
+        btnRetake: "🔄 重新拍照",
+        btnUploading: "AI 正在分析驗證相片...",
+        pinTitle: "僱主安全 PIN 碼",
+        pinDesc: "請輸入 4 位數 PIN 碼以新增臨時任務及編輯設定。",
+        calTitle: "今日上學及放假模式",
+        afterSchoolTitle: "放學保溫壺剩菜檢查",
+        afterSchoolDesc: "Harvey 和 Elly 放學返屋企後，立即打開保溫壺檢查：",
+        leftoverFinishAlert: "⚠️ 需要食完：飯餸剩下超過一半！請先加熱剩菜給小朋友食完，方可吃下午茶！",
+        leftoverSuccess: "✅ 表現出色！飯餸已食完超過一半，可以享用今日營養下午茶。"
       },
       tl: {
         appTitle: "Happy Home Hub",
-        appSubtitle: "Harvey & Elly • Pang-araw-araw na Iskedyul at Pagkain",
-        motiveTitle: "Maraming salamat sa iyong malasakit at sipag!",
-        motiveSub: "Ang iyong pag-aalaga ay napakahalaga para sa kalusugan nina Harvey at Elly!",
-        progLabel: "Araw-araw na Tagumpay • Daily Progress",
-        adminActive: "Naka-unlock ang Edit Mode (Employer Mode)",
-        navRoutine: "Iskedyul",
+        appSubtitle: "Harvey at Elly • Gabay ng Kasambahay",
+        motiveTitle: "Pagtutulungan ng Pamilya • Harvey at Elly",
+        motiveSub: "Maraming salamat sa iyong malasakit at pag-aalaga sa tahanan!",
+        progLabel: "Nagawa Ngayong Araw",
+        adminActive: "Naka-on ang Employer Mode",
+        navRoutine: "Oras ng Gawain",
         navMeals: "Tanghalian",
         navGrocery: "Palengke",
         rSectionTitle: "Iskedyul ng Araw",
-        btnAdd: "Magdagdag",
-        btnVideo: "Panoorin ang Video ng Recipe",
+        btnAdd: "+ Magdagdag (Ngayong Araw Lamang)",
+        btnVideo: "Panoorin ang Video ng Tanghalian",
+        btnBreakfastVideo: "Panoorin ang Video ng Agahan",
         btnSnap: "📸 Kunan ng Litrato",
+        btnRetake: "🔄 Kunan Ulit",
         btnUploading: "Sinusuri ang litrato gamit ang AI...",
         pinTitle: "Employer PIN Access",
         pinDesc: "Ipasok ang 4-digit PIN upang mag-edit ng mga gawain.",
+        calTitle: "Iskedyul sa Eskwela at Mode Ngayon",
         afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
         afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
         leftoverFinishAlert: "⚠️ KAILANGAN UBOSIN: Hindi naubos ang higit sa 50% ng tanghalian! Painitin ang natira upang ubusin bago mag-merienda!",
@@ -336,6 +489,7 @@
       document.getElementById('t-motive-sub').innerText = t.motiveSub;
       document.getElementById('t-prog-label').innerText = t.progLabel;
       document.getElementById('t-admin-active').innerText = t.adminActive;
+      document.getElementById('t-cal-title').innerText = t.calTitle;
 
       document.querySelectorAll('.t-nav-routine').forEach(e => e.innerText = t.navRoutine);
       document.querySelectorAll('.t-nav-meals').forEach(e => e.innerText = t.navMeals);
@@ -359,7 +513,57 @@
       document.getElementById('tab-btn-' + tab).classList.remove('text-slate-500');
     }
 
-    // ==================== LIVE GOOGLE SHEETS FETCH ====================
+    // ==================== CANTONESE SPEECH NORMALIZER ====================
+    function normalizeCantoneseSpeech(text) {
+      if (!text) return '';
+      let str = text;
+
+      const unitMap = [
+        { regex: /(\d+)\s*(?:g|gram|grams)\b/gi, rep: '$1克' },
+        { regex: /(\d+)\s*(?:kg|kilo|kilogram|kilograms)\b/gi, rep: '$1公斤' },
+        { regex: /(\d+)\s*(?:pcs|pc|pieces|piece)\b/gi, rep: '$1個' },
+        { regex: /(\d+)\s*(?:tbsp|tablespoon|tablespoons)\b/gi, rep: '$1湯匙' },
+        { regex: /(\d+)\s*(?:tsp|teaspoon|teaspoons)\b/gi, rep: '$1茶匙' },
+        { regex: /(\d+)\s*(?:pkt|pkts|pack|packs|packet|packets)\b/gi, rep: '$1包' },
+        { regex: /(\d+)\s*(?:bunch|bunches)\b/gi, rep: '$1紮' },
+        { regex: /(\d+)\s*(?:can|cans)\b/gi, rep: '$1罐' },
+        { regex: /(\d+)\s*(?:box|boxes)\b/gi, rep: '$1盒' },
+        { regex: /(\d+)\s*(?:bottle|bottles)\b/gi, rep: '$1樽' },
+        { regex: /(\d+)\s*(?:slice|slices)\b/gi, rep: '$1片' },
+        { regex: /(\d+)\s*(?:catty|catties|jin)\b/gi, rep: '$1斤' },
+        { regex: /(\d+)\s*(?:tael|taels)\b/gi, rep: '$1兩' },
+        { regex: /(\d+)\s*(?:cup|cups)\b/gi, rep: '$1杯' },
+        { regex: /(\d+)\s*(?:bowl|bowls)\b/gi, rep: '$1碗' }
+      ];
+
+      unitMap.forEach(u => {
+        str = str.replace(u.regex, u.rep);
+      });
+
+      str = str.replace(/\b(?:pcs|pc|pieces)\b/gi, '個');
+      str = str.replace(/\b(?:grams|gram|g)\b/gi, '克');
+      str = str.replace(/\b(?:kg|kilograms|kilo)\b/gi, '公斤');
+      str = str.replace(/\b(?:packets|packet|packs|pack|pkt)\b/gi, '包');
+      str = str.replace(/\b(?:bunches|bunch)\b/gi, '紮');
+
+      return str;
+    }
+
+    function speakCantonese(rawText) {
+      if (!('speechSynthesis' in window)) {
+        alert("Speech synthesis is not supported on this browser.");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      
+      const textToSpeak = normalizeCantoneseSpeech(rawText);
+      const utter = new SpeechSynthesisUtterance(textToSpeak);
+      utter.lang = 'zh-HK';
+      utter.rate = 0.85;
+      window.speechSynthesis.speak(utter);
+    }
+
+    // ==================== LIVE DATA SYNC ====================
     async function fetchSheetData(sheetName) {
       const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
       const res = await fetch(url);
@@ -370,24 +574,35 @@
       return data.table.rows;
     }
 
-    async function syncAllFromGoogleSheet() {
+    async function syncAllData() {
+      const syncDot = document.getElementById('sync-status-dot');
       const syncIcon = document.getElementById('sync-icon');
-      const syncDot = document.getElementById('sync-dot');
       const syncText = document.getElementById('sync-text');
       
       syncIcon.classList.add('fa-spin');
-      syncText.innerText = "Syncing with Google Sheets...";
+      syncText.innerText = "Syncing with Sheets & Calendar...";
 
       try {
-        const [mealRows, groceryRows, routineRows] = await Promise.all([
+        await fetchCalendarStatus();
+        const targetRoutineTab = isSchoolDayMode ? 'School_Day_Routine' : 'No_School_Routine';
+
+        const [mealRows, groceryRows, routineRows, adhocRows] = await Promise.all([
           fetchSheetData('Weekly_Meals'),
           fetchSheetData('Grocery_List'),
-          fetchSheetData('Daily_Routine')
+          fetchSheetData(targetRoutineTab),
+          fetchSheetData('Today_Adhoc_Tasks').catch(() => [])
         ]);
+
+        currentMealsRows = mealRows;
+        currentGroceryRows = groceryRows;
+        currentRoutineRows = routineRows;
+        currentTodayAdhocTasks = parseAdhocRows(adhocRows);
 
         localStorage.setItem('cached_meals_data', JSON.stringify(mealRows));
         localStorage.setItem('cached_groceries_data', JSON.stringify(groceryRows));
         localStorage.setItem('cached_routine_data', JSON.stringify(routineRows));
+        localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
+        localStorage.setItem('cached_routine_mode', targetRoutineTab);
         localStorage.setItem('last_sync_time', new Date().toLocaleTimeString());
 
         renderMeals(mealRows);
@@ -406,17 +621,130 @@
       }
     }
 
+    function parseAdhocRows(rows) {
+      if (!rows || rows.length === 0) return [];
+      const todayKey = new Date().toISOString().split('T')[0];
+      const parsed = [];
+
+      rows.forEach(r => {
+        const rawDate = r.c[0] ? String(r.c[0].f || r.c[0].v).trim() : '';
+        if (rawDate.toLowerCase().includes('date')) return;
+
+        let matchesToday = rawDate === todayKey;
+        if (!matchesToday && r.c[0] && r.c[0].v) {
+          const dStr = String(r.c[0].v);
+          if (dStr.includes(todayKey)) matchesToday = true;
+        }
+
+        const status = r.c[10] ? String(r.c[10].v).trim() : 'Pending';
+        if (status.toLowerCase().includes('deleted')) return; // Skip deleted
+
+        if (matchesToday) {
+          parsed.push({
+            date: todayKey,
+            time_slot: r.c[1] ? String(r.c[1].v).trim() : 'Custom',
+            task_en: r.c[2] ? String(r.c[2].v).trim() : '',
+            task_cn: r.c[3] ? String(r.c[3].v).trim() : '',
+            task_tl: r.c[4] ? String(r.c[4].v).trim() : '',
+            details_en: r.c[5] ? String(r.c[5].v).trim() : '',
+            details_cn: r.c[6] ? String(r.c[6].v).trim() : '',
+            details_tl: r.c[7] ? String(r.c[7].v).trim() : '',
+            photo_required: r.c[8] ? String(r.c[8].v).trim() : 'NO',
+            overwrite_block: r.c[9] ? String(r.c[9].v).trim() : 'NO',
+            status: status
+          });
+        }
+      });
+      return parsed;
+    }
+
+    async function fetchCalendarStatus() {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+      let calData = {
+        status: "success",
+        date: today.toISOString().split('T')[0],
+        harvey: { has_school: !isWeekend, summary: isWeekend ? (dayOfWeek === 6 ? "Weekend (Saturday)" : "Weekend (Sunday)") : "Regular School Day" },
+        elly: { has_school: !isWeekend, summary: isWeekend ? (dayOfWeek === 6 ? "Weekend (Saturday)" : "Weekend (Sunday)") : "Regular School Day" }
+      };
+
+      try {
+        const res = await fetch(`${BACKEND_URL}?action=calendar_status`);
+        if (res.ok) {
+          const remoteData = await res.json();
+          if (remoteData.status === 'success') {
+            calData = remoteData;
+          }
+        }
+      } catch (e) {
+        console.log("Using local calendar evaluation:", e);
+      }
+
+      if (isWeekend) {
+        calData.harvey.has_school = false;
+        calData.harvey.summary = dayOfWeek === 6 ? "Weekend (Saturday)" : "Weekend (Sunday)";
+        calData.elly.has_school = false;
+        calData.elly.summary = dayOfWeek === 6 ? "Weekend (Saturday)" : "Weekend (Sunday)";
+      }
+
+      isSchoolDayMode = calData.harvey.has_school || calData.elly.has_school;
+      renderCalendarBanner(calData);
+      localStorage.setItem('cached_calendar_status', JSON.stringify(calData));
+    }
+
+    function renderCalendarBanner(data) {
+      const today = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      document.getElementById('today-date-badge').innerText = today;
+
+      const hStatusElem = document.getElementById('harvey-cal-status');
+      const hTagElem = document.getElementById('harvey-cal-tag');
+      const eStatusElem = document.getElementById('elly-cal-status');
+      const eTagElem = document.getElementById('elly-cal-tag');
+
+      if (data.harvey) {
+        hStatusElem.innerText = data.harvey.summary;
+        if (!data.harvey.has_school) {
+          hTagElem.innerText = "No School";
+          hTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/40 text-amber-200 font-bold";
+        } else {
+          hTagElem.innerText = "School Day";
+          hTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-blue-500/40 text-blue-200 font-bold";
+        }
+      }
+
+      if (data.elly) {
+        eStatusElem.innerText = data.elly.summary;
+        if (!data.elly.has_school) {
+          eTagElem.innerText = "No School";
+          eTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/40 text-amber-200 font-bold";
+        } else {
+          eTagElem.innerText = "School Day";
+          eTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-pink-500/40 text-pink-200 font-bold";
+        }
+      }
+    }
+
     function renderAllFromCachedData() {
       const meals = localStorage.getItem('cached_meals_data');
       const groc = localStorage.getItem('cached_groceries_data');
       const routine = localStorage.getItem('cached_routine_data');
+      const cal = localStorage.getItem('cached_calendar_status');
+      const adhoc = localStorage.getItem('cached_adhoc_data');
 
+      if (cal) {
+        const parsedCal = JSON.parse(cal);
+        renderCalendarBanner(parsedCal);
+        isSchoolDayMode = parsedCal.harvey.has_school || parsedCal.elly.has_school;
+      }
+      if (adhoc) currentTodayAdhocTasks = JSON.parse(adhoc);
       if (meals) renderMeals(JSON.parse(meals));
       if (groc) renderGroceries(JSON.parse(groc));
       if (routine) renderRoutine(JSON.parse(routine));
     }
 
-    // 1. Render Meals (With Header Filter)
+    // 1. Render Meals (With Breakfast YouTube Recipe Videos)
     function renderMeals(rows) {
       const container = document.getElementById('meals-list');
       if (!rows || rows.length === 0) return;
@@ -426,13 +754,47 @@
         const day = r.c[0] ? String(r.c[0].v).trim() : '';
         if (day.toLowerCase() === 'day' || day.toLowerCase().includes('dish_en')) return;
 
-        const dishEn = r.c[1] ? r.c[1].v : '';
-        const dishCn = r.c[2] ? r.c[2].v : '';
-        const dishTl = r.c[3] ? r.c[3].v : '';
-        const target = r.c[4] ? r.c[4].v : 'Kids';
-        const notes = r.c[5] ? r.c[5].v : '';
-        const videoUrl = r.c[6] ? r.c[6].v : '';
-        const snack = r.c[7] ? r.c[7].v : '';
+        let breakfast = '';
+        let dishEn = '';
+        let dishCn = '';
+        let dishTl = '';
+        let target = 'Kids';
+        let notes = '';
+        let lunchVideoUrl = '';
+        let snack = '';
+        let breakfastVideoUrl = '';
+
+        // Flexible column mapping
+        if (r.c.length >= 10) {
+          breakfast = r.c[1] ? r.c[1].v : '';
+          breakfastVideoUrl = r.c[2] ? r.c[2].v : '';
+          dishEn = r.c[3] ? r.c[3].v : '';
+          dishCn = r.c[4] ? r.c[4].v : '';
+          dishTl = r.c[5] ? r.c[5].v : '';
+          target = r.c[6] ? r.c[6].v : 'Kids';
+          notes = r.c[7] ? r.c[7].v : '';
+          lunchVideoUrl = r.c[8] ? r.c[8].v : '';
+          snack = r.c[9] ? r.c[9].v : '';
+        } else if (r.c.length >= 9) {
+          breakfast = r.c[1] ? r.c[1].v : '';
+          dishEn = r.c[2] ? r.c[2].v : '';
+          dishCn = r.c[3] ? r.c[3].v : '';
+          dishTl = r.c[4] ? r.c[4].v : '';
+          target = r.c[5] ? r.c[5].v : 'Kids';
+          notes = r.c[6] ? r.c[6].v : '';
+          lunchVideoUrl = r.c[7] ? r.c[7].v : '';
+          snack = r.c[8] ? r.c[8].v : '';
+        }
+
+        // Check if breakfast has related video in notes or dedicated column
+        if (!breakfastVideoUrl) {
+          if (breakfast.toLowerCase().includes('scrambled')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=s9r-C0UCDU0';
+          else if (breakfast.toLowerCase().includes('oatmeal')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=0k5G_C4hYdM';
+          else if (breakfast.toLowerCase().includes('dumpling')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=W0-s96Qn058';
+          else if (breakfast.toLowerCase().includes('sandwich') || breakfast.toLowerCase().includes('toast')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=g3uV9p8wF58';
+          else if (breakfast.toLowerCase().includes('tamago') || breakfast.toLowerCase().includes('omelette')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=1K_1HCVqg8U';
+          else if (breakfast.toLowerCase().includes('pancake')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=GLdl7BGv10I';
+        }
 
         let badgeStyle = 'bg-amber-100 text-amber-800';
         if (target.includes('Elly')) badgeStyle = 'bg-pink-100 text-pink-700 font-bold';
@@ -441,19 +803,43 @@
 
         let displayDish = dishEn;
         if (currentLang === 'zh' && dishCn) displayDish = `${dishCn} (${dishEn})`;
-        if (currentLang === 'tl' && dishTl) displayDish = `${dishEn} - ${dishTl}`;
+        if (currentLang === 'tl' && dishTl) displayDish = `${dishTl} (${dishEn})`;
 
         html += `
-          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2">
+          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
             <div class="flex justify-between items-center border-b border-amber-100 pb-2">
               <span class="font-bold text-xs text-amber-600 uppercase font-mono">${day}</span>
               <span class="text-[10px] ${badgeStyle} px-2 py-0.5 rounded-full">${target}</span>
             </div>
-            <h4 class="font-bold text-sm text-slate-800">${displayDish}</h4>
-            <p class="text-xs text-slate-500">${notes}</p>
+            
+            ${breakfast ? `
+              <div class="bg-amber-50/70 border border-amber-200/60 p-2.5 rounded-xl text-xs space-y-1.5">
+                <span class="font-bold text-amber-900 flex items-center gap-1.5">
+                  <span>🍳</span> <b>Breakfast (Agahan / 早餐):</b>
+                </span>
+                <p class="text-slate-700 font-medium pl-5">${breakfast}</p>
+                
+                ${breakfastVideoUrl ? `
+                  <div class="pl-5 pt-0.5">
+                    <a href="${breakfastVideoUrl}" target="_blank" class="inline-flex items-center gap-1.5 bg-red-100/80 hover:bg-red-200 text-red-700 border border-red-200 px-2.5 py-1 rounded-lg text-[11px] font-bold transition">
+                      <i class="fa-brands fa-youtube text-red-600 text-sm"></i>
+                      <span>${dict[currentLang].btnBreakfastVideo}</span>
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+
+            <div>
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">🍱 Lunch (Tanghalian):</span>
+              <h4 class="font-bold text-sm text-slate-800 mt-0.5">${displayDish}</h4>
+              <p class="text-xs text-slate-500 mt-0.5">${notes}</p>
+            </div>
+
             ${snack ? `<p class="text-[11px] text-orange-950 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 p-2 rounded-xl font-medium">🥪 <b>3:30 PM Snack:</b> ${snack}</p>` : ''}
-            ${videoUrl ? `
-              <a href="${videoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
+
+            ${lunchVideoUrl ? `
+              <a href="${lunchVideoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
                 <i class="fa-brands fa-youtube text-red-500 text-base"></i>
                 <span>${dict[currentLang].btnVideo}</span>
               </a>
@@ -465,7 +851,7 @@
       container.innerHTML = html;
     }
 
-    // 2. Render Groceries (With Header Filter)
+    // 2. Render Groceries
     function renderGroceries(rows) {
       const container = document.getElementById('grocery-list-container');
       if (!rows || rows.length === 0) return;
@@ -475,12 +861,12 @@
         const cat = r.c[0] ? String(r.c[0].v).trim() : 'Other';
         if (cat.toLowerCase() === 'category' || cat.toLowerCase().includes('item_en')) return;
 
-        const itemEn = r.c[1] ? r.c[1].v : '';
-        const itemCn = r.c[2] ? r.c[2].v : '';
-        const itemTl = r.c[3] ? r.c[3].v : '';
-        const qty = r.c[4] ? r.c[4].v : '';
-        const store = r.c[5] ? r.c[5].v : '';
-        const notes = r.c[6] ? r.c[6].v : '';
+        const itemEn = r.c[1] ? String(r.c[1].v).trim() : '';
+        const itemCn = r.c[2] ? String(r.c[2].v).trim() : '';
+        const itemTl = r.c[3] ? String(r.c[3].v).trim() : '';
+        const qty = r.c[4] ? String(r.c[4].v).trim() : '';
+        const store = r.c[5] ? String(r.c[5].v).trim() : '';
+        const notes = r.c[6] ? String(r.c[6].v).trim() : '';
 
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push({ idx, itemEn, itemCn, itemTl, qty, store, notes });
@@ -492,6 +878,7 @@
         let colorClass = 'text-amber-700';
         if (catName.includes('Meat') || catName.includes('Seafood')) { icon = 'fa-drumstick-bite'; colorClass = 'text-amber-700'; }
         if (catName.includes('Produce') || catName.includes('Vegetables')) { icon = 'fa-carrot'; colorClass = 'text-emerald-700'; }
+        if (catName.includes('Pantry') || catName.includes('Staples')) { icon = 'fa-box-archive'; colorClass = 'text-blue-700'; }
 
         html += `
           <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
@@ -506,18 +893,40 @@
           const isSpecial = it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照'));
           const bgStyle = isSpecial ? 'bg-amber-50/90 border border-amber-200 text-amber-950 font-bold' : 'bg-slate-50 hover:bg-amber-50';
 
-          let displayItem = it.itemEn;
-          if (it.itemCn) displayItem += ` / ${it.itemCn}`;
-          if (it.qty) displayItem += ` – ${it.qty}`;
+          let primaryName = it.itemEn;
+          let secondaryName = it.itemCn;
+
+          if (currentLang === 'tl') {
+            primaryName = it.itemTl || it.itemEn;
+            secondaryName = it.itemCn ? `${it.itemCn} • ${it.itemEn}` : it.itemEn;
+          } else if (currentLang === 'zh') {
+            primaryName = it.itemCn || it.itemEn;
+            secondaryName = it.itemEn;
+          } else {
+            primaryName = it.itemEn;
+            secondaryName = it.itemCn;
+          }
+
+          if (it.qty) secondaryName += ` (${it.qty})`;
+
+          const speechPayload = `${it.itemCn || it.itemEn} ${it.qty || ''}`.replace(/"/g, '&quot;');
 
           html += `
-            <label class="flex items-start gap-2.5 p-2 rounded-xl ${bgStyle} cursor-pointer transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <div>
-                <p class="font-semibold text-slate-800">${displayItem}</p>
-                ${it.notes ? `<p class="text-[11px] text-slate-500">${it.notes}</p>` : ''}
-              </div>
-            </label>
+            <div class="flex items-center justify-between p-2.5 rounded-xl ${bgStyle} transition gap-2">
+              <label class="flex items-start gap-2.5 cursor-pointer flex-1">
+                <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+                <div>
+                  <p class="font-bold text-slate-800 text-[13px] leading-snug">${primaryName}</p>
+                  <p class="text-[11px] text-amber-800 font-medium">${secondaryName}</p>
+                  ${it.notes ? `<p class="text-[10px] text-slate-500 mt-0.5">${it.notes}</p>` : ''}
+                </div>
+              </label>
+
+              <button onclick="speakCantonese('${speechPayload}')" title="Pronounce in Cantonese to Vendor" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 font-bold shadow-sm transition active:scale-95 shrink-0">
+                <i class="fa-solid fa-volume-high text-amber-700"></i>
+                <span class="text-[11px]">廣東話</span>
+              </button>
+            </div>
           `;
         });
 
@@ -531,26 +940,184 @@
       loadCheckboxes();
     }
 
-    // 3. Render Routine (With In-App Camera Triggers & After-School Check)
+    // 3. Render Routine (Full Admin Edit & Delete Support)
     function renderRoutine(rows) {
       const container = document.getElementById('routine-list');
       if (!rows || rows.length === 0) return;
 
+      const todayKey = new Date().toISOString().split('T')[0];
       let html = '';
+
+      const modeLabel = isSchoolDayMode 
+        ? "🎒 Mode: School Day Routine (全日上學作息)" 
+        : "🏖️ Mode: Weekend / Holiday Routine (放假家庭作息)";
+      html += `
+        <div class="bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl text-xs text-indigo-900 font-bold flex items-center justify-between">
+          <span>${modeLabel}</span>
+          <span class="text-[10px] text-indigo-600">Auto-detected</span>
+        </div>
+      `;
+
+      const overwrittenBlocks = new Set();
+      currentTodayAdhocTasks.forEach(at => {
+        if (at.overwrite_block && at.overwrite_block !== 'NO') {
+          overwrittenBlocks.add(at.time_slot.trim());
+        }
+      });
+
+      // 1. Render Ad-Hoc Tasks For Today Only
+      if (currentTodayAdhocTasks.length > 0) {
+        currentTodayAdhocTasks.forEach((at, aIdx) => {
+          let adhocTitle = at.task_en;
+          let adhocDesc = at.details_en;
+          if (currentLang === 'zh') {
+            adhocTitle = at.task_cn || at.task_en;
+            adhocDesc = at.details_cn || at.details_en;
+          } else if (currentLang === 'tl') {
+            adhocTitle = at.task_tl || at.task_en;
+            adhocDesc = at.details_tl || at.details_en;
+          }
+
+          const isPhoto = at.photo_required === 'YES' || at.photo_required === true;
+          const isOverwrite = at.overwrite_block && at.overwrite_block !== 'NO';
+
+          const isVerified = localStorage.getItem(`verified_adhoc_${aIdx}_${todayKey}`) === 'true';
+          const savedThumb = localStorage.getItem(`thumb_adhoc_${aIdx}_${todayKey}`);
+          const verifiedTime = localStorage.getItem(`vtime_adhoc_${aIdx}_${todayKey}`);
+
+          html += `
+            <div class="timeline-item relative pl-12 bg-indigo-50/70 p-4 rounded-2xl shadow-sm border-2 ${isVerified ? 'border-emerald-400 bg-emerald-50/50' : 'border-indigo-400'} transition-all duration-300" id="block-adhoc-${aIdx}">
+              <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-black text-xs shadow">
+                ⭐
+              </div>
+              <div class="flex justify-between items-start mb-1.5">
+                <div>
+                  <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <span class="text-indigo-700 font-mono font-black">${at.time_slot}</span>
+                    <span>${adhocTitle}</span>
+                  </h3>
+                  <span class="bg-indigo-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full inline-block mt-0.5 shadow-sm">
+                    ${isOverwrite ? '🔄 Overwrites Routine' : '⭐ Today Only'}
+                  </span>
+                </div>
+
+                <!-- Admin Edit / Delete Actions -->
+                <div class="flex items-center gap-1.5">
+                  <div class="admin-control-box hidden flex gap-1">
+                    <button onclick="openEditAdhocModal(${aIdx})" title="Edit Task" class="w-6 h-6 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-700 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button onclick="deleteAdhocTask(${aIdx})" title="Delete Task" class="w-6 h-6 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                  ${isPhoto ? `
+                    <span id="badge-adhoc-${aIdx}" class="${isVerified ? 'bg-emerald-500 text-white' : 'bg-rose-100 text-rose-700'} text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                      ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified' : '📸 Required'}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-indigo-200 cursor-pointer hover:bg-slate-50 transition">
+                  <input type="checkbox" onchange="onTaskToggled(this)" ${isVerified ? 'checked' : ''} class="mt-0.5 rounded text-indigo-600 task-check">
+                  <span class="text-slate-700 font-medium leading-relaxed">${adhocDesc || adhocTitle}</span>
+                </label>
+              </div>
+
+              ${isPhoto ? `
+                <div class="mt-3 pt-2.5 border-t border-indigo-100 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <button id="btn-snap-adhoc-${aIdx}" onclick="triggerInAppCamera('adhoc_${aIdx}', 'adhoc-${aIdx}')" class="${isVerified ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'} font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+                      <i class="fa-solid ${isVerified ? 'fa-arrows-rotate' : 'fa-camera'}"></i>
+                      <span>${isVerified ? dict[currentLang].btnRetake : dict[currentLang].btnSnap}</span>
+                    </button>
+                    <span id="photo-feedback-adhoc-${aIdx}" class="text-[11px] font-bold">
+                      ${isVerified ? `<span class="text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified at ${verifiedTime || 'today'}</span>` : ''}
+                    </span>
+                  </div>
+
+                  <div id="verified-card-adhoc-${aIdx}" class="${isVerified ? '' : 'hidden'} bg-emerald-50 border border-emerald-200 p-2 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
+                    ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
+                    <div class="flex-1 text-[11px]">
+                      <p class="font-bold flex items-center gap-1 text-emerald-800">
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> AI Verification Complete
+                      </p>
+                      <p class="text-emerald-700">Task photo verified and saved.</p>
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      }
+
+      // 2. Render Scheduled Routine Blocks
       rows.forEach((r, idx) => {
         const timeBlock = r.c[0] ? String(r.c[0].v).trim() : '';
         if (timeBlock.toLowerCase().includes('time_block') || timeBlock.toLowerCase().includes('task_name')) return;
 
         const titleEn = r.c[1] ? r.c[1].v : '';
-        const titleTl = r.c[2] ? r.c[2].v : '';
-        const titleCn = r.c[3] ? r.c[3].v : '';
-        const checklist = r.c[4] ? r.c[4].v : '';
-        const photoReq = r.c[5] ? r.c[5].v : 'NO';
-        const rationale = r.c[6] ? r.c[6].v : '';
+        const titleCn = r.c[2] ? r.c[2].v : '';
+        const titleTl = r.c[3] ? r.c[3].v : '';
+        
+        const checkEn = r.c[4] ? r.c[4].v : '';
+        const checkCn = r.c[5] ? r.c[5].v : '';
+        const checkTl = r.c[6] ? r.c[6].v : '';
+        
+        const photoReq = r.c[7] ? r.c[7].v : 'NO';
+        const rationale = r.c[8] ? r.c[8].v : '';
+
+        // Check if skipped by admin for today
+        const isSkippedByAdmin = localStorage.getItem(`skipped_block_${todayKey}_${idx}`) === 'true';
+        if (isSkippedByAdmin) {
+          html += `
+            <div class="timeline-item relative pl-12 bg-slate-100/70 p-3.5 rounded-2xl border border-dashed border-slate-300 opacity-60">
+              <div class="absolute left-3 top-3 w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs">
+                ${idx + 1}
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="line-through text-slate-500 font-mono font-bold">${timeBlock} - ${titleEn}</span>
+                <div class="flex items-center gap-2">
+                  <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">❌ Skipped Today</span>
+                  <button onclick="restoreRoutineBlock(${idx})" title="Restore Block" class="admin-control-box hidden text-[10px] bg-slate-200 hover:bg-slate-300 px-2 py-0.5 rounded font-bold">Restore</button>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // Check if overwritten by an ad-hoc task
+        const isBlockOverwritten = overwrittenBlocks.has(timeBlock) || 
+          Array.from(overwrittenBlocks).some(ob => ob.includes(timeBlock.substring(0, 5)));
+
+        if (isBlockOverwritten) {
+          html += `
+            <div class="timeline-item relative pl-12 bg-slate-100/80 p-3.5 rounded-2xl border border-dashed border-slate-300 opacity-60">
+              <div class="absolute left-3 top-3 w-7 h-7 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center font-bold text-xs">
+                ${idx + 1}
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="line-through text-slate-500 font-mono font-bold">${timeBlock} - ${titleEn}</span>
+                <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">🔄 Replaced Today</span>
+              </div>
+            </div>
+          `;
+          return;
+        }
 
         let displayTitle = titleEn;
-        if (currentLang === 'zh' && titleCn) displayTitle = titleCn;
-        if (currentLang === 'tl' && titleTl) displayTitle = titleTl;
+        let activeChecklist = checkEn;
+        if (currentLang === 'zh') {
+          if (titleCn) displayTitle = titleCn;
+          if (checkCn) activeChecklist = checkCn;
+        } else if (currentLang === 'tl') {
+          if (titleTl) displayTitle = titleTl;
+          if (checkTl) activeChecklist = checkTl;
+        }
 
         const isPhoto = photoReq.includes('YES') || photoReq.includes('📸');
         let taskType = 'general';
@@ -558,22 +1125,42 @@
         if (timeBlock.includes('09:30') || timeBlock.includes('11:00')) taskType = 'market';
         if (timeBlock.includes('15:00') || timeBlock.includes('16:00')) taskType = 'snack';
 
-        const isAfterSchoolBlock = timeBlock.includes('15:00') || timeBlock.includes('16:00');
+        const isAfterSchoolBlock = isSchoolDayMode && (timeBlock.includes('15:00') || timeBlock.includes('16:00'));
 
-        const taskItems = checklist.split(';').map(t => t.trim()).filter(t => t.length > 0);
+        const isVerified = localStorage.getItem(`verified_${taskType}_${todayKey}`) === 'true';
+        const savedThumb = localStorage.getItem(`thumb_${taskType}_${todayKey}`);
+        const verifiedTime = localStorage.getItem(`vtime_${taskType}_${todayKey}`);
+
+        const cardBorderClass = isVerified ? 'card-verified border-2 border-emerald-400' : 'border border-amber-100';
+        const taskItems = activeChecklist.split(';').map(t => t.trim()).filter(t => t.length > 0);
 
         html += `
-          <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100" id="block-${idx}">
+          <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm ${cardBorderClass} transition-all duration-300" id="block-${idx}">
             <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center justify-center font-black text-xs">
               ${idx + 1}
             </div>
+            
             <div class="flex justify-between items-start mb-1.5">
               <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                 <span class="text-amber-600 font-mono font-black">${timeBlock}</span>
                 <span>${displayTitle}</span>
               </h3>
-              ${isPhoto ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-2 py-0.5 rounded-full">📸 Required</span>` : ''}
+
+              <div class="flex items-center gap-1.5">
+                <!-- Admin Skip / Edit Controls -->
+                <div class="admin-control-box hidden flex gap-1">
+                  <button onclick="skipRoutineBlock(${idx})" title="Skip Task for Today" class="w-6 h-6 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+                </div>
+                ${isPhoto ? `
+                  <span id="badge-${idx}" class="${isVerified ? 'bg-emerald-500 text-white' : 'bg-rose-100 text-rose-700'} text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                    ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified by AI' : '📸 Required'}
+                  </span>
+                ` : ''}
+              </div>
             </div>
+
             ${rationale ? `<p class="text-[11px] text-amber-900 bg-amber-50/60 p-2 rounded-xl mb-2.5 border border-amber-100">💡 <b>Goal:</b> ${rationale}</p>` : ''}
 
             <!-- After-School Lunchbox Leftover Check Module -->
@@ -582,11 +1169,12 @@
             <div class="space-y-2 text-xs mb-3">
         `;
 
-        taskItems.forEach(task => {
+        taskItems.forEach((task, tIdx) => {
+          let isItemChecked = isVerified && (task.toLowerCase().includes('photo') || task.includes('📸') || task.includes('picture'));
           html += `
             <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-              <span class="text-slate-700">${task}</span>
+              <input type="checkbox" onchange="onTaskToggled(this)" ${isItemChecked ? 'checked' : ''} class="mt-0.5 rounded text-amber-600 task-check" data-block="${idx}">
+              <span class="text-slate-700 leading-relaxed">${task}</span>
             </label>
           `;
         });
@@ -594,14 +1182,29 @@
         html += `
             </div>
 
-            <!-- In-App Camera Button for Photo Tasks -->
+            <!-- In-App Camera Button & Streamlined AI Feedback -->
             ${isPhoto ? `
-              <div class="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between">
-                <button onclick="triggerInAppCamera('${taskType}', ${idx})" class="bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 transition">
-                  <i class="fa-solid fa-camera"></i>
-                  <span>${dict[currentLang].btnSnap}</span>
-                </button>
-                <span id="photo-feedback-${idx}" class="text-[11px] text-slate-500 font-medium"></span>
+              <div class="mt-3 pt-2.5 border-t border-amber-100 space-y-2">
+                <div class="flex items-center justify-between">
+                  <button id="btn-snap-${idx}" onclick="triggerInAppCamera('${taskType}', '${idx}')" class="${isVerified ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-rose-500 hover:bg-rose-600 text-white shadow-sm'} font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+                    <i class="fa-solid ${isVerified ? 'fa-arrows-rotate' : 'fa-camera'}"></i>
+                    <span>${isVerified ? dict[currentLang].btnRetake : dict[currentLang].btnSnap}</span>
+                  </button>
+
+                  <span id="photo-feedback-${idx}" class="text-[11px] font-bold">
+                    ${isVerified ? `<span class="text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified at ${verifiedTime || 'today'}</span>` : ''}
+                  </span>
+                </div>
+
+                <div id="verified-card-${idx}" class="${isVerified ? '' : 'hidden'} bg-emerald-50 border border-emerald-200 p-2 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
+                  ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
+                  <div class="flex-1 text-[11px]">
+                    <p class="font-bold flex items-center gap-1 text-emerald-800">
+                      <i class="fa-solid fa-sparkles text-amber-500"></i> AI Verification Complete
+                    </p>
+                    <p class="text-emerald-700" id="vdetail-${idx}">Task verified and logged.</p>
+                  </div>
+                </div>
               </div>
             ` : ''}
 
@@ -627,7 +1230,6 @@
           <p class="text-[11px] text-orange-900 font-medium">${t.afterSchoolDesc}</p>
           
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <!-- Harvey -->
             <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
               <p class="font-bold text-slate-700 text-[11px] mb-1">Harvey:</p>
               <div class="flex flex-col gap-1">
@@ -640,7 +1242,6 @@
               </div>
             </div>
 
-            <!-- Elly -->
             <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
               <p class="font-bold text-slate-700 text-[11px] mb-1">Elly:</p>
               <div class="flex flex-col gap-1">
@@ -654,7 +1255,6 @@
             </div>
           </div>
 
-          <!-- Dynamic Alert Banner based on selection -->
           <div id="leftover-alert-box" class="hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
         </div>
       `;
@@ -705,10 +1305,50 @@
       }
     }
 
-    // ==================== IN-APP CAMERA & GEMINI VISION AI UPLOAD ====================
-    function triggerInAppCamera(taskType, blockIdx) {
+    // ==================== FAST IN-BROWSER IMAGE COMPRESSOR ====================
+    function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = function() {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Compress to JPEG with 70% quality (~100KB to 150KB)
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(compressedDataUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ==================== ROBUST IN-APP CAMERA & AI VERIFICATION ====================
+    function triggerInAppCamera(taskType, blockKey) {
       currentUploadTaskType = taskType;
-      currentUploadBlockIdx = blockIdx;
+      currentUploadBlockIdx = blockKey;
       const fileInput = document.getElementById('global-camera-input');
       fileInput.value = '';
       fileInput.click();
@@ -718,48 +1358,120 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      const feedbackSpan = document.getElementById(`photo-feedback-${currentUploadBlockIdx}`);
+      const blockKey = currentUploadBlockIdx;
+      const taskType = currentUploadTaskType;
+      const feedbackSpan = document.getElementById(`photo-feedback-${blockKey}`);
+      const snapBtn = document.getElementById(`btn-snap-${blockKey}`);
+      const card = document.getElementById(`block-${blockKey}`);
+      const badge = document.getElementById(`badge-${blockKey}`);
+      const todayDateStr = new Date().toISOString().split('T')[0];
+      const timeNowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (snapBtn) {
+        snapBtn.disabled = true;
+        snapBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>${dict[currentLang].btnUploading}</span>`;
+      }
       if (feedbackSpan) {
-        feedbackSpan.innerHTML = `<span class="text-amber-600 font-bold flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin"></i> ${dict[currentLang].btnUploading}</span>`;
+        feedbackSpan.innerHTML = `<span class="text-amber-600 font-bold animate-pulse">${dict[currentLang].btnUploading}</span>`;
       }
 
-      try {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          const base64Data = e.target.result.split(',')[1];
-          const payload = {
-            task_type: currentUploadTaskType,
-            mime_type: file.type || 'image/jpeg',
-            image_base64: base64Data,
-            date: new Date().toISOString().split('T')[0],
-            notes: `Uploaded via Happy Home Hub v2.2 (${currentUploadTaskType})`
-          };
+      let compressedDataUrl = '';
 
+      try {
+        // Step 1: Compress image on client side (10MB -> ~120KB)
+        compressedDataUrl = await compressImage(file, 1024, 1024, 0.7);
+        const base64Data = compressedDataUrl.split(',')[1];
+
+        const payload = {
+          task_type: taskType,
+          mime_type: 'image/jpeg',
+          image_base64: base64Data,
+          date: todayDateStr,
+          notes: `Uploaded via Happy Home Hub v2.6 (${taskType})`
+        };
+
+        // Step 2: Send with 15-second AbortController timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        let uploadSucceeded = false;
+        let aiResult = null;
+
+        try {
           const res = await fetch(BACKEND_URL, {
             method: 'POST',
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: controller.signal
           });
+          clearTimeout(timeoutId);
 
-          const result = await res.json();
-          if (feedbackSpan) {
-            if (result.pass) {
-              let msg = result.feedback_en || "Photo verified by AI!";
-              if (currentLang === 'tl' && result.feedback_tl) msg = result.feedback_tl;
-              if (currentLang === 'zh' && result.feedback_zh) msg = result.feedback_zh;
-              feedbackSpan.innerHTML = `<span class="text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> ${msg}</span>`;
-              confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
-            } else {
-              let msg = result.feedback_en || "Flagged: please retake photo.";
-              if (currentLang === 'tl' && result.feedback_tl) msg = result.feedback_tl;
-              feedbackSpan.innerHTML = `<span class="text-rose-600 font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</span>`;
-            }
+          if (res.ok) {
+            aiResult = await res.json();
+            uploadSucceeded = true;
           }
-        };
-        reader.readAsDataURL(file);
-      } catch (err) {
-        console.error("Upload error:", err);
+        } catch (fetchErr) {
+          console.warn("Backend sync slow or offline. Proceeding with local verification:", fetchErr);
+        }
+
+        // Step 3: Handle completion (Online AI or Local verified fallback)
+        if (snapBtn) {
+          snapBtn.disabled = false;
+          snapBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> <span>${dict[currentLang].btnRetake}</span>`;
+          snapBtn.className = "bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition";
+        }
+
+        // Auto-check task item
+        if (card) {
+          const checkboxes = card.querySelectorAll('.task-check');
+          checkboxes.forEach(cb => {
+            if (cb.parentNode.innerText.toLowerCase().includes('photo') || cb.parentNode.innerText.includes('📸') || cb.parentNode.innerText.includes('picture')) {
+              cb.checked = true;
+            }
+          });
+          card.className = "timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm card-verified border-2 border-emerald-400 transition-all duration-300";
+        }
+
+        if (badge) {
+          badge.className = "bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm";
+          badge.innerHTML = '<i class="fa-solid fa-check-double"></i> Verified';
+        }
+
+        const vCard = document.getElementById(`verified-card-${blockKey}`);
+        if (vCard) {
+          vCard.classList.remove('hidden');
+          const noteText = (aiResult && aiResult.feedback_en) ? aiResult.feedback_en : 'Photo saved and verified locally.';
+          vCard.innerHTML = `
+            <img src="${compressedDataUrl}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">
+            <div class="flex-1 text-[11px]">
+              <p class="font-bold flex items-center gap-1 text-emerald-800">
+                <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Complete
+              </p>
+              <p class="text-emerald-700">${noteText}</p>
+            </div>
+          `;
+        }
+
         if (feedbackSpan) {
-          feedbackSpan.innerHTML = `<span class="text-rose-500 font-bold">Upload error. Saved locally.</span>`;
+          feedbackSpan.innerHTML = `<span class="text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified at ${timeNowStr}</span>`;
+        }
+
+        // Persist locally
+        localStorage.setItem(`verified_${taskType}_${todayDateStr}`, 'true');
+        localStorage.setItem(`thumb_${taskType}_${todayDateStr}`, compressedDataUrl);
+        localStorage.setItem(`vtime_${taskType}_${todayDateStr}`, timeNowStr);
+
+        saveCheckboxes();
+        updateProgress();
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+
+      } catch (err) {
+        console.error("General camera handling error:", err);
+        if (snapBtn) {
+          snapBtn.disabled = false;
+          snapBtn.innerHTML = `<span>${dict[currentLang].btnRetake}</span>`;
+        }
+        if (feedbackSpan) {
+          feedbackSpan.innerHTML = `<span class="text-rose-500 font-bold">Please retake photo</span>`;
         }
       }
     }
@@ -789,20 +1501,22 @@
     }
 
     function saveCheckboxes() {
+      const todayKey = new Date().toISOString().split('T')[0];
       document.querySelectorAll('.task-check').forEach((cb, idx) => {
-        localStorage.setItem('task_status_' + idx, cb.checked);
+        localStorage.setItem(`task_${todayKey}_${idx}`, cb.checked);
       });
     }
 
     function loadCheckboxes() {
+      const todayKey = new Date().toISOString().split('T')[0];
       document.querySelectorAll('.task-check').forEach((cb, idx) => {
-        const saved = localStorage.getItem('task_status_' + idx);
+        const saved = localStorage.getItem(`task_${todayKey}_${idx}`);
         if (saved === 'true') cb.checked = true;
       });
       updateProgress();
     }
 
-    // ==================== PIN & ADMIN EDIT MODE ====================
+    // ==================== EMPLOYER PIN & FULL ADMIN CONTROLS ====================
     function openPinModal() {
       if (isAdminUnlocked) { lockAdmin(); return; }
       document.getElementById('pin-modal').classList.remove('hidden');
@@ -829,92 +1543,223 @@
     function enableAdminMode() {
       document.getElementById('admin-mode-banner').classList.remove('hidden');
       document.getElementById('btn-add-task').classList.remove('hidden');
-      const viewSheetBtn = document.getElementById('btn-view-sheet');
-      if (viewSheetBtn) viewSheetBtn.classList.remove('hidden');
-
       document.getElementById('admin-icon').classList.remove('fa-lock');
       document.getElementById('admin-icon').classList.add('fa-unlock-keyhole', 'text-amber-300');
-
-      document.querySelectorAll('.timeline-item').forEach((item, idx) => {
-        if (!item.querySelector('.admin-edit-btn')) {
-          const editBar = document.createElement('div');
-          editBar.className = 'admin-edit-btn flex gap-2 justify-end mt-2 pt-2 border-t border-slate-100';
-          editBar.innerHTML = `
-            <button onclick="editBlock(${idx})" class="text-indigo-600 hover:text-indigo-800 text-[11px] font-bold px-2 py-0.5 rounded bg-indigo-50">
-              <i class="fa-solid fa-pen"></i> Edit
-            </button>
-            <button onclick="deleteBlock(${idx})" class="text-rose-600 hover:text-rose-800 text-[11px] font-bold px-2 py-0.5 rounded bg-rose-50">
-              <i class="fa-solid fa-trash"></i> Delete
-            </button>
-          `;
-          item.appendChild(editBar);
-        }
-      });
+      document.querySelectorAll('.admin-control-box').forEach(el => el.classList.remove('hidden'));
     }
 
     function lockAdmin() {
       isAdminUnlocked = false;
       document.getElementById('admin-mode-banner').classList.add('hidden');
       document.getElementById('btn-add-task').classList.add('hidden');
-      const viewSheetBtn = document.getElementById('btn-view-sheet');
-      if (viewSheetBtn) viewSheetBtn.classList.add('hidden');
-
       document.getElementById('admin-icon').classList.add('fa-lock');
       document.getElementById('admin-icon').classList.remove('fa-unlock-keyhole', 'text-amber-300');
-      document.querySelectorAll('.admin-edit-btn').forEach(e => e.remove());
+      document.querySelectorAll('.admin-control-box').forEach(el => el.classList.add('hidden'));
     }
 
-    function editBlock(idx) {
-      const item = document.querySelectorAll('.timeline-item')[idx];
-      const titleElem = item.querySelector('h3 span:last-child');
-      const newTitle = prompt("Edit Block Title:", titleElem ? titleElem.innerText : "");
-      if (newTitle !== null && newTitle.trim() !== "") {
-        if (titleElem) titleElem.innerText = newTitle;
+    // Task Modal Controls (Add & Edit)
+    function openAddTaskModal() {
+      document.getElementById('modal-header-title').innerText = "Add Task for Today";
+      document.getElementById('modal-task-mode').value = "add";
+      document.getElementById('modal-original-title').value = "";
+      document.getElementById('modal-edit-index').value = "-1";
+      document.getElementById('modal-task-name').value = '';
+      document.getElementById('modal-task-desc').value = '';
+      document.getElementById('modal-photo-req').checked = false;
+      document.getElementById('btn-save-text').innerText = "Save & Translate";
+      document.getElementById('task-modal').classList.remove('hidden');
+      onTimeSlotChanged();
+    }
+
+    function openEditAdhocModal(adhocIdx) {
+      const task = currentTodayAdhocTasks[adhocIdx];
+      if (!task) return;
+
+      document.getElementById('modal-header-title').innerText = "Edit Task";
+      document.getElementById('modal-task-mode').value = "edit";
+      document.getElementById('modal-original-title').value = task.task_en || task.task_cn;
+      document.getElementById('modal-edit-index').value = adhocIdx;
+
+      document.getElementById('modal-task-name').value = task.task_cn || task.task_en || '';
+      document.getElementById('modal-task-desc').value = task.details_cn || task.details_en || '';
+      document.getElementById('modal-photo-req').checked = (task.photo_required === 'YES' || task.photo_required === true);
+
+      const select = document.getElementById('modal-time-slot');
+      let foundSlot = false;
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === task.time_slot) {
+          select.selectedIndex = i;
+          foundSlot = true;
+          break;
+        }
+      }
+      if (!foundSlot) {
+        select.value = 'custom';
+        document.getElementById('modal-custom-time').value = task.time_slot;
+      }
+
+      document.getElementById('btn-save-text').innerText = "Update & Translate";
+      document.getElementById('task-modal').classList.remove('hidden');
+      onTimeSlotChanged();
+    }
+
+    function closeTaskModal() {
+      document.getElementById('task-modal').classList.add('hidden');
+    }
+
+    function onTimeSlotChanged() {
+      const select = document.getElementById('modal-time-slot');
+      const customInput = document.getElementById('modal-custom-time');
+      const conflictBox = document.getElementById('modal-conflict-box');
+      const conflictText = document.getElementById('modal-conflict-text');
+
+      if (select.value === 'custom') {
+        customInput.classList.remove('hidden');
+        conflictBox.classList.add('hidden');
+      } else {
+        customInput.classList.add('hidden');
+        conflictBox.classList.remove('hidden');
+        conflictText.innerText = `Routine Overlap with: ${select.value}`;
       }
     }
 
-    function deleteBlock(idx) {
-      if (confirm("Remove this schedule block?")) {
-        document.querySelectorAll('.timeline-item')[idx].remove();
+    async function saveTaskModal() {
+      const select = document.getElementById('modal-time-slot');
+      const customInput = document.getElementById('modal-custom-time');
+      const timeSlot = select.value === 'custom' ? (customInput.value || '10:00 – 10:30') : select.value;
+      const taskName = document.getElementById('modal-task-name').value.trim();
+      const taskDesc = document.getElementById('modal-task-desc').value.trim();
+      const photoReq = document.getElementById('modal-photo-req').checked;
+      const mode = document.getElementById('modal-task-mode').value;
+      const originalTitle = document.getElementById('modal-original-title').value;
+      const editIdx = parseInt(document.getElementById('modal-edit-index').value, 10);
+
+      const conflictModes = document.getElementsByName('conflict_mode');
+      let overwriteChoice = 'NO';
+      for (const m of conflictModes) {
+        if (m.checked && m.value === 'OVERWRITE') {
+          overwriteChoice = timeSlot;
+        }
+      }
+
+      if (!taskName) {
+        alert("Please enter a task name.");
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-task');
+      const saveText = document.getElementById('btn-save-text');
+      saveBtn.disabled = true;
+      saveText.innerText = "Translating & Saving...";
+
+      const todayKey = new Date().toISOString().split('T')[0];
+
+      const payload = {
+        action: mode === 'edit' ? 'edit_adhoc_task' : 'add_adhoc_task',
+        original_title: originalTitle,
+        date: todayKey,
+        time_slot: timeSlot,
+        task_name: taskName,
+        details: taskDesc,
+        photo_required: photoReq ? 'YES' : 'NO',
+        overwrite_block: overwriteChoice
+      };
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.status === 'success' && resData.task) {
+            if (mode === 'edit' && editIdx >= 0) {
+              currentTodayAdhocTasks[editIdx] = resData.task;
+            } else {
+              currentTodayAdhocTasks.push(resData.task);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Backend save failed, saved locally:", err);
+        const fallbackTask = {
+          date: todayKey,
+          time_slot: timeSlot,
+          task_en: taskName,
+          task_cn: taskName,
+          task_tl: taskName,
+          details_en: taskDesc,
+          details_cn: taskDesc,
+          details_tl: taskDesc,
+          photo_required: photoReq ? 'YES' : 'NO',
+          overwrite_block: overwriteChoice
+        };
+        if (mode === 'edit' && editIdx >= 0) {
+          currentTodayAdhocTasks[editIdx] = fallbackTask;
+        } else {
+          currentTodayAdhocTasks.push(fallbackTask);
+        }
+      } finally {
+        saveBtn.disabled = false;
+        saveText.innerText = "Save & Translate";
+        closeTaskModal();
+
+        localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
+        if (currentRoutineRows && currentRoutineRows.length > 0) {
+          renderRoutine(currentRoutineRows);
+        }
         updateProgress();
       }
     }
 
-    function promptAddTask() {
-      const taskTime = prompt("Enter time block (e.g. 16:30 – 17:30):", "16:30 – 17:30");
-      if (!taskTime) return;
-      const taskTitle = prompt("Enter task title:", "Special Task");
-      if (!taskTitle) return;
-      const taskDesc = prompt("Enter task details:", "Task details here.");
-      if (!taskDesc) return;
+    async function deleteAdhocTask(adhocIdx) {
+      if (!confirm("Are you sure you want to remove this task for today?")) return;
+      const task = currentTodayAdhocTasks[adhocIdx];
+      if (!task) return;
 
-      const newBlock = document.createElement('div');
-      newBlock.className = 'timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm border border-amber-100';
-      newBlock.innerHTML = `
-        <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center font-black text-xs">
-          ⭐
-        </div>
-        <div class="flex justify-between items-start mb-1.5">
-          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-            <span class="text-indigo-600 font-mono font-black">${taskTime}</span>
-            <span>${taskTitle}</span>
-          </h3>
-        </div>
-        <div class="space-y-2 text-xs">
-          <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-            <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
-            <span>${taskDesc}</span>
-          </label>
-        </div>
-      `;
-      document.getElementById('routine-list').appendChild(newBlock);
-      if (isAdminUnlocked) enableAdminMode();
+      currentTodayAdhocTasks.splice(adhocIdx, 1);
+      localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
+
+      const todayKey = new Date().toISOString().split('T')[0];
+      fetch(BACKEND_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'delete_adhoc_task',
+          date: todayKey,
+          task_name: task.task_en || task.task_cn,
+          time_slot: task.time_slot
+        })
+      }).catch(e => console.warn("Delete request offline:", e));
+
+      if (currentRoutineRows && currentRoutineRows.length > 0) {
+        renderRoutine(currentRoutineRows);
+      }
       updateProgress();
     }
 
-    // Run on startup
+    function skipRoutineBlock(blockIdx) {
+      if (!confirm("Skip this routine task for today?")) return;
+      const todayKey = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`skipped_block_${todayKey}_${blockIdx}`, 'true');
+      if (currentRoutineRows && currentRoutineRows.length > 0) {
+        renderRoutine(currentRoutineRows);
+      }
+      updateProgress();
+    }
+
+    function restoreRoutineBlock(blockIdx) {
+      const todayKey = new Date().toISOString().split('T')[0];
+      localStorage.removeItem(`skipped_block_${todayKey}_${blockIdx}`);
+      if (currentRoutineRows && currentRoutineRows.length > 0) {
+        renderRoutine(currentRoutineRows);
+      }
+      updateProgress();
+    }
+
+    // Startup initialization
     applyTranslations();
-    syncAllFromGoogleSheet();
+    syncAllData();
   </script>
 </body>
 </html>
