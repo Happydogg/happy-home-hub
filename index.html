@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Happy Home • Helper Routine, Meals & Groceries (v2.7)</title>
-
+  <title>Happy Home • Helper Routine, Meals & Groceries (v2.8)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
   <!-- FontAwesome Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
   <style>
     body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     .tab-active { color: #d97706; border-bottom: 2px solid #d97706; font-weight: 700; }
@@ -51,12 +46,12 @@
         <div>
           <h1 class="text-base font-extrabold tracking-tight leading-tight flex items-center gap-1.5">
             <span id="app-title">Happy Home Hub</span>
-            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.7</span>
+            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.8</span>
           </h1>
           <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey & Elly • Helper Daily Guide</p>
         </div>
       </div>
-
+      
       <div class="flex items-center gap-2">
         <!-- Language Switcher: English, Chinese, Tagalog -->
         <div class="flex bg-amber-800/80 rounded-lg p-0.5 text-xs font-semibold">
@@ -97,11 +92,13 @@
           <span id="prog-percent" class="text-lg font-black tracking-tight">0%</span>
         </div>
       </div>
+      
       <div class="w-full bg-amber-900/50 rounded-full h-2 overflow-hidden">
         <div id="prog-bar" class="bg-amber-300 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
       </div>
+
       <div class="flex justify-between items-center text-[10px] text-amber-200">
-        <span id="t-prog-label">Daily Progress</span>
+        <span id="t-prog-label">Daily Progress (2-Way Cloud Synced)</span>
         <span id="prog-detail">0 of 0 completed</span>
       </div>
     </div>
@@ -147,11 +144,43 @@
   </nav>
 
   <!-- Main Content Area -->
-  <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1">
-
+  <main class="max-w-md mx-auto w-full px-4 pt-4 flex-1 space-y-4">
+    
     <!-- ==================== TAB 1: DAILY ROUTINE ==================== -->
     <section id="view-routine" class="space-y-4">
 
+      <!-- FEATURE 4: TWO-WAY BILINGUAL HELPER MEMO BOARD -->
+      <div id="memo-board-card" class="bg-white border-2 border-amber-200/90 rounded-2xl p-3.5 shadow-sm space-y-2.5">
+        <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+          <div class="flex items-center gap-1.5 font-bold text-xs text-amber-950">
+            <i class="fa-solid fa-comments text-amber-600"></i>
+            <span id="t-memo-title">Family Notice Board</span>
+          </div>
+          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+            Auto-Translated
+          </span>
+        </div>
+
+        <!-- Memos Container -->
+        <div id="memos-list" class="space-y-2 text-xs max-h-48 overflow-y-auto">
+          <p class="text-slate-400 text-center py-2 text-[11px]">No handover notes today. Leave a note below!</p>
+        </div>
+
+        <!-- Add Memo Input -->
+        <div class="pt-1 space-y-2 border-t border-amber-100 text-xs">
+          <div class="flex gap-1.5">
+            <select id="memo-sender-select" class="bg-slate-100 border border-slate-200 rounded-xl px-2 py-1.5 text-[11px] font-bold text-slate-700 focus:outline-none">
+              <option value="Employer">👔 Employer</option>
+              <option value="Helper">👩 Helper</option>
+            </select>
+            <input type="text" id="memo-text-input" placeholder="Leave note (e.g. Grandma visiting at 4 PM)..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-amber-500">
+            <button onclick="postNewMemo()" id="btn-post-memo" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm transition active:scale-95">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <!-- Real-time School & Weekend Status Card -->
       <div id="calendar-banner" class="bg-white border border-amber-200/80 rounded-2xl p-3.5 shadow-sm space-y-2">
         <div class="flex justify-between items-center border-b border-amber-100 pb-2">
@@ -173,7 +202,6 @@
             </div>
             <p id="harvey-cal-status" class="text-[11px] text-blue-700 leading-tight">School Day</p>
           </div>
-
           <!-- Elly Status -->
           <div class="bg-pink-50/70 border border-pink-100 p-2 rounded-xl">
             <div class="flex items-center justify-between mb-1">
@@ -218,6 +246,50 @@
         </p>
       </div>
 
+      <!-- Dedicated Permanent Lunchbox Finish & Appetite Tracker Card on Meals Tab -->
+      <div id="meals-lunchbox-card" class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 p-3.5 rounded-2xl shadow-sm space-y-2.5">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-1.5 font-black text-xs text-orange-950">
+            <span>🍱</span>
+            <span id="t-meals-afterschool-title">After-School Lunchbox Check (Appetite & Health)</span>
+          </div>
+          <span class="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full border border-orange-300">
+            Live Cloud Sync
+          </span>
+        </div>
+        <p class="text-[11px] text-orange-900 font-medium" id="t-meals-afterschool-desc">
+          Open thermos immediately when Harvey & Elly arrive home. Record appetite status:
+        </p>
+
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="bg-white/85 p-2.5 rounded-xl border border-orange-200/60 shadow-xs">
+            <p class="font-bold text-slate-700 text-[11px] mb-1.5">👦 Harvey:</p>
+            <div class="flex flex-col gap-1.5">
+              <button onclick="setLeftover('harvey', 'finished')" class="btn-harvey-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
+                🟢 Finished >50%
+              </button>
+              <button onclick="setLeftover('harvey', 'left')" class="btn-harvey-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
+                ⚠️ Left >50%
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white/85 p-2.5 rounded-xl border border-orange-200/60 shadow-xs">
+            <p class="font-bold text-slate-700 text-[11px] mb-1.5">👧 Elly:</p>
+            <div class="flex flex-col gap-1.5">
+              <button onclick="setLeftover('elly', 'finished')" class="btn-elly-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
+                🟢 Finished >50%
+              </button>
+              <button onclick="setLeftover('elly', 'left')" class="btn-elly-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
+                ⚠️ Left >50%
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="leftover-alert-box hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
+      </div>
+
       <div id="meals-list" class="space-y-4">
         <div class="p-8 text-center text-slate-400 text-xs">
           <i class="fa-solid fa-circle-notch fa-spin text-lg text-amber-500 mb-2"></i>
@@ -226,9 +298,9 @@
       </div>
     </section>
 
-    <!-- ==================== TAB 3: GROCERY LIST WITH CANTONESE AUDIO ==================== -->
+    <!-- ==================== TAB 3: GROCERY LIST WITH CANTONESE AUDIO & PANTRY QUICK-ADD ==================== -->
     <section id="view-grocery" class="space-y-4 hidden">
-      <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-xs">
+      <div class="bg-emerald-600 text-white p-3.5 rounded-2xl shadow-sm text-xs space-y-2.5">
         <div class="flex justify-between items-center">
           <p class="font-bold flex items-center gap-1.5 text-sm mb-0.5">
             <i class="fa-solid fa-scale-balanced"></i>
@@ -237,8 +309,30 @@
           <span class="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded font-bold">🔊 Audio Help</span>
         </div>
         <p class="text-emerald-100 text-[11px] t-groc-banner-desc">
-          Tap 🔊 to speak fluent Cantonese to market vendors! (Auto-converts grams & pieces to 克/個)
+          Tap 🔊 to speak fluent Cantonese to market vendors! Tap staples below to quick-add running-low items.
         </p>
+
+        <!-- FEATURE 2: 1-TAP RUNNING LOW PANTRY QUICK CHIPS -->
+        <div class="pt-1 border-t border-emerald-500/50">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-200 mb-1.5">⚡ 1-Tap Running Low Restock:</p>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="quickAddStaple('Fresh Whole Milk', '全脂鮮牛奶', 'Fresh Whole Milk', '2 cartons', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+              🥛 + Milk
+            </button>
+            <button onclick="quickAddStaple('Fresh Eggs', '雞蛋', 'Itlog', '1 carton (10 pcs)', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+              🥚 + Eggs
+            </button>
+            <button onclick="quickAddStaple('Sliced Sandwich Bread', '白方包', 'Tinapay', '1 loaf', 'Bakery')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+              🍞 + Bread
+            </button>
+            <button onclick="quickAddStaple('Unsalted Butter', '無鹽牛油', 'Butter', '1 block', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+              🧈 + Butter
+            </button>
+            <button onclick="quickAddStaple('Dishwasher Detergent Pods', '洗碗機洗滌球', 'Dishwasher Pods', '1 pack', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+              🧼 + Pods
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="grocery-list-container" class="space-y-4">
@@ -284,15 +378,13 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
       <div class="space-y-2 text-xs">
         <p class="text-slate-600 leading-relaxed">
-          Paste your deployed Google Apps Script Web App URL below to sync photo uploads and deletions live to Google Sheets:
+          Your deployed Google Apps Script Web App URL below syncs checklist progress, memos, photos, and appetite logs live to Google Sheets:
         </p>
         <input type="url" id="input-backend-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full p-2.5 border border-slate-200 rounded-xl font-mono text-[11px] focus:outline-none focus:border-indigo-500">
         <p id="backend-test-status" class="text-[11px] font-bold text-slate-500">Status: Not tested</p>
       </div>
-
       <div class="flex gap-2 pt-2 border-t border-slate-100">
         <button onclick="testAndSaveBackendUrl()" id="btn-test-backend" class="w-full py-2.5 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow flex items-center justify-center gap-1.5 transition">
           <i class="fa-solid fa-plug"></i>
@@ -359,7 +451,7 @@
           </div>
         </div>
 
-        <!-- 3. Task Name Input (Supports Chinese or English) -->
+        <!-- 3. Task Name Input -->
         <div>
           <label class="block font-bold text-slate-700 mb-1">Task Name (任務名稱):</label>
           <input type="text" id="modal-task-name" placeholder="e.g. 去乾洗店取西裝 / Pick up dry cleaning" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 font-semibold text-slate-800">
@@ -402,18 +494,19 @@
 
   <script>
     const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
-    // Default fallback backend URL
-    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbx8nBhKg_T8kxw-sFpxbYXA75DW4AP_E_lovkColuFfxDWP8EXIo4XyfhYTTjpQ5hoI/exec";
+    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbyHbelcWDkducv4v4TTf8VvePVu0SwDocCy35fOUVLDXNYhdHFMCo9F_Zr3ngHP61SZ/exec";
 
     function getBackendUrl() {
       const saved = localStorage.getItem('custom_backend_url');
-      if (saved && !saved.includes('AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU') && saved.startsWith('https://script.google.com/macros/s/')) {
+      if (saved && 
+          !saved.includes('AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU') && 
+          !saved.includes('AKfycbx8nBhKg_T8kxw-sFpxbYXA75DW4AP_E_lovkColuFfxDWP8EXIo4XyfhYTTjpQ5hoI') && 
+          saved.startsWith('https://script.google.com/macros/s/')) {
         return saved;
       }
       return DEFAULT_BACKEND_URL;
     }
 
-    // Employer PIN updated to 2776
     const employerPin = "2776";
     let isAdminUnlocked = false;
     let isSchoolDayMode = true;
@@ -424,6 +517,8 @@
     let currentMealsRows = [];
     let currentGroceryRows = [];
     let currentTodayAdhocTasks = [];
+    let currentTodayMemos = [];
+    let cloudSyncDebounceTimer = null;
 
     // Multilingual Dictionary
     const dict = {
@@ -432,7 +527,7 @@
         appSubtitle: "Harvey & Elly • Helper Daily Guide",
         motiveTitle: "Family Teamwork • Harvey & Elly",
         motiveSub: "Thank you for taking great care of our home!",
-        progLabel: "Daily Progress",
+        progLabel: "Daily Progress (2-Way Cloud Synced)",
         adminActive: "Employer Admin Mode (PIN: 2776)",
         navRoutine: "Routine",
         navMeals: "Meals",
@@ -443,21 +538,25 @@
         btnBreakfastVideo: "Watch Breakfast Video",
         btnSnap: "📸 Take Photo",
         btnRetake: "🔄 Retake Photo",
-        btnUploading: "Analyzing photo with AI...",
+        btnUploading: "Analyzing photo with Gemini 3.8 Flash...",
         pinTitle: "Employer PIN Access",
         pinDesc: "Enter 4-digit PIN (2776) to manage tasks.",
         calTitle: "Today's Schedule & Mode",
         afterSchoolTitle: "After-School Lunchbox Check",
         afterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home:",
         leftoverFinishAlert: "⚠️ FINISH REMAINING: Over 50% left! Warm up leftovers to eat before afternoon snack!",
-        leftoverSuccess: "✅ Great job! Lunch was finished (>50%). Ready for the planned healthy snack."
+        leftoverSuccess: "✅ Great job! Lunch was finished (>50%). Ready for the planned healthy snack.",
+        memoTitle: "Family Notice Board (Bilingual)",
+        memoPlaceholder: "Leave a note (e.g. Grandma visiting at 4 PM)...",
+        mealsAfterSchoolTitle: "After-School Lunchbox Check (Appetite & Health)",
+        mealsAfterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home. Record appetite status:"
       },
       zh: {
         appTitle: "溫馨家園助手",
         appSubtitle: "Harvey & Elly • 姐姐每日家務指南",
         motiveTitle: "家庭同心 • 照顧 Harvey & Elly",
         motiveSub: "感謝你悉心打理屋企，讓小朋友健康快樂成長！",
-        progLabel: "今日家務進度",
+        progLabel: "今日家務進度 (雙向雲端同步)",
         adminActive: "僱主管理模式已啟用 (PIN: 2776)",
         navRoutine: "作息時間",
         navMeals: "每日餐單",
@@ -468,21 +567,25 @@
         btnBreakfastVideo: "觀看早餐影片教學",
         btnSnap: "📸 拍攝驗證照片",
         btnRetake: "🔄 重新拍照",
-        btnUploading: "AI 正在分析驗證相片...",
+        btnUploading: "AI 正在分析驗證相片 (Gemini 3.8)...",
         pinTitle: "僱主安全 PIN 碼",
         pinDesc: "請輸入 4 位數 PIN 碼 (2776) 以管理任務。",
         calTitle: "今日上學及放假模式",
         afterSchoolTitle: "放學保溫壺剩菜檢查",
         afterSchoolDesc: "Harvey 和 Elly 放學返屋企後，立即打開保溫壺檢查：",
         leftoverFinishAlert: "⚠️ 需要食完：飯餸剩下超過一半！請先加熱剩菜給小朋友食完，方可吃下午茶！",
-        leftoverSuccess: "✅ 表現出色！飯餸已食完超過一半，可以享用今日營養下午茶。"
+        leftoverSuccess: "✅ 表現出色！飯餸已食完超過一半，可以享用今日營養下午茶。",
+        memoTitle: "家園每日留言板 (雙向翻譯)",
+        memoPlaceholder: "輸入重要事項 (例如：婆婆下午四點來探訪)...",
+        mealsAfterSchoolTitle: "放學保溫盒檢查（食量與營養追蹤）",
+        mealsAfterSchoolDesc: "Harvey 和 Elly 回家後立即打開保溫壺，記錄今天午餐進食狀況："
       },
       tl: {
         appTitle: "Happy Home Hub",
         appSubtitle: "Harvey at Elly • Gabay ng Kasambahay",
         motiveTitle: "Pagtutulungan ng Pamilya • Harvey at Elly",
         motiveSub: "Maraming salamat sa iyong malasakit at pag-aalaga sa tahanan!",
-        progLabel: "Nagawa Ngayong Araw",
+        progLabel: "Nagawa Ngayong Araw (Cloud Synced)",
         adminActive: "Naka-on ang Employer Mode (PIN: 2776)",
         navRoutine: "Oras ng Gawain",
         navMeals: "Tanghalian",
@@ -493,14 +596,18 @@
         btnBreakfastVideo: "Panoorin ang Video ng Agahan",
         btnSnap: "📸 Kunan ng Litrato",
         btnRetake: "🔄 Kunan Ulit",
-        btnUploading: "Sinusuri ang litrato gamit ang AI...",
+        btnUploading: "Sinusuri ang litrato gamit ang Gemini 3.8...",
         pinTitle: "Employer PIN Access",
         pinDesc: "Ipasok ang 4-digit PIN (2776) upang mag-edit ng mga gawain.",
         calTitle: "Iskedyul sa Eskwela at Mode Ngayon",
         afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
         afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
         leftoverFinishAlert: "⚠️ KAILANGAN UBOSIN: Hindi naubos ang higit sa 50% ng tanghalian! Painitin ang natira upang ubusin bago mag-merienda!",
-        leftoverSuccess: "✅ Magaling! Naubos ang tanghalian (>50%). Maaari nang ihain ang nakatakdang masustansyang merienda."
+        leftoverSuccess: "✅ Magaling! Naubos ang tanghalian (>50%). Maaari nang ihain ang nakatakdang masustansyang merienda.",
+        memoTitle: "Memo ng Pamilya (Bilingual)",
+        memoPlaceholder: "Mag-iwan ng mensahe (hal. Bibisita si Lola ng 4 PM)...",
+        mealsAfterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
+        mealsAfterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly. Itala ang lagay ng pagkain:"
       }
     };
 
@@ -537,14 +644,13 @@
       document.getElementById('t-prog-label').innerText = t.progLabel;
       document.getElementById('t-admin-active').innerText = t.adminActive;
       document.getElementById('t-cal-title').innerText = t.calTitle;
-
+      document.getElementById('t-memo-title').innerText = t.memoTitle;
+      document.getElementById('memo-text-input').placeholder = t.memoPlaceholder;
       document.querySelectorAll('.t-nav-routine').forEach(e => e.innerText = t.navRoutine);
       document.querySelectorAll('.t-nav-meals').forEach(e => e.innerText = t.navMeals);
       document.querySelectorAll('.t-nav-grocery').forEach(e => e.innerText = t.navGrocery);
-
       document.querySelector('.t-r-section-title').innerText = t.rSectionTitle;
       document.getElementById('t-btn-add').innerText = t.btnAdd;
-
       document.getElementById('t-pin-title').innerText = t.pinTitle;
       document.getElementById('t-pin-desc').innerText = t.pinDesc;
     }
@@ -560,11 +666,10 @@
       document.getElementById('tab-btn-' + tab).classList.remove('text-slate-500');
     }
 
-    // ==================== CANTONESE SPEECH NORMALIZER ====================
+    // Cantonese speech normalizer
     function normalizeCantoneseSpeech(text) {
       if (!text) return '';
       let str = text;
-
       const unitMap = [
         { regex: /(\d+)\s*(?:g|gram|grams)\b/gi, rep: '$1克' },
         { regex: /(\d+)\s*(?:kg|kilo|kilogram|kilograms)\b/gi, rep: '$1公斤' },
@@ -582,17 +687,14 @@
         { regex: /(\d+)\s*(?:cup|cups)\b/gi, rep: '$1杯' },
         { regex: /(\d+)\s*(?:bowl|bowls)\b/gi, rep: '$1碗' }
       ];
-
       unitMap.forEach(u => {
         str = str.replace(u.regex, u.rep);
       });
-
       str = str.replace(/\b(?:pcs|pc|pieces)\b/gi, '個');
       str = str.replace(/\b(?:grams|gram|g)\b/gi, '克');
       str = str.replace(/\b(?:kg|kilograms|kilo)\b/gi, '公斤');
       str = str.replace(/\b(?:packets|packet|packs|pack|pkt)\b/gi, '包');
       str = str.replace(/\b(?:bunches|bunch)\b/gi, '紮');
-
       return str;
     }
 
@@ -602,7 +704,6 @@
         return;
       }
       window.speechSynthesis.cancel();
-      
       const textToSpeak = normalizeCantoneseSpeech(rawText);
       const utter = new SpeechSynthesisUtterance(textToSpeak);
       utter.lang = 'zh-HK';
@@ -610,7 +711,7 @@
       window.speechSynthesis.speak(utter);
     }
 
-    // ==================== LIVE DATA SYNC ====================
+    // Live Data Sync
     async function fetchSheetData(sheetName) {
       const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
       const res = await fetch(url);
@@ -632,7 +733,6 @@
       try {
         await fetchCalendarStatus();
         const targetRoutineTab = isSchoolDayMode ? 'School_Day_Routine' : 'No_School_Routine';
-
         const [mealRows, groceryRows, routineRows, adhocRows] = await Promise.all([
           fetchSheetData('Weekly_Meals'),
           fetchSheetData('Grocery_List'),
@@ -651,6 +751,9 @@
         localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
         localStorage.setItem('cached_routine_mode', targetRoutineTab);
         localStorage.setItem('last_sync_time', new Date().toLocaleTimeString());
+
+        // Fetch Two-Way Cloud State (Checklist, Appetite, Memos)
+        await fetchCloudState();
 
         renderMeals(mealRows);
         renderGroceries(groceryRows);
@@ -672,20 +775,16 @@
       if (!rows || rows.length === 0) return [];
       const todayKey = new Date().toISOString().split('T')[0];
       const parsed = [];
-
       rows.forEach(r => {
         const rawDate = r.c[0] ? String(r.c[0].f || r.c[0].v).trim() : '';
         if (rawDate.toLowerCase().includes('date')) return;
-
         let matchesToday = rawDate === todayKey;
         if (!matchesToday && r.c[0] && r.c[0].v) {
           const dStr = String(r.c[0].v);
           if (dStr.includes(todayKey)) matchesToday = true;
         }
-
         const status = r.c[10] ? String(r.c[10].v).trim() : 'Pending';
         if (status.toLowerCase().includes('deleted')) return;
-
         if (matchesToday) {
           parsed.push({
             date: todayKey,
@@ -707,9 +806,8 @@
 
     async function fetchCalendarStatus() {
       const today = new Date();
-      const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+      const dayOfWeek = today.getDay();
       const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
       let calData = {
         status: "success",
         date: today.toISOString().split('T')[0],
@@ -744,7 +842,6 @@
     function renderCalendarBanner(data) {
       const today = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
       document.getElementById('today-date-badge').innerText = today;
-
       const hStatusElem = document.getElementById('harvey-cal-status');
       const hTagElem = document.getElementById('harvey-cal-tag');
       const eStatusElem = document.getElementById('elly-cal-status');
@@ -754,10 +851,10 @@
         hStatusElem.innerText = data.harvey.summary;
         if (!data.harvey.has_school) {
           hTagElem.innerText = "No School";
-          hTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/40 text-amber-200 font-bold";
+          hTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-rose-600 text-white shadow-xs";
         } else {
           hTagElem.innerText = "School Day";
-          hTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-blue-500/40 text-blue-200 font-bold";
+          hTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-emerald-600 text-white shadow-xs";
         }
       }
 
@@ -765,12 +862,162 @@
         eStatusElem.innerText = data.elly.summary;
         if (!data.elly.has_school) {
           eTagElem.innerText = "No School";
-          eTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/40 text-amber-200 font-bold";
+          eTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-rose-600 text-white shadow-xs";
         } else {
           eTagElem.innerText = "School Day";
-          eTagElem.className = "text-[10px] px-1.5 py-0.5 rounded bg-pink-500/40 text-pink-200 font-bold";
+          eTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-emerald-600 text-white shadow-xs";
         }
       }
+    }
+
+    // ==================== FEATURE 1 & 4: TWO-WAY CLOUD STATE & MEMOS ====================
+    async function fetchCloudState() {
+      const todayKey = new Date().toISOString().split('T')[0];
+      try {
+        const res = await fetch(`${getBackendUrl()}?action=get_state&date=${todayKey}`);
+        if (res.ok) {
+          const stateData = await res.json();
+          if (stateData.status === 'success') {
+            // 1. Sync remote checked keys to local
+            if (Array.isArray(stateData.checked_keys) && stateData.checked_keys.length > 0) {
+              stateData.checked_keys.forEach(k => {
+                localStorage.setItem(`task_${todayKey}_${k}`, 'true');
+              });
+            }
+
+            // 2. Sync appetite log
+            if (stateData.appetite) {
+              if (stateData.appetite.harvey_finished) localStorage.setItem('leftover_harvey', stateData.appetite.harvey_finished);
+              if (stateData.appetite.elly_finished) localStorage.setItem('leftover_elly', stateData.appetite.elly_finished);
+              loadAfterSchoolState();
+            }
+
+            // 3. Render Memos
+            if (Array.isArray(stateData.memos)) {
+              currentTodayMemos = stateData.memos;
+              localStorage.setItem('cached_memos_data', JSON.stringify(currentTodayMemos));
+              renderMemos(currentTodayMemos);
+            }
+          }
+        }
+      } catch (e) {
+        console.log("Could not fetch remote state, using local cache:", e);
+      }
+    }
+
+    function renderMemos(memos) {
+      const listEl = document.getElementById('memos-list');
+      if (!listEl) return;
+      if (!memos || memos.length === 0) {
+        listEl.innerHTML = `<p class="text-slate-400 text-center py-2 text-[11px]">No handover notes today. Leave a note below!</p>`;
+        return;
+      }
+
+      let html = '';
+      memos.forEach(m => {
+        let msg = m.msg_en || m.msgEn || '';
+        if (currentLang === 'zh' && (m.msg_cn || m.msgCn)) msg = m.msg_cn || m.msgCn;
+        if (currentLang === 'tl' && (m.msg_tl || m.msgTl)) msg = m.msg_tl || m.msgTl;
+        if (!msg) msg = m.msg_en || m.msgEn || '';
+
+        const isEmp = (m.sender === 'Employer');
+        const badgeColor = isEmp ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800';
+        const icon = isEmp ? '👔 Employer' : '👩 Helper';
+
+        html += `
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+            <div class="flex justify-between items-center text-[10px]">
+              <span class="font-bold px-1.5 py-0.5 rounded ${badgeColor}">${icon}</span>
+              <span class="text-slate-400 font-mono">${m.timestamp ? m.timestamp.substring(11, 16) : ''}</span>
+            </div>
+            <p class="text-slate-800 font-medium text-xs leading-relaxed pl-1">${msg}</p>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+    }
+
+    async function postNewMemo() {
+      const input = document.getElementById('memo-text-input');
+      const select = document.getElementById('memo-sender-select');
+      const text = input.value.trim();
+      const sender = select.value;
+      if (!text) return;
+
+      const btn = document.getElementById('btn-post-memo');
+      btn.disabled = true;
+
+      const todayKey = new Date().toISOString().split('T')[0];
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Optimistic local add
+      const optMemo = {
+        timestamp: `${todayKey} ${nowStr}`,
+        sender: sender,
+        msg_en: text,
+        msg_cn: text,
+        msg_tl: text
+      };
+      currentTodayMemos.push(optMemo);
+      renderMemos(currentTodayMemos);
+      input.value = '';
+
+      try {
+        const res = await fetch(getBackendUrl(), {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'post_memo',
+            date: todayKey,
+            sender: sender,
+            message: text
+          })
+        });
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.status === 'success' && resData.memo) {
+            const m = resData.memo;
+            optMemo.timestamp = m.timestamp || optMemo.timestamp;
+            optMemo.msg_en = m.msg_en || m.msgEn || text;
+            optMemo.msg_cn = m.msg_cn || m.msgCn || text;
+            optMemo.msg_tl = m.msg_tl || m.msgTl || text;
+            localStorage.setItem('cached_memos_data', JSON.stringify(currentTodayMemos));
+            renderMemos(currentTodayMemos);
+          }
+        }
+      } catch (err) {
+        console.warn("Memo save offline:", err);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Debounced Two-Way Checklist Sync
+    function queueChecklistCloudSync() {
+      if (cloudSyncDebounceTimer) clearTimeout(cloudSyncDebounceTimer);
+      cloudSyncDebounceTimer = setTimeout(async () => {
+        const todayKey = new Date().toISOString().split('T')[0];
+        const allCheckboxes = document.querySelectorAll('.task-check');
+        const checkedKeys = [];
+        allCheckboxes.forEach((cb, idx) => {
+          if (cb.checked) checkedKeys.push(idx);
+        });
+        const total = allCheckboxes.length;
+        const percent = total > 0 ? Math.round((checkedKeys.length / total) * 100) : 0;
+
+        try {
+          await fetch(getBackendUrl(), {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'sync_checklist',
+              date: todayKey,
+              checked_keys: checkedKeys,
+              percent: percent
+            })
+          });
+        } catch (e) {
+          console.log("Checklist sync offline:", e);
+        }
+      }, 1000);
     }
 
     function renderAllFromCachedData() {
@@ -786,17 +1033,22 @@
         isSchoolDayMode = parsedCal.harvey.has_school || parsedCal.elly.has_school;
       }
       if (adhoc) currentTodayAdhocTasks = JSON.parse(adhoc);
+      const cachedMemos = localStorage.getItem('cached_memos_data');
+      if (cachedMemos) {
+        try { currentTodayMemos = JSON.parse(cachedMemos); } catch(e) {}
+      }
       if (meals) renderMeals(JSON.parse(meals));
       if (groc) renderGroceries(JSON.parse(groc));
       if (routine) renderRoutine(JSON.parse(routine));
+      renderMemos(currentTodayMemos);
     }
 
     // 1. Render Meals
     function renderMeals(rows) {
       const container = document.getElementById('meals-list');
       if (!rows || rows.length === 0) return;
-
       let html = '';
+
       rows.forEach(r => {
         const day = r.c[0] ? String(r.c[0].v).trim() : '';
         if (day.toLowerCase() === 'day' || day.toLowerCase().includes('dish_en')) return;
@@ -892,11 +1144,10 @@
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
 
-    // 2. Render Groceries
+    // 2. Render Groceries with "Running Low" Quick Flagging
     function renderGroceries(rows) {
       const container = document.getElementById('grocery-list-container');
       if (!rows || rows.length === 0) return;
@@ -905,14 +1156,12 @@
       rows.forEach((r, idx) => {
         const cat = r.c[0] ? String(r.c[0].v).trim() : 'Other';
         if (cat.toLowerCase() === 'category' || cat.toLowerCase().includes('item_en')) return;
-
         const itemEn = r.c[1] ? String(r.c[1].v).trim() : '';
         const itemCn = r.c[2] ? String(r.c[2].v).trim() : '';
         const itemTl = r.c[3] ? String(r.c[3].v).trim() : '';
         const qty = r.c[4] ? String(r.c[4].v).trim() : '';
         const store = r.c[5] ? String(r.c[5].v).trim() : '';
         const notes = r.c[6] ? String(r.c[6].v).trim() : '';
-
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push({ idx, itemEn, itemCn, itemTl, qty, store, notes });
       });
@@ -921,9 +1170,11 @@
       for (const [catName, items] of Object.entries(categories)) {
         let icon = 'fa-basket-shopping';
         let colorClass = 'text-amber-700';
+        const isPantry = catName.includes('Pantry') || catName.includes('Staples');
+
         if (catName.includes('Meat') || catName.includes('Seafood')) { icon = 'fa-drumstick-bite'; colorClass = 'text-amber-700'; }
         if (catName.includes('Produce') || catName.includes('Vegetables')) { icon = 'fa-carrot'; colorClass = 'text-emerald-700'; }
-        if (catName.includes('Pantry') || catName.includes('Staples')) { icon = 'fa-box-archive'; colorClass = 'text-blue-700'; }
+        if (isPantry) { icon = 'fa-box-archive'; colorClass = 'text-blue-700'; }
 
         html += `
           <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
@@ -935,8 +1186,9 @@
         `;
 
         items.forEach(it => {
-          const isSpecial = it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照'));
-          const bgStyle = isSpecial ? 'bg-amber-50/90 border border-amber-200 text-amber-950 font-bold' : 'bg-slate-50 hover:bg-amber-50';
+          const isLow = localStorage.getItem(`low_item_${it.itemEn}`) === 'true';
+          const isSpecial = isLow || (it.notes && (it.notes.includes('⚠️') || it.notes.includes('photo') || it.notes.includes('拍照')));
+          const bgStyle = isSpecial ? 'bg-amber-50/90 border border-amber-300 text-amber-950 font-bold' : 'bg-slate-50 hover:bg-amber-50';
 
           let primaryName = it.itemEn;
           let secondaryName = it.itemCn;
@@ -953,7 +1205,6 @@
           }
 
           if (it.qty) secondaryName += ` (${it.qty})`;
-
           const speechPayload = `${it.itemCn || it.itemEn} ${it.qty || ''}`.replace(/"/g, '&quot;');
 
           html += `
@@ -961,16 +1212,27 @@
               <label class="flex items-start gap-2.5 cursor-pointer flex-1">
                 <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
                 <div>
-                  <p class="font-bold text-slate-800 text-[13px] leading-snug">${primaryName}</p>
+                  <p class="font-bold text-slate-800 text-[13px] leading-snug flex items-center gap-1.5">
+                    <span>${primaryName}</span>
+                    ${isLow ? '<span class="bg-amber-500 text-white text-[9px] px-1.5 py-0.2 rounded font-black">LOW</span>' : ''}
+                  </p>
                   <p class="text-[11px] text-amber-800 font-medium">${secondaryName}</p>
                   ${it.notes ? `<p class="text-[10px] text-slate-500 mt-0.5">${it.notes}</p>` : ''}
                 </div>
               </label>
 
-              <button onclick="speakCantonese('${speechPayload}')" title="Pronounce in Cantonese to Vendor" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 font-bold shadow-sm transition active:scale-95 shrink-0">
-                <i class="fa-solid fa-volume-high text-amber-700"></i>
-                <span class="text-[11px]">廣東話</span>
-              </button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                ${isPantry ? `
+                  <button onclick="toggleRunningLow('${it.itemEn}', this)" title="Flag as running low" class="${isLow ? 'bg-amber-500 text-white' : 'bg-slate-100 hover:bg-amber-100 text-slate-600'} text-[10px] font-bold px-2 py-1.5 rounded-lg border border-slate-200 transition">
+                    ${isLow ? '⚠️ Low' : '+ Low'}
+                  </button>
+                ` : ''}
+
+                <button onclick="speakCantonese('${speechPayload}')" title="Pronounce in Cantonese to Vendor" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 font-bold shadow-sm transition active:scale-95">
+                  <i class="fa-solid fa-volume-high text-amber-700"></i>
+                  <span class="text-[11px]">廣東話</span>
+                </button>
+              </div>
             </div>
           `;
         });
@@ -980,12 +1242,46 @@
           </div>
         `;
       }
-
       container.innerHTML = html;
       loadCheckboxes();
     }
 
-    // 3. Render Routine
+    async function quickAddStaple(nameEn, nameCn, nameTl, qty, store) {
+      localStorage.setItem(`low_item_${nameEn}`, 'true');
+      alert(`Added ${nameEn} (${nameCn}) to Market Restock list!`);
+      if (currentGroceryRows && currentGroceryRows.length > 0) {
+        renderGroceries(currentGroceryRows);
+      }
+
+      try {
+        await fetch(getBackendUrl(), {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'add_grocery_item',
+            category: 'Pantry & Staples',
+            item_en: nameEn,
+            item_cn: nameCn,
+            item_tl: nameTl,
+            qty: qty,
+            store: store,
+            notes: '⚠️ Running Low (1-Tap Quick Add)'
+          })
+        });
+      } catch (e) {
+        console.log("Quick add saved locally:", e);
+      }
+    }
+
+    function toggleRunningLow(itemName, btn) {
+      const current = localStorage.getItem(`low_item_${itemName}`) === 'true';
+      const newVal = !current;
+      localStorage.setItem(`low_item_${itemName}`, newVal);
+      if (currentGroceryRows && currentGroceryRows.length > 0) {
+        renderGroceries(currentGroceryRows);
+      }
+    }
+
+    // 3. Render Routine (WITH CHINESE SEMICOLON SPLITTING FIX & 2-WAY SYNC)
     function renderRoutine(rows) {
       const container = document.getElementById('routine-list');
       if (!rows || rows.length === 0) return;
@@ -996,6 +1292,7 @@
       const modeLabel = isSchoolDayMode 
         ? "🎒 Mode: School Day Routine (全日上學作息)" 
         : "🏖️ Mode: Weekend / Holiday Routine (放假家庭作息)";
+
       html += `
         <div class="bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl text-xs text-indigo-900 font-bold flex items-center justify-between">
           <span>${modeLabel}</span>
@@ -1015,6 +1312,7 @@
         currentTodayAdhocTasks.forEach((at, aIdx) => {
           let adhocTitle = at.task_en;
           let adhocDesc = at.details_en;
+
           if (currentLang === 'zh') {
             adhocTitle = at.task_cn || at.task_en;
             adhocDesc = at.details_cn || at.details_en;
@@ -1025,7 +1323,6 @@
 
           const isPhoto = at.photo_required === 'YES' || at.photo_required === true;
           const isOverwrite = at.overwrite_block && at.overwrite_block !== 'NO';
-
           const isVerified = localStorage.getItem(`verified_adhoc_${aIdx}_${todayKey}`) === 'true';
           const savedThumb = localStorage.getItem(`thumb_adhoc_${aIdx}_${todayKey}`);
           const verifiedTime = localStorage.getItem(`vtime_adhoc_${aIdx}_${todayKey}`);
@@ -1035,6 +1332,7 @@
               <div class="absolute left-3 top-4 w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-black text-xs shadow">
                 ⭐
               </div>
+
               <div class="flex justify-between items-start mb-1.5">
                 <div>
                   <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -1046,7 +1344,6 @@
                   </span>
                 </div>
 
-                <!-- Admin Edit / Delete Actions -->
                 <div class="flex items-center gap-1.5">
                   <div class="admin-control-box ${isAdminUnlocked ? '' : 'hidden'} flex gap-1">
                     <button onclick="openEditAdhocModal(${aIdx})" title="Edit Task" class="w-6 h-6 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-700 flex items-center justify-center text-xs">
@@ -1056,6 +1353,7 @@
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </div>
+
                   ${isPhoto ? `
                     <span id="badge-adhoc-${aIdx}" class="${isVerified ? 'bg-emerald-500 text-white' : 'bg-rose-100 text-rose-700'} text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                       ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified' : '📸 Required'}
@@ -1084,12 +1382,12 @@
                   </div>
 
                   <div id="verified-card-adhoc-${aIdx}" class="${isVerified ? '' : 'hidden'} bg-emerald-50 border border-emerald-200 p-2 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
-                    ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
+                    ${savedThumb ? `<img src="${savedThumb}" onclick="openPhotoModal('${savedThumb}')" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm cursor-pointer hover:opacity-90 active:scale-95 transition" title="Click to enlarge">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
                     <div class="flex-1 text-[11px]">
                       <p class="font-bold flex items-center gap-1 text-emerald-800">
                         <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Logged
                       </p>
-                      <p class="text-emerald-700">Photo verified and synced to Google Sheets.</p>
+                      <p class="text-emerald-700">Photo verified with Gemini 3.8 and synced to Google Sheets.</p>
                     </div>
                   </div>
                 </div>
@@ -1115,21 +1413,16 @@
         const photoReq = r.c[7] ? r.c[7].v : 'NO';
         const rationale = r.c[8] ? r.c[8].v : '';
 
-        // If skipped by admin for today, completely omit it
         const isSkippedByAdmin = localStorage.getItem(`skipped_block_${todayKey}_${idx}`) === 'true';
-        if (isSkippedByAdmin) {
-          return;
-        }
+        if (isSkippedByAdmin) return;
 
         const isBlockOverwritten = overwrittenBlocks.has(timeBlock) || 
           Array.from(overwrittenBlocks).some(ob => ob.includes(timeBlock.substring(0, 5)));
-
-        if (isBlockOverwritten) {
-          return; // Suppressed and replaced by today's adhoc task
-        }
+        if (isBlockOverwritten) return;
 
         let displayTitle = titleEn;
         let activeChecklist = checkEn;
+
         if (currentLang === 'zh') {
           if (titleCn) displayTitle = titleCn;
           if (checkCn) activeChecklist = checkCn;
@@ -1144,14 +1437,19 @@
         if (timeBlock.includes('09:30') || timeBlock.includes('11:00')) taskType = 'market';
         if (timeBlock.includes('15:00') || timeBlock.includes('16:00')) taskType = 'snack';
 
-        const isAfterSchoolBlock = isSchoolDayMode && (timeBlock.includes('15:00') || timeBlock.includes('16:00'));
+        const isAfterSchoolBlock = (timeBlock.includes('15:00') || timeBlock.includes('16:00') || timeBlock.toLowerCase().includes('afternoon') || timeBlock.toLowerCase().includes('snack'));
 
         const isVerified = localStorage.getItem(`verified_${taskType}_${todayKey}`) === 'true';
         const savedThumb = localStorage.getItem(`thumb_${taskType}_${todayKey}`);
         const verifiedTime = localStorage.getItem(`vtime_${taskType}_${todayKey}`);
-
         const cardBorderClass = isVerified ? 'card-verified border-2 border-emerald-400' : 'border border-amber-100';
-        const taskItems = activeChecklist.split(';').map(t => t.trim()).filter(t => t.length > 0);
+
+        // CHINESE SEMICOLON SPLITTING FIX:
+        const taskItems = activeChecklist
+          .replace(/；/g, ';')
+          .split(/[;\n]+/)
+          .map(t => t.trim())
+          .filter(t => t.length > 0);
 
         html += `
           <div class="timeline-item relative pl-12 bg-white p-4 rounded-2xl shadow-sm ${cardBorderClass} transition-all duration-300" id="block-${idx}">
@@ -1164,14 +1462,14 @@
                 <span class="text-amber-600 font-mono font-black">${timeBlock}</span>
                 <span>${displayTitle}</span>
               </h3>
-
+              
               <div class="flex items-center gap-1.5">
-                <!-- Admin Skip Controls -->
                 <div class="admin-control-box ${isAdminUnlocked ? '' : 'hidden'} flex gap-1">
                   <button onclick="skipRoutineBlock(${idx})" title="Remove / Skip Task for Today" class="w-6 h-6 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </div>
+
                 ${isPhoto ? `
                   <span id="badge-${idx}" class="${isVerified ? 'bg-emerald-500 text-white' : 'bg-rose-100 text-rose-700'} text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                     ${isVerified ? '<i class="fa-solid fa-check-double"></i> Verified' : '📸 Required'}
@@ -1209,24 +1507,22 @@
                     <i class="fa-solid ${isVerified ? 'fa-arrows-rotate' : 'fa-camera'}"></i>
                     <span>${isVerified ? dict[currentLang].btnRetake : dict[currentLang].btnSnap}</span>
                   </button>
-
                   <span id="photo-feedback-${idx}" class="text-[11px] font-bold">
                     ${isVerified ? `<span class="text-emerald-600 flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Verified at ${verifiedTime || 'today'}</span>` : ''}
                   </span>
                 </div>
 
                 <div id="verified-card-${idx}" class="${isVerified ? '' : 'hidden'} bg-emerald-50 border border-emerald-200 p-2 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
-                  ${savedThumb ? `<img src="${savedThumb}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
+                  ${savedThumb ? `<img src="${savedThumb}" onclick="openPhotoModal('${savedThumb}')" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm cursor-pointer hover:opacity-90 active:scale-95 transition" title="Click to enlarge">` : '<div class="w-10 h-10 bg-emerald-200 rounded-lg flex items-center justify-center text-emerald-800">📸</div>'}
                   <div class="flex-1 text-[11px]">
                     <p class="font-bold flex items-center gap-1 text-emerald-800">
                       <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Logged
                     </p>
-                    <p class="text-emerald-700" id="vdetail-${idx}">Task verified and logged to Google Sheets.</p>
+                    <p class="text-emerald-700" id="vdetail-${idx}">Task verified with Gemini 3.8 and logged to Google Sheets.</p>
                   </div>
                 </div>
               </div>
             ` : ''}
-
           </div>
         `;
       });
@@ -1249,39 +1545,72 @@
           <p class="text-[11px] text-orange-900 font-medium">${t.afterSchoolDesc}</p>
           
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
+            <div class="bg-white/85 p-2 rounded-xl border border-orange-200/60 shadow-xs">
               <p class="font-bold text-slate-700 text-[11px] mb-1">Harvey:</p>
               <div class="flex flex-col gap-1">
-                <button onclick="setLeftover('harvey', 'finished')" id="btn-harvey-finished" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                <button onclick="setLeftover('harvey', 'finished')" class="btn-harvey-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
                   🟢 Finished >50%
                 </button>
-                <button onclick="setLeftover('harvey', 'left')" id="btn-harvey-left" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                <button onclick="setLeftover('harvey', 'left')" class="btn-harvey-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
                   ⚠️ Left >50%
                 </button>
               </div>
             </div>
 
-            <div class="bg-white/80 p-2 rounded-lg border border-orange-200/60">
+            <div class="bg-white/85 p-2 rounded-xl border border-orange-200/60 shadow-xs">
               <p class="font-bold text-slate-700 text-[11px] mb-1">Elly:</p>
               <div class="flex flex-col gap-1">
-                <button onclick="setLeftover('elly', 'finished')" id="btn-elly-finished" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                <button onclick="setLeftover('elly', 'finished')" class="btn-elly-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
                   🟢 Finished >50%
                 </button>
-                <button onclick="setLeftover('elly', 'left')" id="btn-elly-left" class="text-[10px] font-bold py-1 px-1.5 rounded bg-slate-100 text-slate-600 border border-slate-200 text-left">
+                <button onclick="setLeftover('elly', 'left')" class="btn-elly-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
                   ⚠️ Left >50%
                 </button>
               </div>
             </div>
           </div>
 
-          <div id="leftover-alert-box" class="hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
+          <div class="leftover-alert-box hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
         </div>
       `;
     }
 
-    function setLeftover(kid, status) {
+    // FEATURE 3: LIVE APPETITE & NUTRITION LOGGING
+    async function setLeftover(kid, status) {
       localStorage.setItem(`leftover_${kid}`, status);
       loadAfterSchoolState();
+
+      const todayKey = new Date().toISOString().split('T')[0];
+      const hStatus = localStorage.getItem('leftover_harvey') || '';
+      const eStatus = localStorage.getItem('leftover_elly') || '';
+      let actionTaken = (hStatus === 'left' || eStatus === 'left') ? 'Reheat leftovers to finish before afternoon snack' : 'Serve healthy afternoon snack';
+
+      // Find today's lunch dish name from meals
+      let dishName = 'School Lunch';
+      if (currentMealsRows && currentMealsRows.length > 0) {
+        const todayDayIdx = new Date().getDay();
+        if (todayDayIdx >= 1 && todayDayIdx <= 5 && currentMealsRows[todayDayIdx - 1]) {
+          const row = currentMealsRows[todayDayIdx - 1];
+          dishName = row.c && row.c[3] ? row.c[3].v : 'School Lunch';
+        }
+      }
+
+      try {
+        await fetch(getBackendUrl(), {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'save_appetite',
+            date: todayKey,
+            dish_name: dishName,
+            harvey_finished: hStatus,
+            elly_finished: eStatus,
+            finish_action: actionTaken,
+            notes: `Logged via Happy Home Hub v2.8 (${kid}: ${status})`
+          })
+        });
+      } catch (e) {
+        console.log("Appetite sync saved locally:", e);
+      }
     }
 
     function loadAfterSchoolState() {
@@ -1324,7 +1653,7 @@
       }
     }
 
-    // ==================== FAST IN-BROWSER IMAGE COMPRESSOR ====================
+    // Fast In-Browser Image Compressor
     function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1335,7 +1664,6 @@
           img.onload = function() {
             let width = img.width;
             let height = img.height;
-
             if (width > height) {
               if (width > maxWidth) {
                 height = Math.round((height * maxWidth) / width);
@@ -1347,13 +1675,11 @@
                 height = maxHeight;
               }
             }
-
             const canvas = document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-
             const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
             resolve(compressedDataUrl);
           };
@@ -1363,7 +1689,7 @@
       });
     }
 
-    // ==================== IN-APP CAMERA & AI VERIFICATION ====================
+    // In-App Camera & AI Verification
     function triggerInAppCamera(taskType, blockKey) {
       currentUploadTaskType = taskType;
       currentUploadBlockIdx = blockKey;
@@ -1382,6 +1708,7 @@
       const snapBtn = document.getElementById(`btn-snap-${blockKey}`);
       const card = document.getElementById(`block-${blockKey}`);
       const badge = document.getElementById(`badge-${blockKey}`);
+
       const todayDateStr = new Date().toISOString().split('T')[0];
       const timeNowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -1394,7 +1721,6 @@
       }
 
       let compressedDataUrl = '';
-
       try {
         compressedDataUrl = await compressImage(file, 1024, 1024, 0.7);
         const base64Data = compressedDataUrl.split(',')[1];
@@ -1404,12 +1730,11 @@
           mime_type: 'image/jpeg',
           image_base64: base64Data,
           date: todayDateStr,
-          notes: `Uploaded via Happy Home Hub v2.7 (${taskType})`
+          notes: `Uploaded via Happy Home Hub v2.8 (${taskType})`
         };
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
-
+        const timeoutId = setTimeout(() => controller.abort(), 18000);
         let uploadSucceeded = false;
         let aiResult = null;
 
@@ -1420,7 +1745,6 @@
             signal: controller.signal
           });
           clearTimeout(timeoutId);
-
           if (res.ok) {
             aiResult = await res.json();
             uploadSucceeded = true;
@@ -1435,7 +1759,6 @@
           snapBtn.className = "bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition";
         }
 
-        // Check if Gemini Vision Flagged the image as incorrect (e.g. empty cup)
         if (uploadSucceeded && aiResult && aiResult.pass === false) {
           let msg = aiResult.feedback_en || "Verification flagged: please retake a clear photo of the task.";
           if (currentLang === 'tl' && aiResult.feedback_tl) msg = aiResult.feedback_tl;
@@ -1478,9 +1801,9 @@
         const vCard = document.getElementById(`verified-card-${blockKey}`);
         if (vCard) {
           vCard.classList.remove('hidden');
-          const noteText = (aiResult && aiResult.feedback_en) ? aiResult.feedback_en : 'Photo saved and verified.';
+          const noteText = (aiResult && aiResult.feedback_en) ? aiResult.feedback_en : 'Photo saved and verified with Gemini 3.8.';
           vCard.innerHTML = `
-            <img src="${compressedDataUrl}" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm">
+            <img src="${compressedDataUrl}" onclick="openPhotoModal('${compressedDataUrl}')" class="w-10 h-10 object-cover rounded-lg border border-emerald-300 shadow-sm cursor-pointer hover:opacity-90 active:scale-95 transition" title="Click to enlarge">
             <div class="flex-1 text-[11px]">
               <p class="font-bold flex items-center gap-1 text-emerald-800">
                 <i class="fa-solid fa-sparkles text-amber-500"></i> Verification Complete
@@ -1500,6 +1823,7 @@
 
         saveCheckboxes();
         updateProgress();
+        queueChecklistCloudSync();
         confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
 
       } catch (err) {
@@ -1514,7 +1838,7 @@
       }
     }
 
-    // ==================== CHECKBOXES & PROGRESS ====================
+    // Checkboxes & Progress with Two-Way Cloud Synchronization
     function updateProgress() {
       const allCheckboxes = document.querySelectorAll('.task-check');
       const checked = Array.from(allCheckboxes).filter(cb => cb.checked).length;
@@ -1533,6 +1857,7 @@
     function onTaskToggled(cb) {
       saveCheckboxes();
       updateProgress();
+      queueChecklistCloudSync();
       if (cb.checked) {
         confetti({ particleCount: 25, spread: 45, origin: { y: 0.7 } });
       }
@@ -1554,7 +1879,7 @@
       updateProgress();
     }
 
-    // ==================== EMPLOYER PIN & FULL ADMIN CONTROLS (PIN: 2776) ====================
+    // Employer PIN & full admin controls (PIN: 2776)
     function openPinModal() {
       if (isAdminUnlocked) { lockAdmin(); return; }
       document.getElementById('pin-modal').classList.remove('hidden');
@@ -1660,7 +1985,6 @@
       document.getElementById('modal-task-mode').value = "edit";
       document.getElementById('modal-original-title').value = task.task_en || task.task_cn;
       document.getElementById('modal-edit-index').value = adhocIdx;
-
       document.getElementById('modal-task-name').value = task.task_cn || task.task_en || '';
       document.getElementById('modal-task-desc').value = task.details_cn || task.details_en || '';
       document.getElementById('modal-photo-req').checked = (task.photo_required === 'YES' || task.photo_required === true);
@@ -1734,7 +2058,6 @@
       saveText.innerText = "Translating & Saving to Sheets...";
 
       const todayKey = new Date().toISOString().split('T')[0];
-
       const payload = {
         action: mode === 'edit' ? 'edit_adhoc_task' : 'add_adhoc_task',
         original_title: originalTitle,
@@ -1751,7 +2074,6 @@
           method: 'POST',
           body: JSON.stringify(payload)
         });
-
         if (res.ok) {
           const resData = await res.json();
           if (resData.status === 'success' && resData.task) {
@@ -1785,7 +2107,6 @@
         saveBtn.disabled = false;
         saveText.innerText = "Save & Translate";
         closeTaskModal();
-
         localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
         if (currentRoutineRows && currentRoutineRows.length > 0) {
           renderRoutine(currentRoutineRows);
@@ -1800,8 +2121,6 @@
       if (!task) return;
 
       const todayKey = new Date().toISOString().split('T')[0];
-
-      // Remove immediately from local state
       currentTodayAdhocTasks.splice(adhocIdx, 1);
       localStorage.setItem('cached_adhoc_data', JSON.stringify(currentTodayAdhocTasks));
 
@@ -1810,7 +2129,6 @@
       }
       updateProgress();
 
-      // Send delete command to Google Apps Script to delete row from Google Sheet
       try {
         await fetch(getBackendUrl(), {
           method: 'POST',
@@ -1839,7 +2157,39 @@
     // Startup initialization
     applyTranslations();
     syncAllData();
+  
+    // Photo Lightbox Enlargement
+    function openPhotoModal(imgSrc) {
+      if (!imgSrc) return;
+      const modal = document.getElementById('photo-modal');
+      const img = document.getElementById('modal-enlarged-img');
+      img.src = imgSrc;
+      modal.classList.remove('hidden');
+    }
+
+    function closePhotoModal() {
+      const modal = document.getElementById('photo-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
   </script>
+  <!-- ==================== PHOTO ENLARGEMENT LIGHTBOX MODAL ==================== -->
+  <div id="photo-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="closePhotoModal()">
+    <div class="relative max-w-sm w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700" onclick="event.stopPropagation()">
+      <div class="p-3 bg-slate-800 flex justify-between items-center text-white border-b border-slate-700">
+        <span class="text-xs font-bold flex items-center gap-1.5 text-amber-400">
+          <i class="fa-solid fa-image"></i> Verified Photo
+        </span>
+        <button onclick="closePhotoModal()" class="w-7 h-7 rounded-full bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-2 flex items-center justify-center bg-black/60 min-h-[220px] max-h-[75vh]">
+        <img id="modal-enlarged-img" src="" alt="Enlarged photo" class="max-h-[70vh] w-auto max-w-full rounded-xl object-contain shadow-lg">
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
 
