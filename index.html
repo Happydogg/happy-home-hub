@@ -403,10 +403,14 @@
   <script>
     const SPREADSHEET_ID = "1FYXjGcVRHlMYrrtxgTolVe13hTeUZx7h-Uhl8_-rSuU";
     // Default fallback backend URL
-    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU/exec";
+    const DEFAULT_BACKEND_URL = "https://script.google.com/macros/s/AKfycbx8nBhKg_T8kxw-sFpxbYXA75DW4AP_E_lovkColuFfxDWP8EXIo4XyfhYTTjpQ5hoI/exec";
 
     function getBackendUrl() {
-      return localStorage.getItem('custom_backend_url') || DEFAULT_BACKEND_URL;
+      const saved = localStorage.getItem('custom_backend_url');
+      if (saved && !saved.includes('AKfycbygG4kL4Zg71626jB3Zl1hS8jW9k0xWqDk1m-rSuU') && saved.startsWith('https://script.google.com/macros/s/')) {
+        return saved;
+      }
+      return DEFAULT_BACKEND_URL;
     }
 
     // Employer PIN updated to 2776
