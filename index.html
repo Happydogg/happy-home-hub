@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <title>Happy Home • Helper Routine, Meals & Groceries (v2.9)</title>
+  <title>Happy Home • Helper Routine, Meals & Groceries (v2.9.1)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter -->
@@ -53,7 +53,7 @@
         <div>
           <h1 class="text-base font-extrabold tracking-tight leading-tight flex items-center gap-1.5">
             <span id="app-title">Happy Home Hub</span>
-            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.9</span>
+            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.9.1</span>
           </h1>
           <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey & Elly • Helper Daily Guide</p>
         </div>
@@ -326,7 +326,7 @@
             <button onclick="quickAddStaple('Fresh Whole Milk', '全脂鮮牛奶', 'Fresh Whole Milk', '2 cartons', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
               🥛 + Milk
             </button>
-            <button onclick="quickAddStaple('Fresh Eggs', '雞蛋', 'Itlog', '1 carton (10 pcs)', 'Supermarket')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
+            <button onclick="quickAddStaple('Fresh Eggs', '新鮮雞蛋', 'Itlog', '1 carton (10 pcs)', 'Wet Market Egg Stall')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
               🥚 + Eggs
             </button>
             <button onclick="quickAddStaple('Sliced Sandwich Bread', '白方包', 'Tinapay', '1 loaf', 'Bakery')" class="bg-white/15 hover:bg-white/30 text-white text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 transition active:scale-95">
@@ -549,8 +549,8 @@
         pinTitle: "Employer PIN Access",
         pinDesc: "Enter 4-digit employer PIN to manage tasks.",
         calTitle: "Today's Schedule & Mode",
-        afterSchoolTitle: "After-School Lunchbox Check",
-        afterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home:",
+        afterSchoolTitle: "Daily Lunch Check (Appetite & Leftover Verification)",
+        afterSchoolDesc: "Open thermos upon arrival (or check plates after home lunch). Take photo and confirm appetite:",
         leftoverFinishAlert: "⚠️ FINISH REMAINING: Over 50% left! Warm up leftovers to eat before afternoon snack!",
         leftoverSuccess: "✅ Great job! Lunch was finished (>50%). Ready for the planned healthy snack.",
         memoTitle: "Family Notice Board (Bilingual)",
@@ -589,8 +589,8 @@
         pinTitle: "僱主安全 PIN 碼",
         pinDesc: "請輸入 4 位數僱主安全密碼以管理任務。",
         calTitle: "今日上學及放假模式",
-        afterSchoolTitle: "放學保溫壺剩菜檢查",
-        afterSchoolDesc: "Harvey 和 Elly 放學返屋企後，立即打開保溫壺檢查：",
+        afterSchoolTitle: "每日午餐進食檢查（食量與剩菜確認）",
+        afterSchoolDesc: "小朋友回家後立即打開保溫壺（在家午餐則檢查餐盤）。拍照並確認食量：",
         leftoverFinishAlert: "⚠️ 需要食完：飯餸剩下超過一半！請先加熱剩菜給小朋友食完，方可吃下午茶！",
         leftoverSuccess: "✅ 表現出色！飯餸已食完超過一半，可以享用今日營養下午茶。",
         memoTitle: "家園每日留言板 (雙向翻譯)",
@@ -629,8 +629,8 @@
         pinTitle: "Employer PIN Access",
         pinDesc: "Ipasok ang 4-digit PIN ng employer upang mag-edit ng mga gawain.",
         calTitle: "Iskedyul sa Eskwela at Mode Ngayon",
-        afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
-        afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
+        afterSchoolTitle: "Pagsusuri ng Tanghalian (Check sa Kinain at Natira)",
+        afterSchoolDesc: "Buksan ang thermos pagkauwi (o tingnan ang plato sa bahay). Kunan ng litrato at itala ang kinain:",
         leftoverFinishAlert: "⚠️ KAILANGAN UBOSIN: Hindi naubos ang higit sa 50% ng tanghalian! Painitin ang natira upang ubusin bago mag-merienda!",
         leftoverSuccess: "✅ Magaling! Naubos ang tanghalian (>50%). Maaari nang ihain ang nakatakdang masustansyang merienda.",
         memoTitle: "Memo ng Pamilya (Bilingual)",
@@ -1542,6 +1542,10 @@
 
           if (it.qty) secondaryName += ` (${it.qty})`;
           const speechPayload = `${it.itemCn || it.itemEn} ${it.qty || ''}`.replace(/"/g, '&quot;');
+          const safeNameCn = (it.itemCn || it.itemEn || '').replace(/['"\\]/g, ' ');
+          const safeQty = (it.qty || '').replace(/['"\\]/g, ' ');
+          const safeNotes = (it.notes || '').replace(/['"\\]/g, ' ');
+          const safeCat = catName.replace(/['"\\]/g, ' ');
 
           html += `
             <div class="flex items-center justify-between p-2.5 rounded-xl ${bgStyle} transition gap-2">
@@ -1552,7 +1556,7 @@
                     <span>${primaryName}</span>
                     ${isLow ? '<span class="bg-amber-500 text-white text-[9px] px-1.5 py-0.2 rounded font-black">LOW</span>' : ''}
                   </p>
-                  <p class="text-[11px] text-amber-800 font-medium">${secondaryName}</p>
+                  <p onclick="openMarketFlashcard('${safeNameCn}', '${safeQty}', '${safeNotes}', '${safeCat}')" class="text-[11px] text-amber-800 font-bold cursor-pointer hover:underline flex items-center gap-1.5"><span>${secondaryName}</span><span class="text-[9px] bg-amber-200/90 text-amber-900 px-1.5 py-0.5 rounded font-black">🔍 大字</span></p>
                   ${it.notes ? `<p class="text-[10px] text-slate-500 mt-0.5">${it.notes}</p>` : ''}
                 </div>
               </label>
@@ -1567,6 +1571,10 @@
                 <button onclick="speakCantonese('${speechPayload}')" title="Pronounce in Cantonese to Vendor" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 font-bold shadow-sm transition active:scale-95">
                   <i class="fa-solid fa-volume-high text-amber-700"></i>
                   <span class="text-[11px]">廣東話</span>
+                </button>
+                <button type="button" onclick="openMarketFlashcard('${safeNameCn}', '${safeQty}', '${safeNotes}', '${safeCat}')" title="Enlarge Chinese text for noisy market" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1 font-bold shadow-sm transition active:scale-95">
+                  <i class="fa-solid fa-magnifying-glass-plus"></i>
+                  <span class="text-[11px]">🔍 大字</span>
                 </button>
               </div>
             </div>
@@ -1624,6 +1632,7 @@
 
       const todayKey = new Date().toISOString().split('T')[0];
       let html = '';
+      let lunchCheckModuleAlreadyRendered = false;
 
       const modeLabel = isSchoolDayMode 
         ? "🎒 Mode: School Day Routine (全日上學作息)" 
@@ -1769,11 +1778,34 @@
 
         const isPhoto = photoReq.includes('YES') || photoReq.includes('📸');
         let taskType = 'general';
-        if (timeBlock.includes('06:30') || timeBlock.includes('07:45')) taskType = 'baon';
-        if (timeBlock.includes('09:30') || timeBlock.includes('11:00')) taskType = 'market';
-        if (timeBlock.includes('15:00') || timeBlock.includes('16:00')) taskType = 'snack';
+        const titleLower = (titleEn + ' ' + titleCn).toLowerCase();
+        if (titleLower.includes('breakfast') || titleLower.includes('早餐')) {
+          taskType = (titleLower.includes('after') || titleLower.includes('吃完')) ? 'breakfast_after' : 'breakfast_before';
+        } else if (titleLower.includes('lunchbox packing') || titleLower.includes('裝壺') || titleLower.includes('baon')) {
+          taskType = 'lunch_before';
+        } else if (titleLower.includes('lunch check') || titleLower.includes('午餐檢查') || titleLower.includes('開壺') || titleLower.includes('吃完')) {
+          taskType = 'lunch_after';
+        } else if (timeBlock.includes('11:00') || titleLower.includes('market') || titleLower.includes('買餸')) {
+          taskType = 'market';
+        } else if (titleLower.includes('snack') || titleLower.includes('下午茶')) {
+          taskType = 'snack';
+        }
 
-        const isAfterSchoolBlock = (timeBlock.includes('15:00') || timeBlock.includes('16:00') || timeBlock.toLowerCase().includes('afternoon') || timeBlock.toLowerCase().includes('snack'));
+        // Render lunch check module strictly ONCE per day (3:45 PM on school days; 11:30/12:00 on non-school days)
+        let isLunchCheckBlock = false;
+        if (!lunchCheckModuleAlreadyRendered) {
+          if (isSchoolDayMode) {
+            if (timeBlock.includes('03:45') || timeBlock.includes('15:45') || titleEn.toLowerCase().includes('lunchbox inspection') || titleCn.includes('保溫壺')) {
+              isLunchCheckBlock = true;
+              lunchCheckModuleAlreadyRendered = true;
+            }
+          } else {
+            if ((timeBlock.includes('11:30') || timeBlock.includes('12:00') || timeBlock.includes('12:30') || titleEn.toLowerCase().includes('lunch') || titleCn.includes('午餐')) && !titleEn.toLowerCase().includes('gear') && !titleCn.includes('運動裝備') && !titleCn.includes('戶外')) {
+              isLunchCheckBlock = true;
+              lunchCheckModuleAlreadyRendered = true;
+            }
+          }
+        }
 
         const isVerified = localStorage.getItem(`verified_${taskType}_${todayKey}`) === 'true';
         const savedThumb = localStorage.getItem(`thumb_${taskType}_${todayKey}`);
@@ -1817,7 +1849,7 @@
             ${rationale ? `<p class="text-[11px] text-amber-900 bg-amber-50/60 p-2 rounded-xl mb-2.5 border border-amber-100">💡 <b>Goal:</b> ${rationale}</p>` : ''}
 
             <!-- After-School Lunchbox Leftover Check Module -->
-            ${isAfterSchoolBlock ? renderAfterSchoolModule() : ''}
+            ${isLunchCheckBlock ? renderLunchCheckModule() : ''}
 
             <div class="space-y-2 text-xs mb-3">
         `;
@@ -1871,44 +1903,83 @@
       if (isAdminUnlocked) enableAdminMode();
     }
 
-    // Render After-School Check
-    function renderAfterSchoolModule() {
+    // Render Unified Lunch Check Module (Works on School & Non-School Days)
+    function renderLunchCheckModule() {
       const t = dict[currentLang];
+      const todayKey = new Date().toISOString().split('T')[0];
+      const isPhotoDone = localStorage.getItem(`verified_lunch_after_${todayKey}`) === 'true';
+      const photoThumb = localStorage.getItem(`thumb_lunch_after_${todayKey}`);
+
       return `
-        <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 p-3 rounded-xl mb-3 space-y-2.5">
-          <div class="flex items-center gap-1.5 font-black text-xs text-orange-950">
-            <span>🍱</span>
-            <span>${t.afterSchoolTitle}</span>
+        <div class="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100/60 border-2 border-amber-300 p-3.5 rounded-2xl mb-3 space-y-3 shadow-sm">
+          <div class="flex justify-between items-center border-b border-amber-200/80 pb-2">
+            <div class="flex items-center gap-1.5 font-black text-xs text-amber-950">
+              <span class="text-base">🍱</span>
+              <span>${t.afterSchoolTitle}</span>
+            </div>
+            <span class="text-[10px] bg-amber-200 text-amber-900 font-extrabold px-2 py-0.5 rounded-full">
+              Lunch Verification
+            </span>
           </div>
-          <p class="text-[11px] text-orange-900 font-medium">${t.afterSchoolDesc}</p>
+
+          <p class="text-[11px] text-amber-900 font-medium leading-relaxed">${t.afterSchoolDesc}</p>
           
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="bg-white/85 p-2 rounded-xl border border-orange-200/60 shadow-xs">
-              <p class="font-bold text-slate-700 text-[11px] mb-1">Harvey:</p>
-              <div class="flex flex-col gap-1">
-                <button onclick="setLeftover('harvey', 'finished')" class="btn-harvey-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
-                  🟢 Finished >50%
+          <!-- Appetite Selection Grid -->
+          <div class="grid grid-cols-2 gap-2.5 text-xs">
+            <!-- Harvey Box -->
+            <div class="bg-white/95 p-2.5 rounded-2xl border border-amber-200 shadow-xs space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="font-extrabold text-blue-900 text-xs flex items-center gap-1">👦 Harvey</span>
+                <span id="badge-harvey-appetite" class="text-[9px] font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Unrecorded</span>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <button type="button" onclick="setLeftover('harvey', 'finished')" class="btn-harvey-finished text-[11px] font-bold py-2 px-2 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95 flex items-center justify-between">
+                  <span>🟢 Finished &gt;50%</span>
+                  <span class="text-[10px] font-normal text-slate-400">食完</span>
                 </button>
-                <button onclick="setLeftover('harvey', 'left')" class="btn-harvey-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
-                  ⚠️ Left >50%
+                <button type="button" onclick="setLeftover('harvey', 'left')" class="btn-harvey-left text-[11px] font-bold py-2 px-2 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95 flex items-center justify-between">
+                  <span>⚠️ Left &gt;50%</span>
+                  <span class="text-[10px] font-normal text-slate-400">剩下</span>
                 </button>
               </div>
+              <div id="status-harvey-text" class="text-[10px] font-bold pt-0.5"></div>
             </div>
 
-            <div class="bg-white/85 p-2 rounded-xl border border-orange-200/60 shadow-xs">
-              <p class="font-bold text-slate-700 text-[11px] mb-1">Elly:</p>
-              <div class="flex flex-col gap-1">
-                <button onclick="setLeftover('elly', 'finished')" class="btn-elly-finished text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
-                  🟢 Finished >50%
+            <!-- Elly Box -->
+            <div class="bg-white/95 p-2.5 rounded-2xl border border-amber-200 shadow-xs space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="font-extrabold text-pink-900 text-xs flex items-center gap-1">👧 Elly</span>
+                <span id="badge-elly-appetite" class="text-[9px] font-black px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Unrecorded</span>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <button type="button" onclick="setLeftover('elly', 'finished')" class="btn-elly-finished text-[11px] font-bold py-2 px-2 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95 flex items-center justify-between">
+                  <span>🟢 Finished &gt;50%</span>
+                  <span class="text-[10px] font-normal text-slate-400">食完</span>
                 </button>
-                <button onclick="setLeftover('elly', 'left')" class="btn-elly-left text-[10px] font-bold py-1.5 px-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95">
-                  ⚠️ Left >50%
+                <button type="button" onclick="setLeftover('elly', 'left')" class="btn-elly-left text-[11px] font-bold py-2 px-2 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 text-left transition active:scale-95 flex items-center justify-between">
+                  <span>⚠️ Left &gt;50%</span>
+                  <span class="text-[10px] font-normal text-slate-400">剩下</span>
                 </button>
               </div>
+              <div id="status-elly-text" class="text-[10px] font-bold pt-0.5"></div>
             </div>
           </div>
 
-          <div class="leftover-alert-box hidden p-2 rounded-lg text-xs font-bold leading-tight"></div>
+          <!-- Mandatory Lunch Check Photo Button -->
+          <div class="bg-white/80 p-2.5 rounded-xl border border-amber-200/80 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              ${photoThumb ? `<img src="${photoThumb}" onclick="openPhotoModal('${photoThumb}')" class="w-9 h-9 object-cover rounded-lg border border-amber-300 cursor-pointer shadow-xs">` : '<div class="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center text-sm">📸</div>'}
+              <div class="text-[11px]">
+                <p class="font-bold text-slate-800">📸 Lunch Check Photo (午餐檢查拍照)</p>
+                <p class="text-[10px] text-slate-500">${isPhotoDone ? '✓ Verified with Gemini AI' : 'Required before afternoon snack'}</p>
+              </div>
+            </div>
+            <button type="button" onclick="triggerInAppCamera('lunch_after', 'lunch_check')" class="${isPhotoDone ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-rose-500 hover:bg-rose-600 text-white shadow-sm'} font-bold text-xs px-3 py-1.5 rounded-xl transition active:scale-95">
+              ${isPhotoDone ? '🔄 Retake' : '📸 Take Photo'}
+            </button>
+          </div>
+
+          <div id="leftover-alert-box" class="leftover-alert-box hidden p-2.5 rounded-xl text-xs font-bold leading-tight"></div>
         </div>
       `;
     }
@@ -1943,7 +2014,7 @@
             harvey_finished: hStatus,
             elly_finished: eStatus,
             finish_action: actionTaken,
-            notes: `Logged via Happy Home Hub v2.9 (${kid}: ${status})`
+            notes: `Logged via Happy Home Hub v2.9.1 (${kid}: ${status})`
           })
         });
       } catch (e) {
@@ -1956,39 +2027,56 @@
       const eStatus = localStorage.getItem('leftover_elly');
       const t = dict[currentLang];
 
-      const hFin = document.getElementById('btn-harvey-finished');
-      const hLeft = document.getElementById('btn-harvey-left');
-      const eFin = document.getElementById('btn-elly-finished');
-      const eLeft = document.getElementById('btn-elly-left');
-      const alertBox = document.getElementById('leftover-alert-box');
+      const hFinBtns = document.querySelectorAll('.btn-harvey-finished');
+      const hLeftBtns = document.querySelectorAll('.btn-harvey-left');
+      const eFinBtns = document.querySelectorAll('.btn-elly-finished');
+      const eLeftBtns = document.querySelectorAll('.btn-elly-left');
+      const hBadge = document.getElementById('badge-harvey-appetite');
+      const eBadge = document.getElementById('badge-elly-appetite');
+      const hText = document.getElementById('status-harvey-text');
+      const eText = document.getElementById('status-elly-text');
+      const alertBoxes = document.querySelectorAll('.leftover-alert-box');
 
-      if (!hFin) return;
-
+      // Style Harvey Buttons & Status
       if (hStatus === 'finished') {
-        hFin.className = "text-[10px] font-black py-1 px-1.5 rounded bg-emerald-500 text-white border border-emerald-600 text-left";
-        hLeft.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+        hFinBtns.forEach(b => b.className = "btn-harvey-finished text-[11px] font-black py-2 px-2.5 rounded-xl bg-emerald-600 text-white border-2 border-emerald-700 ring-2 ring-emerald-300 shadow-md text-left transition scale-[1.02] flex items-center justify-between");
+        hLeftBtns.forEach(b => b.className = "btn-harvey-left text-[11px] font-medium py-2 px-2.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 text-left transition opacity-50 flex items-center justify-between");
+        if (hBadge) { hBadge.className = "text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-xs"; hBadge.innerText = "✓ Finished >50%"; }
+        if (hText) { hText.innerHTML = '<span class="text-emerald-700 flex items-center gap-1 font-black">✓ 已確認食完（無需加熱）</span>'; }
       } else if (hStatus === 'left') {
-        hLeft.className = "text-[10px] font-black py-1 px-1.5 rounded bg-rose-500 text-white border border-rose-600 text-left";
-        hFin.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+        hLeftBtns.forEach(b => b.className = "btn-harvey-left text-[11px] font-black py-2 px-2.5 rounded-xl bg-rose-600 text-white border-2 border-rose-700 ring-2 ring-rose-300 shadow-md text-left transition scale-[1.02] flex items-center justify-between");
+        hFinBtns.forEach(b => b.className = "btn-harvey-finished text-[11px] font-medium py-2 px-2.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 text-left transition opacity-50 flex items-center justify-between");
+        if (hBadge) { hBadge.className = "text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-600 text-white shadow-xs"; hBadge.innerText = "⚠️ Left >50%"; }
+        if (hText) { hText.innerHTML = '<span class="text-rose-700 flex items-center gap-1 font-black">⚠️ 剩飯菜多，需先加熱食完！</span>'; }
       }
 
+      // Style Elly Buttons & Status
       if (eStatus === 'finished') {
-        eFin.className = "text-[10px] font-black py-1 px-1.5 rounded bg-emerald-500 text-white border border-emerald-600 text-left";
-        eLeft.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+        eFinBtns.forEach(b => b.className = "btn-elly-finished text-[11px] font-black py-2 px-2.5 rounded-xl bg-emerald-600 text-white border-2 border-emerald-700 ring-2 ring-emerald-300 shadow-md text-left transition scale-[1.02] flex items-center justify-between");
+        eLeftBtns.forEach(b => b.className = "btn-elly-left text-[11px] font-medium py-2 px-2.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 text-left transition opacity-50 flex items-center justify-between");
+        if (eBadge) { eBadge.className = "text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-xs"; eBadge.innerText = "✓ Finished >50%"; }
+        if (eText) { eText.innerHTML = '<span class="text-emerald-700 flex items-center gap-1 font-black">✓ 已確認食完（無需加熱）</span>'; }
       } else if (eStatus === 'left') {
-        eLeft.className = "text-[10px] font-black py-1 px-1.5 rounded bg-rose-500 text-white border border-rose-600 text-left";
-        eFin.className = "text-[10px] font-medium py-1 px-1.5 rounded bg-slate-100 text-slate-400 border border-slate-200 text-left";
+        eLeftBtns.forEach(b => b.className = "btn-elly-left text-[11px] font-black py-2 px-2.5 rounded-xl bg-rose-600 text-white border-2 border-rose-700 ring-2 ring-rose-300 shadow-md text-left transition scale-[1.02] flex items-center justify-between");
+        eFinBtns.forEach(b => b.className = "btn-elly-finished text-[11px] font-medium py-2 px-2.5 rounded-xl bg-slate-100 text-slate-400 border border-slate-200 text-left transition opacity-50 flex items-center justify-between");
+        if (eBadge) { eBadge.className = "text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-600 text-white shadow-xs"; eBadge.innerText = "⚠️ Left >50%"; }
+        if (eText) { eText.innerHTML = '<span class="text-rose-700 flex items-center gap-1 font-black">⚠️ 剩飯菜多，需先加熱食完！</span>'; }
       }
 
-      if (hStatus === 'left' || eStatus === 'left') {
-        alertBox.classList.remove('hidden');
-        alertBox.className = "p-2.5 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 font-bold text-xs";
-        alertBox.innerText = t.leftoverFinishAlert;
-      } else if (hStatus === 'finished' && eStatus === 'finished') {
-        alertBox.classList.remove('hidden');
-        alertBox.className = "p-2.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold text-xs";
-        alertBox.innerText = t.leftoverSuccess;
-      }
+      // Alert Box Handling
+      alertBoxes.forEach(alertBox => {
+        if (hStatus === 'left' || eStatus === 'left') {
+          alertBox.classList.remove('hidden');
+          alertBox.className = "leftover-alert-box p-3 rounded-xl bg-rose-100 text-rose-900 border-2 border-rose-400 font-black text-xs space-y-1 shadow-sm";
+          alertBox.innerHTML = `<div>${t.leftoverFinishAlert}</div><p class="text-[10px] text-rose-800 font-medium">⚠️ 溫馨提示：請先將保溫壺或餐盤內的剩飯餸微波或蒸熱，督促小朋友食完，方可享用下午茶。</p>`;
+        } else if (hStatus === 'finished' && eStatus === 'finished') {
+          alertBox.classList.remove('hidden');
+          alertBox.className = "leftover-alert-box p-3 rounded-xl bg-emerald-100 text-emerald-900 border-2 border-emerald-400 font-black text-xs space-y-1 shadow-sm";
+          alertBox.innerHTML = `<div>${t.leftoverSuccess}</div><p class="text-[10px] text-emerald-800 font-medium">✓ 兩位小朋友午餐食量優良，已達今日生長目標，可直接提供下午茶。</p>`;
+        } else {
+          alertBox.classList.add('hidden');
+        }
+      });
     }
 
     // Fast In-Browser Image Compressor
@@ -2068,7 +2156,7 @@
           mime_type: 'image/jpeg',
           image_base64: base64Data,
           date: todayDateStr,
-          notes: `Uploaded via Happy Home Hub v2.9 (${taskType})`
+          notes: `Uploaded via Happy Home Hub v2.9.1 (${taskType})`
         };
 
         const controller = new AbortController();
@@ -2502,6 +2590,36 @@
     applyTranslations();
     syncAllData();
   
+
+    // Market Flashcard Modal for Noisy Wet Markets
+    let currentFlashcardPayload = '';
+
+    function openMarketFlashcard(nameCn, qty, notes, cat) {
+      document.getElementById('flashcard-chinese-name').innerText = nameCn || '';
+      document.getElementById('flashcard-quantity').innerText = qty || '適量';
+      const notesEl = document.getElementById('flashcard-notes');
+      if (notes && notes.trim() !== '') {
+        notesEl.innerText = notes;
+        notesEl.classList.remove('hidden');
+      } else {
+        notesEl.classList.add('hidden');
+      }
+      document.getElementById('flashcard-category').innerText = cat || '街市攤檔';
+      currentFlashcardPayload = `${nameCn} ${qty || ''}`.replace(/"/g, '&quot;');
+      document.getElementById('market-flashcard-modal').classList.remove('hidden');
+    }
+
+    function closeMarketFlashcard() {
+      const modal = document.getElementById('market-flashcard-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function playFlashcardAudio() {
+      if (currentFlashcardPayload) {
+        speakCantonese(currentFlashcardPayload);
+      }
+    }
+
     // Photo Lightbox Enlargement
     function openPhotoModal(imgSrc) {
       if (!imgSrc) return;
@@ -2517,6 +2635,47 @@
     }
 
   </script>
+
+  <!-- ==================== MARKET FLASHCARD ENLARGED CHINESE MODAL ==================== -->
+  <div id="market-flashcard-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4" onclick="closeMarketFlashcard()">
+    <div class="relative max-w-sm w-full bg-white rounded-3xl p-6 shadow-2xl border-4 border-amber-400 text-center space-y-4" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center border-b border-amber-100 pb-2">
+        <span id="flashcard-category" class="text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 px-3 py-1 rounded-full">
+          街市攤檔
+        </span>
+        <button type="button" onclick="closeMarketFlashcard()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm font-black">
+          ✕
+        </button>
+      </div>
+
+      <!-- Giant Chinese Character Display for Wet Market Vendors -->
+      <div class="py-4 space-y-3">
+        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">向街市店主出示 (Show to Vendor)</p>
+        <h2 id="flashcard-chinese-name" class="text-5xl font-black text-slate-900 tracking-tight leading-tight select-all">
+          新鮮豬踭
+        </h2>
+        <div id="flashcard-quantity-box" class="bg-amber-50 p-2.5 rounded-2xl border border-amber-200 inline-block px-5">
+          <p id="flashcard-quantity" class="text-3xl font-black text-amber-700">
+            3 斤
+          </p>
+        </div>
+        <p id="flashcard-notes" class="text-sm font-bold text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 italic">
+          煲湯用，切塊
+        </p>
+      </div>
+
+      <div class="pt-2 border-t border-slate-100 flex gap-2">
+        <button type="button" id="flashcard-audio-btn" onclick="playFlashcardAudio()" class="flex-1 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md transition active:scale-95">
+          <i class="fa-solid fa-volume-high text-base"></i>
+          <span>🔊 播放廣東話讀音</span>
+        </button>
+        <button type="button" onclick="closeMarketFlashcard()" class="py-3 px-5 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== PHOTO ENLARGEMENT LIGHTBOX MODAL ==================== -->
   <div id="photo-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="closePhotoModal()">
     <div class="relative max-w-sm w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-700" onclick="event.stopPropagation()">
