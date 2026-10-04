@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="./icon-192.png">
-  <title>Happy Home • Helper Routine, Meals & Groceries (v2.8)</title>
+  <title>Happy Home • Helper Routine, Meals & Groceries (v2.9)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter -->
@@ -53,9 +53,9 @@
         <div>
           <h1 class="text-base font-extrabold tracking-tight leading-tight flex items-center gap-1.5">
             <span id="app-title">Happy Home Hub</span>
-            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.8</span>
+            <span class="bg-amber-800 text-[10px] px-1.5 py-0.5 rounded font-mono font-normal">v2.9</span>
           </h1>
-          <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey & Elly • Helper Daily Guide</p>
+          <p id="app-subtitle" class="text-[11px] text-amber-200">Harvey (Grade 4) & Elly (Grade 2) • Helper Daily Guide</p>
         </div>
       </div>
       
@@ -67,7 +67,7 @@
           <button onclick="setLang('tl')" id="btn-lang-tl" class="px-2 py-1 rounded transition text-[11px]">TL</button>
         </div>
 
-        <!-- Employer PIN Unlock Button (PIN: 2776) -->
+        <!-- Employer PIN Unlock Button -->
         <button onclick="openPinModal()" id="btn-pin-toggle" title="Employer PIN Settings" class="w-8 h-8 rounded-lg bg-amber-800/80 hover:bg-amber-800 flex items-center justify-center text-amber-200 transition active:scale-95">
           <i class="fa-solid fa-lock text-xs" id="admin-icon"></i>
         </button>
@@ -111,12 +111,12 @@
     </div>
   </section>
 
-  <!-- Admin Mode Bar (Visible when unlocked via PIN 2776) -->
+  <!-- Admin Mode Bar -->
   <div id="admin-mode-banner" class="hidden bg-indigo-600 text-white px-4 py-2 text-xs font-bold text-center flex flex-col gap-1.5 max-w-md mx-auto w-full shadow">
     <div class="flex justify-between items-center w-full">
       <span class="flex items-center gap-1.5">
         <i class="fa-solid fa-unlock-keyhole text-amber-300"></i>
-        <span id="t-admin-active">Employer Admin Mode (PIN: 2776)</span>
+        <span id="t-admin-active">Employer Admin Mode Active</span>
       </span>
       <div class="flex gap-2">
         <button onclick="toggleBackendConfigModal()" class="bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
@@ -204,7 +204,7 @@
           <!-- Harvey Status -->
           <div class="bg-blue-50/70 border border-blue-100 p-2 rounded-xl">
             <div class="flex items-center justify-between mb-1">
-              <span class="font-bold text-blue-900">👦 Harvey</span>
+              <span class="font-bold text-blue-900">👦 Harvey (Grade 4)</span>
               <span id="harvey-cal-tag" class="text-[10px] px-1.5 py-0.2 rounded font-bold">Checking...</span>
             </div>
             <p id="harvey-cal-status" class="text-[11px] text-blue-700 leading-tight">School Day</p>
@@ -212,7 +212,7 @@
           <!-- Elly Status -->
           <div class="bg-pink-50/70 border border-pink-100 p-2 rounded-xl">
             <div class="flex items-center justify-between mb-1">
-              <span class="font-bold text-pink-900">👧 Elly</span>
+              <span class="font-bold text-pink-900">👧 Elly (Grade 2)</span>
               <span id="elly-cal-tag" class="text-[10px] px-1.5 py-0.2 rounded font-bold">Checking...</span>
             </div>
             <p id="elly-cal-status" class="text-[11px] text-pink-700 leading-tight">School Day</p>
@@ -352,7 +352,7 @@
 
   </main>
 
-  <!-- ==================== EMPLOYER PIN MODAL (PIN: 2776) ==================== -->
+  <!-- ==================== EMPLOYER PIN MODAL ==================== -->
   <div id="pin-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl space-y-4 text-center border border-amber-100">
       <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-xl">
@@ -360,7 +360,7 @@
       </div>
       <div>
         <h3 class="font-bold text-base text-slate-800" id="t-pin-title">Employer PIN Access</h3>
-        <p class="text-xs text-slate-500 mt-1" id="t-pin-desc">Enter 4-digit PIN (2776) to manage tasks.</p>
+        <p class="text-xs text-slate-500 mt-1" id="t-pin-desc">Enter 4-digit employer PIN to manage tasks.</p>
       </div>
       <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-32 mx-auto text-center text-2xl tracking-widest font-mono font-bold py-2 border-2 border-amber-200 rounded-xl focus:outline-none focus:border-amber-500">
       <p id="pin-error" class="text-xs text-rose-500 font-bold hidden">Incorrect PIN. Try again.</p>
@@ -531,11 +531,11 @@
     const dict = {
       en: {
         appTitle: "Happy Home Hub",
-        appSubtitle: "Harvey & Elly • Helper Daily Guide",
+        appSubtitle: "Harvey (Grade 4) & Elly (Grade 2) • Helper Daily Guide",
         motiveTitle: "Family Teamwork • Harvey & Elly",
         motiveSub: "Thank you for taking great care of our home!",
         progLabel: "Daily Progress (2-Way Cloud Synced)",
-        adminActive: "Employer Admin Mode (PIN: 2776)",
+        adminActive: "Employer Admin Mode Active",
         navRoutine: "Routine",
         navMeals: "Meals",
         navGrocery: "Market",
@@ -547,7 +547,7 @@
         btnRetake: "🔄 Retake Photo",
         btnUploading: "Analyzing photo with Gemini 3.8 Flash...",
         pinTitle: "Employer PIN Access",
-        pinDesc: "Enter 4-digit PIN (2776) to manage tasks.",
+        pinDesc: "Enter 4-digit employer PIN to manage tasks.",
         calTitle: "Today's Schedule & Mode",
         afterSchoolTitle: "After-School Lunchbox Check",
         afterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home:",
@@ -555,16 +555,27 @@
         leftoverSuccess: "✅ Great job! Lunch was finished (>50%). Ready for the planned healthy snack.",
         memoTitle: "Family Notice Board (Bilingual)",
         memoPlaceholder: "Leave a note (e.g. Grandma visiting at 4 PM)...",
+        dinnerTitle: "Tonight's Growth Dinner Plan (1 Soup, 2 Proteins, 1 Veggie, Wholesome Carb)",
+        dinnerAttendanceTitle: "4:00 PM Dinner Attendance Check",
+        dinnerAttendanceDesc: "Ask employers how many adults will be dining at home before prepping ingredients:",
+        suppTitle: "Daily Pediatric Supplement Protocol (Harvey & Elly)",
+        suppMorning: "Morning Window (After Breakfast)",
+        suppEvening: "Evening Window (After Dinner / Before Bed)",
+        tennisAlert: "🎾 8:00 AM Priority: Book apartment tennis court at Management Office / Clubhouse (8:00 AM sharp)",
+        milestone2pmDeadline: "⚠️ 2:00 PM Completion Deadline: All morning cleaning, market shopping, laundry, and lunch must be finished before 2:00 PM for afternoon pickup.",
+        sundayOff: "🏖️ Sunday: Helper Day Off (No tasks or cooking scheduled)",
+        btnDinnerVideo: "Watch Dinner Recipe Video",
+        btnConfirmAttendance: "Confirm Headcount",
         mealsAfterSchoolTitle: "After-School Lunchbox Check (Appetite & Health)",
         mealsAfterSchoolDesc: "Open thermos immediately when Harvey & Elly arrive home. Record appetite status:"
       },
       zh: {
         appTitle: "溫馨家園助手",
-        appSubtitle: "Harvey & Elly • 姐姐每日家務指南",
+        appSubtitle: "Harvey (小四) & Elly (小二) • 姐姐每日家務指南",
         motiveTitle: "家庭同心 • 照顧 Harvey & Elly",
         motiveSub: "感謝你悉心打理屋企，讓小朋友健康快樂成長！",
         progLabel: "今日家務進度 (雙向雲端同步)",
-        adminActive: "僱主管理模式已啟用 (PIN: 2776)",
+        adminActive: "僱主管理模式已啟用",
         navRoutine: "作息時間",
         navMeals: "每日餐單",
         navGrocery: "街市買餸",
@@ -576,7 +587,7 @@
         btnRetake: "🔄 重新拍照",
         btnUploading: "AI 正在分析驗證相片 (Gemini 3.8)...",
         pinTitle: "僱主安全 PIN 碼",
-        pinDesc: "請輸入 4 位數 PIN 碼 (2776) 以管理任務。",
+        pinDesc: "請輸入 4 位數僱主安全密碼以管理任務。",
         calTitle: "今日上學及放假模式",
         afterSchoolTitle: "放學保溫壺剩菜檢查",
         afterSchoolDesc: "Harvey 和 Elly 放學返屋企後，立即打開保溫壺檢查：",
@@ -584,16 +595,27 @@
         leftoverSuccess: "✅ 表現出色！飯餸已食完超過一半，可以享用今日營養下午茶。",
         memoTitle: "家園每日留言板 (雙向翻譯)",
         memoPlaceholder: "輸入重要事項 (例如：婆婆下午四點來探訪)...",
+        dinnerTitle: "今晚長高營養晚餐（1湯、2肉/魚、1菜、高質非米飯澱粉）",
+        dinnerAttendanceTitle: "下午 4:00 晚餐人數確認",
+        dinnerAttendanceDesc: "準備食材前，請向僱主確認今晚有多少位大人在家吃晚飯：",
+        suppTitle: "小朋友每日成長營養補充品記錄（Harvey & Elly）",
+        suppMorning: "早上時段（早餐後）",
+        suppEvening: "晚上時段（晚餐後／睡前）",
+        tennisAlert: "🎾 早上 8:00 優先任務：準時致電或前往屋苑客務處/會所預訂網球場",
+        milestone2pmDeadline: "⚠️ 下午 2:00 完成界線：上午全屋清潔、買餸、晾衫及午餐必須於下午 2:00 前完成，以便準時接小朋友放學。",
+        sundayOff: "🏖️ 星期日：姐姐放假日（無需執行家務或煮食）",
+        btnDinnerVideo: "觀看晚餐烹飪影片教學",
+        btnConfirmAttendance: "確認人數",
         mealsAfterSchoolTitle: "放學保溫盒檢查（食量與營養追蹤）",
         mealsAfterSchoolDesc: "Harvey 和 Elly 回家後立即打開保溫壺，記錄今天午餐進食狀況："
       },
       tl: {
         appTitle: "Happy Home Hub",
-        appSubtitle: "Harvey at Elly • Gabay ng Kasambahay",
+        appSubtitle: "Harvey (Grade 4) at Elly (Grade 2) • Gabay ng Kasambahay",
         motiveTitle: "Pagtutulungan ng Pamilya • Harvey at Elly",
         motiveSub: "Maraming salamat sa iyong malasakit at pag-aalaga sa tahanan!",
         progLabel: "Nagawa Ngayong Araw (Cloud Synced)",
-        adminActive: "Naka-on ang Employer Mode (PIN: 2776)",
+        adminActive: "Naka-on ang Employer Mode",
         navRoutine: "Oras ng Gawain",
         navMeals: "Tanghalian",
         navGrocery: "Palengke",
@@ -605,7 +627,7 @@
         btnRetake: "🔄 Kunan Ulit",
         btnUploading: "Sinusuri ang litrato gamit ang Gemini 3.8...",
         pinTitle: "Employer PIN Access",
-        pinDesc: "Ipasok ang 4-digit PIN (2776) upang mag-edit ng mga gawain.",
+        pinDesc: "Ipasok ang 4-digit PIN ng employer upang mag-edit ng mga gawain.",
         calTitle: "Iskedyul sa Eskwela at Mode Ngayon",
         afterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
         afterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly:",
@@ -613,6 +635,17 @@
         leftoverSuccess: "✅ Magaling! Naubos ang tanghalian (>50%). Maaari nang ihain ang nakatakdang masustansyang merienda.",
         memoTitle: "Memo ng Pamilya (Bilingual)",
         memoPlaceholder: "Mag-iwan ng mensahe (hal. Bibisita si Lola ng 4 PM)...",
+        dinnerTitle: "Plano sa Hapunan (1 Sabaw, 2 Protina, 1 Gulay, Masustansyang Carb)",
+        dinnerAttendanceTitle: "4:00 PM Bilang ng Kakain sa Hapunan",
+        dinnerAttendanceDesc: "Tanungin ang mga employer kung ilang matatanda ang kakain sa bahay bago maghanda ng rekado:",
+        suppTitle: "Pang-araw-araw na Bitamina ng mga Bata (Harvey at Elly)",
+        suppMorning: "Oras sa Umaga (Pagkatapos ng Agahan)",
+        suppEvening: "Oras sa Gabi (Pagkatapos ng Hapunan / Bago Matulog)",
+        tennisAlert: "🎾 8:00 AM Priority: I-book ang apartment tennis court sa Management Office / Clubhouse",
+        milestone2pmDeadline: "⚠️ 2:00 PM Deadline: Lahat ng gawaing-bahay, palengke, at tanghalian ay dapat matapos bago mag-2:00 PM para sa pagsundo.",
+        sundayOff: "🏖️ Linggo: Day Off ng Kasambahay (Walang nakatakdang gawain)",
+        btnDinnerVideo: "Panoorin ang Video ng Hapunan",
+        btnConfirmAttendance: "Kumpirmahin ang Bilang",
         mealsAfterSchoolTitle: "Pagsusuri ng Baon Pagkauwi mula Eskwela",
         mealsAfterSchoolDesc: "Buksan agad ang thermos pagkauwi nina Harvey at Elly. Itala ang lagay ng pagkain:"
       }
@@ -740,17 +773,41 @@
       try {
         await fetchCalendarStatus();
         const targetRoutineTab = isSchoolDayMode ? 'School_Day_Routine' : 'No_School_Routine';
-        const [mealRows, groceryRows, routineRows, adhocRows] = await Promise.all([
+        const todayKey = new Date().toISOString().split('T')[0];
+
+        const [mealRows, groceryRows, routineRows, adhocRows, memoRows, progressRows, recurringRows] = await Promise.all([
           fetchSheetData('Weekly_Meals'),
           fetchSheetData('Grocery_List'),
           fetchSheetData(targetRoutineTab),
-          fetchSheetData('Today_Adhoc_Tasks').catch(() => [])
+          fetchSheetData('Today_Adhoc_Tasks').catch(() => []),
+          fetchSheetData('Daily_Memos').catch(() => []),
+          fetchSheetData('Daily_Progress').catch(() => []),
+          fetchSheetData('Recurring_Routines').catch(() => [])
         ]);
 
         currentMealsRows = mealRows;
         currentGroceryRows = groceryRows;
         currentRoutineRows = routineRows;
         currentTodayAdhocTasks = parseAdhocRows(adhocRows);
+        if (recurringRows && recurringRows.length > 0) {
+          currentRecurringRoutines = parseRecurringRows(recurringRows);
+          localStorage.setItem('cached_recurring_data', JSON.stringify(currentRecurringRoutines));
+        }
+
+        // Direct Parse & Render Memos from Daily_Memos Tab (Bug 1 Fix)
+        if (memoRows && memoRows.length > 0) {
+          const directMemos = parseMemoRows(memoRows);
+          if (directMemos.length > 0) {
+            currentTodayMemos = directMemos;
+            localStorage.setItem('cached_memos_data', JSON.stringify(currentTodayMemos));
+            renderMemos(currentTodayMemos);
+          }
+        }
+
+        // Direct Parse & Reconcile Checkboxes from Daily_Progress Tab (Bug 2 Fix)
+        if (progressRows && progressRows.length > 0) {
+          reconcileProgressFromSheet(progressRows, todayKey);
+        }
 
         localStorage.setItem('cached_meals_data', JSON.stringify(mealRows));
         localStorage.setItem('cached_groceries_data', JSON.stringify(groceryRows));
@@ -759,12 +816,13 @@
         localStorage.setItem('cached_routine_mode', targetRoutineTab);
         localStorage.setItem('last_sync_time', new Date().toLocaleTimeString());
 
-        // Fetch Two-Way Cloud State (Checklist, Appetite, Memos)
+        // Fetch Additional Two-Way Cloud State (Checklist, Appetite, Memos)
         await fetchCloudState();
 
         renderMeals(mealRows);
         renderGroceries(groceryRows);
         renderRoutine(routineRows);
+        loadCheckboxes();
 
         syncDot.className = "w-2 h-2 rounded-full bg-emerald-500";
         syncText.innerText = `Live Connected (${localStorage.getItem('last_sync_time')})`;
@@ -776,6 +834,100 @@
       } finally {
         syncIcon.classList.remove('fa-spin');
       }
+    }
+
+    let currentRecurringRoutines = [];
+
+    function parseMemoRows(rows) {
+      if (!rows || rows.length === 0) return [];
+      const memos = [];
+      rows.forEach(r => {
+        if (!r.c) return;
+        const ts = r.c[0] ? String(r.c[0].f || r.c[0].v).trim() : '';
+        if (ts.toLowerCase().includes('timestamp') || ts.toLowerCase().includes('date')) return;
+        const dateStr = r.c[1] ? String(r.c[1].f || r.c[1].v).trim() : '';
+        const sender = r.c[2] ? String(r.c[2].v || 'Employer').trim() : 'Employer';
+        const msgEn = r.c[3] ? String(r.c[3].v || '').trim() : '';
+        const msgCn = r.c[4] ? String(r.c[4].v || '').trim() : '';
+        const msgTl = r.c[5] ? String(r.c[5].v || '').trim() : '';
+        if (msgEn || msgCn || msgTl) {
+          memos.push({
+            timestamp: ts,
+            date: dateStr,
+            sender: sender,
+            msg_en: msgEn,
+            msg_cn: msgCn,
+            msg_tl: msgTl,
+            msgEn: msgEn,
+            msgCn: msgCn,
+            msgTl: msgTl
+          });
+        }
+      });
+      // Sort newest first
+      memos.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+      return memos;
+    }
+
+    function reconcileProgressFromSheet(rows, todayKey) {
+      if (!rows || rows.length <= 1) return;
+      // Reverse scan for today's latest progress row
+      for (let i = rows.length - 1; i >= 1; i--) {
+        const r = rows[i];
+        if (!r.c || !r.c[0]) continue;
+        const rDate = String(r.c[0].f || r.c[0].v).trim();
+        if (rDate.includes(todayKey)) {
+          if (r.c[1] && r.c[1].v) {
+            try {
+              const remoteChecked = JSON.parse(r.c[1].v);
+              if (Array.isArray(remoteChecked)) {
+                remoteChecked.forEach(k => {
+                  localStorage.setItem(`task_${todayKey}_${k}`, 'true');
+                });
+              }
+            } catch(e) {}
+          }
+          break;
+        }
+      }
+    }
+
+    function parseRecurringRows(rows) {
+      if (!rows || rows.length <= 1) return [];
+      const today = new Date();
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dayOfWeek = dayNames[today.getDay()];
+      const dayOfMonth = today.getDate(); // 1-31
+
+      const list = [];
+      rows.forEach(r => {
+        if (!r.c || !r.c[0]) return;
+        const type = String(r.c[0].v || '').trim();
+        if (type.toLowerCase().includes('type')) return;
+        const key = String(r.c[1] ? r.c[1].v : '').trim();
+        let matchesToday = false;
+
+        if (type.toLowerCase() === 'weekly' && key.toLowerCase() === dayOfWeek.toLowerCase()) {
+          matchesToday = true;
+        } else if (type.toLowerCase() === 'monthly') {
+          if (key === '1st_of_month' && dayOfMonth === 1) matchesToday = true;
+          if (key === '15th_of_month' && dayOfMonth === 15) matchesToday = true;
+        }
+
+        if (matchesToday) {
+          list.push({
+            type: type,
+            schedule_key: key,
+            task_en: r.c[2] ? String(r.c[2].v).trim() : '',
+            task_cn: r.c[3] ? String(r.c[3].v).trim() : '',
+            task_tl: r.c[4] ? String(r.c[4].v).trim() : '',
+            time_window: r.c[5] ? String(r.c[5].v).trim() : '09:00 – 11:15',
+            priority: r.c[6] ? String(r.c[6].v).trim() : 'NORMAL',
+            notes: r.c[7] ? String(r.c[7].v).trim() : ''
+          });
+        }
+      });
+      return list;
     }
 
     function parseAdhocRows(rows) {
@@ -855,24 +1007,38 @@
       const eTagElem = document.getElementById('elly-cal-tag');
 
       if (data.harvey) {
-        hStatusElem.innerText = data.harvey.summary;
         if (!data.harvey.has_school) {
-          hTagElem.innerText = "No School";
+          hTagElem.innerText = (currentLang === 'zh' ? "放假" : (currentLang === 'tl' ? "Walang Pasok" : "No School"));
           hTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-rose-600 text-white shadow-xs";
+          hStatusElem.innerText = data.harvey.summary || (currentLang === 'zh' ? "放假 / 週末" : "Holiday / Weekend");
         } else {
-          hTagElem.innerText = "School Day";
+          hTagElem.innerText = (currentLang === 'zh' ? "上學日" : (currentLang === 'tl' ? "May Pasok" : "School Day"));
           hTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-emerald-600 text-white shadow-xs";
+          if (data.harvey.has_eca || (data.harvey.summary && /eca|baseball|training|practice|swimming/i.test(data.harvey.summary))) {
+            hStatusElem.innerHTML = currentLang === 'zh' 
+              ? '<span class="font-bold text-indigo-700">接放學：下午 4:15</span> <span class="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.2 rounded font-bold">ECA課外活動</span>'
+              : (currentLang === 'tl' 
+                ? '<span class="font-bold text-indigo-700">Sundo: 4:15 PM</span> <span class="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.2 rounded font-bold">ECA Activity</span>'
+                : '<span class="font-bold text-indigo-700">Pick up: 4:15 PM</span> <span class="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.2 rounded font-bold">ECA Day</span>');
+          } else {
+            hStatusElem.innerText = currentLang === 'zh'
+              ? "接放學：下午 3:00"
+              : (currentLang === 'tl' ? "Sundo: 3:00 PM" : "Pick up: 3:00 PM");
+          }
         }
       }
 
       if (data.elly) {
-        eStatusElem.innerText = data.elly.summary;
         if (!data.elly.has_school) {
-          eTagElem.innerText = "No School";
+          eTagElem.innerText = (currentLang === 'zh' ? "放假" : (currentLang === 'tl' ? "Walang Pasok" : "No School"));
           eTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-rose-600 text-white shadow-xs";
+          eStatusElem.innerText = data.elly.summary || (currentLang === 'zh' ? "放假 / 週末" : "Holiday / Weekend");
         } else {
-          eTagElem.innerText = "School Day";
+          eTagElem.innerText = (currentLang === 'zh' ? "上學日" : (currentLang === 'tl' ? "May Pasok" : "School Day"));
           eTagElem.className = "text-[10px] px-2 py-0.5 rounded font-black bg-emerald-600 text-white shadow-xs";
+          eStatusElem.innerText = currentLang === 'zh'
+            ? "接放學：下午 3:15"
+            : (currentLang === 'tl' ? "Sundo: 3:15 PM" : "Pick up: 3:15 PM");
         }
       }
     }
@@ -1006,7 +1172,8 @@
         const allCheckboxes = document.querySelectorAll('.task-check');
         const checkedKeys = [];
         allCheckboxes.forEach((cb, idx) => {
-          if (cb.checked) checkedKeys.push(idx);
+          const taskId = cb.getAttribute('data-task-id') || `idx_${idx}`;
+          if (cb.checked) checkedKeys.push(taskId);
         });
         const total = allCheckboxes.length;
         const percent = total > 0 ? Math.round((checkedKeys.length / total) * 100) : 0;
@@ -1050,74 +1217,173 @@
       renderMemos(currentTodayMemos);
     }
 
-    // 1. Render Meals
+    // 1. Render Meals with Growth Dinners, Attendance Check & Supplement Tracker
     function renderMeals(rows) {
       const container = document.getElementById('meals-list');
       if (!rows || rows.length === 0) return;
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+      const todayKey = today.toISOString().split('T')[0];
+      const t = dict[currentLang];
       let html = '';
 
+      // 1. TOP CARD: Trilingual Pediatric Growth Supplement Protocol
+      html += `
+        <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-200 p-4 rounded-3xl shadow-sm space-y-3">
+          <div class="flex justify-between items-center border-b border-indigo-100 pb-2">
+            <span class="font-extrabold text-xs text-indigo-950 flex items-center gap-1.5">
+              <span>💊</span>
+              <span>${t.suppTitle}</span>
+            </span>
+            <span class="text-[10px] bg-indigo-600 text-white font-black px-2 py-0.5 rounded-full">Daily Protocol</span>
+          </div>
+
+          <!-- Morning Supplement Window -->
+          <div class="bg-white/90 p-3 rounded-2xl border border-indigo-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-amber-900 flex items-center gap-1.5">
+                <span>☀️</span> <b>${t.suppMorning}</b>
+              </span>
+              <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded">Post-Breakfast</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs">
+              <label class="flex items-start gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="supp_harvey_morning" class="mt-0.5 rounded text-indigo-600 task-check">
+                <span class="text-slate-800 leading-snug">
+                  <b>👦 Harvey (Grade 4):</b> 2 Kirkland Children Gummies + D3 400 IU (in warm milk) + 1 pack Calcium Granules (92mg Ca)
+                </span>
+              </label>
+
+              <label class="flex items-start gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="supp_elly_morning" class="mt-0.5 rounded text-indigo-600 task-check">
+                <span class="text-slate-800 leading-snug">
+                  <b>👧 Elly (Grade 2):</b> 2 Kirkland Children Gummies + D3 400 IU (in warm milk) + 1 pack Calcium Granules (92mg Ca)
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Evening Supplement Window -->
+          <div class="bg-white/90 p-3 rounded-2xl border border-indigo-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-purple-900 flex items-center gap-1.5">
+                <span>🌙</span> <b>${t.suppEvening}</b>
+              </span>
+              <span class="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.2 rounded">Post-Dinner / Bedtime</span>
+            </div>
+            
+            <div class="space-y-1.5 text-xs">
+              <label class="flex items-start gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="supp_harvey_evening" class="mt-0.5 rounded text-purple-600 task-check">
+                <span class="text-slate-800 leading-snug">
+                  <b>👦 Harvey (Grade 4):</b> 1 pack Calcium Granules in warm water (Total: 2 packs = 184mg Ca/day)
+                </span>
+              </label>
+
+              <label class="flex items-start gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
+                <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="supp_elly_evening" class="mt-0.5 rounded text-purple-600 task-check">
+                <span class="text-slate-800 leading-snug">
+                  <b>👧 Elly (Grade 2):</b> 2 packs Calcium Granules in warm water (Total: 3 packs = 276mg Ca/day)
+                </span>
+              </label>
+            </div>
+            <p class="text-[10px] text-purple-700 italic pl-1">
+              💡 ${currentLang === 'zh' ? '注意：鈣顆粒請用溫水沖服，避免直接加在牛奶中以確保最佳吸收率。' : 'Note: Dissolve calcium granules in warm water, not milk, to maximize absorption.'}
+            </p>
+          </div>
+        </div>
+      `;
+
+      // 2. 4:00 PM Dinner Attendance Check Card
+      const savedAttendance = localStorage.getItem(`dinner_attendance_${todayKey}`) || '';
+      html += `
+        <div class="bg-amber-50 border-2 border-amber-300 p-3.5 rounded-2xl shadow-sm space-y-2">
+          <div class="flex justify-between items-center border-b border-amber-200 pb-1.5">
+            <span class="font-bold text-xs text-amber-950 flex items-center gap-1.5">
+              <span>👨‍👩‍👧‍👦</span> <b>${t.dinnerAttendanceTitle}</b>
+            </span>
+            <span class="text-[10px] bg-amber-200 text-amber-800 font-bold px-2 py-0.5 rounded-full">Attendance</span>
+          </div>
+          <p class="text-xs text-amber-900 leading-relaxed font-medium">${t.dinnerAttendanceDesc}</p>
+          
+          <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+            <button onclick="setDinnerAttendance('3_adults')" id="btn-att-3" class="py-2 px-2.5 rounded-xl border font-bold text-left transition ${savedAttendance === '3_adults' ? 'bg-amber-600 text-white border-amber-700 shadow-sm' : 'bg-white text-slate-700 border-amber-200 hover:bg-amber-100'}">
+              👥 3 Adults (3位大人)
+            </button>
+            <button onclick="setDinnerAttendance('2_adults')" id="btn-att-2" class="py-2 px-2.5 rounded-xl border font-bold text-left transition ${savedAttendance === '2_adults' ? 'bg-amber-600 text-white border-amber-700 shadow-sm' : 'bg-white text-slate-700 border-amber-200 hover:bg-amber-100'}">
+              👥 2 Adults (2位大人)
+            </button>
+            <button onclick="setDinnerAttendance('1_adult')" id="btn-att-1" class="py-2 px-2.5 rounded-xl border font-bold text-left transition ${savedAttendance === '1_adult' ? 'bg-amber-600 text-white border-amber-700 shadow-sm' : 'bg-white text-slate-700 border-amber-200 hover:bg-amber-100'}">
+              👤 1 Adult (1位大人)
+            </button>
+            <button onclick="setDinnerAttendance('none')" id="btn-att-none" class="py-2 px-2.5 rounded-xl border font-bold text-left transition ${savedAttendance === 'none' ? 'bg-rose-600 text-white border-rose-700 shadow-sm' : 'bg-white text-rose-700 border-rose-200 hover:bg-rose-50'}">
+              🚫 None (不回家吃飯)
+            </button>
+          </div>
+          <p id="attendance-status-text" class="text-[10px] text-amber-800 font-bold italic pt-0.5">
+            ${savedAttendance ? `✓ Recorded: ${savedAttendance.replace('_', ' ')}` : 'Please check and select before 4:30 PM'}
+          </p>
+        </div>
+      `;
+
+      // 3. Render 6-Day Meal Cards (Mon to Sat)
       rows.forEach(r => {
-        const day = r.c[0] ? String(r.c[0].v).trim() : '';
+        if (!r.c || !r.c[0]) return;
+        const day = String(r.c[0].v).trim();
         if (day.toLowerCase() === 'day' || day.toLowerCase().includes('dish_en')) return;
 
-        let breakfast = '';
-        let dishEn = '';
-        let dishCn = '';
-        let dishTl = '';
-        let target = 'Kids';
-        let notes = '';
-        let lunchVideoUrl = '';
-        let snack = '';
-        let breakfastVideoUrl = '';
+        let breakfast = r.c[1] ? String(r.c[1].v).trim() : '';
+        let breakfastVideoUrl = r.c[2] ? String(r.c[2].v).trim() : '';
+        let dishEn = r.c[3] ? String(r.c[3].v).trim() : '';
+        let dishCn = r.c[4] ? String(r.c[4].v).trim() : '';
+        let dishTl = r.c[5] ? String(r.c[5].v).trim() : '';
+        let target = r.c[6] ? String(r.c[6].v).trim() : 'Kids';
+        let notes = r.c[7] ? String(r.c[7].v).trim() : '';
+        let lunchVideoUrl = r.c[8] ? String(r.c[8].v).trim() : '';
+        let snack = r.c[9] ? String(r.c[9].v).trim() : '';
 
-        if (r.c.length >= 10) {
-          breakfast = r.c[1] ? r.c[1].v : '';
-          breakfastVideoUrl = r.c[2] ? r.c[2].v : '';
-          dishEn = r.c[3] ? r.c[3].v : '';
-          dishCn = r.c[4] ? r.c[4].v : '';
-          dishTl = r.c[5] ? r.c[5].v : '';
-          target = r.c[6] ? r.c[6].v : 'Kids';
-          notes = r.c[7] ? r.c[7].v : '';
-          lunchVideoUrl = r.c[8] ? r.c[8].v : '';
-          snack = r.c[9] ? r.c[9].v : '';
-        } else if (r.c.length >= 9) {
-          breakfast = r.c[1] ? r.c[1].v : '';
-          dishEn = r.c[2] ? r.c[2].v : '';
-          dishCn = r.c[3] ? r.c[3].v : '';
-          dishTl = r.c[4] ? r.c[4].v : '';
-          target = r.c[5] ? r.c[5].v : 'Kids';
-          notes = r.c[6] ? r.c[6].v : '';
-          lunchVideoUrl = r.c[7] ? r.c[7].v : '';
-          snack = r.c[8] ? r.c[8].v : '';
-        }
+        // Dinner Columns
+        let dSoup = r.c[10] ? String(r.c[10].v).trim() : '';
+        if (currentLang === 'zh' && r.c[11]) dSoup = String(r.c[11].v).trim();
+        if (currentLang === 'tl' && r.c[12]) dSoup = String(r.c[12].v).trim();
 
-        if (!breakfastVideoUrl) {
-          if (breakfast.toLowerCase().includes('scrambled')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=s9r-C0UCDU0';
-          else if (breakfast.toLowerCase().includes('oatmeal')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=0k5G_C4hYdM';
-          else if (breakfast.toLowerCase().includes('dumpling')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=W0-s96Qn058';
-          else if (breakfast.toLowerCase().includes('sandwich') || breakfast.toLowerCase().includes('toast')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=g3uV9p8wF58';
-          else if (breakfast.toLowerCase().includes('tamago') || breakfast.toLowerCase().includes('omelette')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=1K_1HCVqg8U';
-          else if (breakfast.toLowerCase().includes('pancake')) breakfastVideoUrl = 'https://www.youtube.com/watch?v=GLdl7BGv10I';
-        }
+        let dProt1 = r.c[13] ? String(r.c[13].v).trim() : '';
+        if (currentLang === 'zh' && r.c[14]) dProt1 = String(r.c[14].v).trim();
+        if (currentLang === 'tl' && r.c[15]) dProt1 = String(r.c[15].v).trim();
+
+        let dProt2 = r.c[16] ? String(r.c[16].v).trim() : '';
+        if (currentLang === 'zh' && r.c[17]) dProt2 = String(r.c[17].v).trim();
+        if (currentLang === 'tl' && r.c[18]) dProt2 = String(r.c[18].v).trim();
+
+        let dVeg = r.c[19] ? String(r.c[19].v).trim() : '';
+        if (currentLang === 'zh' && r.c[20]) dVeg = String(r.c[20].v).trim();
+        if (currentLang === 'tl' && r.c[21]) dVeg = String(r.c[21].v).trim();
+
+        let dCarb = r.c[22] ? String(r.c[22].v).trim() : '';
+        if (currentLang === 'zh' && r.c[23]) dCarb = String(r.c[23].v).trim();
+        if (currentLang === 'tl' && r.c[24]) dCarb = String(r.c[24].v).trim();
+
+        let dinnerVideoUrl = r.c[25] ? String(r.c[25].v).trim() : '';
 
         let badgeStyle = 'bg-amber-100 text-amber-800';
         if (target.includes('Elly')) badgeStyle = 'bg-pink-100 text-pink-700 font-bold';
         if (target.includes('Harvey')) badgeStyle = 'bg-blue-100 text-blue-700 font-bold';
-        if (dishEn.toLowerCase().includes('curry')) badgeStyle = 'bg-amber-100 text-amber-900 font-black border border-amber-300';
 
-        let displayDish = dishEn;
-        if (currentLang === 'zh' && dishCn) displayDish = `${dishCn} (${dishEn})`;
-        if (currentLang === 'tl' && dishTl) displayDish = `${dishTl} (${dishEn})`;
+        let displayLunch = dishEn;
+        if (currentLang === 'zh' && dishCn) displayLunch = `${dishCn} (${dishEn})`;
+        if (currentLang === 'tl' && dishTl) displayLunch = `${dishTl} (${dishEn})`;
 
         html += `
-          <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-sm space-y-2.5">
+          <div class="bg-white rounded-3xl border border-amber-100 p-4 shadow-sm space-y-3">
             <div class="flex justify-between items-center border-b border-amber-100 pb-2">
-              <span class="font-bold text-xs text-amber-600 uppercase font-mono">${day}</span>
+              <span class="font-black text-xs text-amber-700 uppercase font-mono tracking-wider">${day}</span>
               <span class="text-[10px] ${badgeStyle} px-2 py-0.5 rounded-full">${target}</span>
             </div>
             
+            <!-- Breakfast Section -->
             ${breakfast ? `
-              <div class="bg-amber-50/70 border border-amber-200/60 p-2.5 rounded-xl text-xs space-y-1.5">
+              <div class="bg-amber-50/70 border border-amber-200/60 p-2.5 rounded-2xl text-xs space-y-1.5">
                 <span class="font-bold text-amber-900 flex items-center gap-1.5">
                   <span>🍳</span> <b>Breakfast (Agahan / 早餐):</b>
                 </span>
@@ -1134,25 +1400,88 @@
               </div>
             ` : ''}
 
-            <div>
-              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">🍱 Lunch (Tanghalian):</span>
-              <h4 class="font-bold text-sm text-slate-800 mt-0.5">${displayDish}</h4>
-              <p class="text-xs text-slate-500 mt-0.5">${notes}</p>
+            <!-- Lunch Section -->
+            <div class="p-2.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1 text-xs">
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">🍱 Lunch (Tanghalian / 午餐):</span>
+              <h4 class="font-bold text-sm text-slate-800 leading-snug">${displayLunch}</h4>
+              ${notes ? `<p class="text-[11px] text-slate-500">${notes}</p>` : ''}
+              
+              ${lunchVideoUrl ? `
+                <div class="pt-1">
+                  <a href="${lunchVideoUrl}" target="_blank" class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-2.5 py-1 rounded-lg text-[11px] font-bold transition">
+                    <i class="fa-brands fa-youtube text-red-500 text-sm"></i>
+                    <span>${dict[currentLang].btnVideo}</span>
+                  </a>
+                </div>
+              ` : ''}
             </div>
 
-            ${snack ? `<p class="text-[11px] text-orange-950 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 p-2 rounded-xl font-medium">🥪 <b>3:30 PM Snack:</b> ${snack}</p>` : ''}
+            <!-- Afternoon Snack -->
+            ${snack ? `<p class="text-[11px] text-orange-950 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 p-2.5 rounded-xl font-medium">🥪 <b>3:30 PM Snack:</b> ${snack}</p>` : ''}
 
-            ${lunchVideoUrl ? `
-              <a href="${lunchVideoUrl}" target="_blank" class="inline-flex items-center gap-2 bg-red-50 text-red-600 border border-red-200 px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition mt-1">
-                <i class="fa-brands fa-youtube text-red-500 text-base"></i>
-                <span>${dict[currentLang].btnVideo}</span>
-              </a>
+            <!-- Tonight's Growth Dinner Plan -->
+            ${(dProt1 || dSoup) ? `
+              <div class="bg-gradient-to-br from-amber-50/90 to-orange-50/60 border-2 border-amber-300 p-3 rounded-2xl space-y-2 text-xs">
+                <div class="flex justify-between items-center border-b border-amber-200/80 pb-1.5">
+                  <span class="font-black text-xs text-amber-950 flex items-center gap-1.5">
+                    <span>🍲</span> <b>${t.dinnerTitle}</b>
+                  </span>
+                  <span class="text-[9px] bg-amber-600 text-white font-black px-1.5 py-0.5 rounded">3 Adults + 2 Kids</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-1.5 text-xs text-slate-800 pl-1">
+                  ${dSoup ? `<p class="leading-relaxed"><b>🥣 Soup (湯水):</b> <span class="font-medium text-amber-950">${dSoup}</span></p>` : ''}
+                  ${dProt1 ? `<p class="leading-relaxed"><b>🥩 Protein 1 (主菜肉類):</b> <span class="font-medium text-slate-900">${dProt1}</span></p>` : ''}
+                  ${dProt2 ? `<p class="leading-relaxed"><b>🍗 Protein 2 (副菜蛋白質):</b> <span class="font-medium text-slate-900">${dProt2}</span></p>` : ''}
+                  ${dVeg ? `<p class="leading-relaxed"><b>🥬 Veggie (蔬菜):</b> <span class="font-medium text-slate-900">${dVeg}</span></p>` : ''}
+                  ${dCarb ? `<p class="leading-relaxed bg-amber-100/70 p-1.5 rounded-lg border border-amber-200"><b>🍠 Wholesome Carb (優質澱粉):</b> <span class="font-bold text-amber-950">${dCarb}</span></p>` : ''}
+                </div>
+
+                ${dinnerVideoUrl ? `
+                  <div class="pt-1">
+                    <a href="${dinnerVideoUrl}" target="_blank" class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm transition">
+                      <i class="fa-brands fa-youtube text-sm"></i>
+                      <span>${dict[currentLang].btnDinnerVideo}</span>
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
             ` : ''}
           </div>
         `;
       });
+
+      // 4. Sunday Day Off Note in Meals
+      html += `
+        <div class="bg-slate-100 border border-slate-200 p-4 rounded-3xl text-center text-xs text-slate-600 space-y-1">
+          <p class="font-bold">🏖️ Sunday / Linggo / 星期日</p>
+          <p class="text-[11px] text-slate-500">Helper Day Off • Family dining out or private arrangement.</p>
+        </div>
+      `;
+
       container.innerHTML = html;
+      loadCheckboxes();
     }
+
+    function setDinnerAttendance(choice) {
+      const todayKey = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`dinner_attendance_${todayKey}`, choice);
+      const statusP = document.getElementById('attendance-status-text');
+      if (statusP) {
+        statusP.innerText = `✓ Recorded: ${choice.replace('_', ' ')}`;
+      }
+      ['btn-att-3', 'btn-att-2', 'btn-att-1', 'btn-att-none'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        const matches = (id === `btn-att-${choice.replace('_adults', '').replace('_adult', '')}`);
+        if (matches) {
+          btn.className = "py-2 px-2.5 rounded-xl border font-bold text-left transition bg-amber-600 text-white border-amber-700 shadow-sm";
+        } else {
+          btn.className = "py-2 px-2.5 rounded-xl border font-bold text-left transition bg-white text-slate-700 border-amber-200 hover:bg-amber-100";
+        }
+      });
+    }
+
 
     // 2. Render Groceries with "Running Low" Quick Flagging
     function renderGroceries(rows) {
@@ -1217,7 +1546,7 @@
           html += `
             <div class="flex items-center justify-between p-2.5 rounded-xl ${bgStyle} transition gap-2">
               <label class="flex items-start gap-2.5 cursor-pointer flex-1">
-                <input type="checkbox" onchange="onTaskToggled(this)" class="mt-0.5 rounded text-amber-600 task-check">
+                <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="groc_${it.idx}" class="mt-0.5 rounded text-amber-600 task-check">
                 <div>
                   <p class="font-bold text-slate-800 text-[13px] leading-snug flex items-center gap-1.5">
                     <span>${primaryName}</span>
@@ -1494,10 +1823,12 @@
         `;
 
         taskItems.forEach((task, tIdx) => {
-          let isItemChecked = isVerified && (task.toLowerCase().includes('photo') || task.includes('📸') || task.includes('picture'));
+          const taskId = `routine_${idx}_${tIdx}`;
+          const isSavedChecked = localStorage.getItem(`task_${todayKey}_${taskId}`) === 'true';
+          const isItemChecked = isSavedChecked || (isVerified && (task.toLowerCase().includes('photo') || task.includes('📸') || task.includes('picture')));
           html += `
             <label class="flex items-start gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer hover:bg-slate-100 transition">
-              <input type="checkbox" onchange="onTaskToggled(this)" ${isItemChecked ? 'checked' : ''} class="mt-0.5 rounded text-amber-600 task-check" data-block="${idx}">
+              <input type="checkbox" onchange="onTaskToggled(this)" data-task-id="${taskId}" ${isItemChecked ? 'checked' : ''} class="mt-0.5 rounded text-amber-600 task-check" data-block="${idx}">
               <span class="text-slate-700 leading-relaxed">${task}</span>
             </label>
           `;
@@ -1612,7 +1943,7 @@
             harvey_finished: hStatus,
             elly_finished: eStatus,
             finish_action: actionTaken,
-            notes: `Logged via Happy Home Hub v2.8 (${kid}: ${status})`
+            notes: `Logged via Happy Home Hub v2.9 (${kid}: ${status})`
           })
         });
       } catch (e) {
@@ -1737,7 +2068,7 @@
           mime_type: 'image/jpeg',
           image_base64: base64Data,
           date: todayDateStr,
-          notes: `Uploaded via Happy Home Hub v2.8 (${taskType})`
+          notes: `Uploaded via Happy Home Hub v2.9 (${taskType})`
         };
 
         const controller = new AbortController();
@@ -1873,20 +2204,26 @@
     function saveCheckboxes() {
       const todayKey = new Date().toISOString().split('T')[0];
       document.querySelectorAll('.task-check').forEach((cb, idx) => {
-        localStorage.setItem(`task_${todayKey}_${idx}`, cb.checked);
+        const taskId = cb.getAttribute('data-task-id') || `idx_${idx}`;
+        localStorage.setItem(`task_${todayKey}_${taskId}`, cb.checked ? 'true' : 'false');
       });
     }
 
     function loadCheckboxes() {
       const todayKey = new Date().toISOString().split('T')[0];
       document.querySelectorAll('.task-check').forEach((cb, idx) => {
-        const saved = localStorage.getItem(`task_${todayKey}_${idx}`);
-        if (saved === 'true') cb.checked = true;
+        const taskId = cb.getAttribute('data-task-id') || `idx_${idx}`;
+        const saved = localStorage.getItem(`task_${todayKey}_${taskId}`);
+        if (saved === 'true') {
+          cb.checked = true;
+        } else if (saved === 'false') {
+          cb.checked = false;
+        }
       });
       updateProgress();
     }
 
-    // Employer PIN & full admin controls (PIN: 2776)
+    // Employer PIN & full admin controls
     function openPinModal() {
       if (isAdminUnlocked) { lockAdmin(); return; }
       document.getElementById('pin-modal').classList.remove('hidden');
